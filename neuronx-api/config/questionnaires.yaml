@@ -5,6 +5,16 @@
 # The API returns only relevant questions based on program type.
 # Edit this file to add/change questions.
 # Push to GitHub → Railway auto-deploys in 90s.
+#
+# SOURCES: Question fields derived from IRCC official application
+# requirements and document checklists.
+# See docs/09_domain_knowledge/GOVERNMENT_SOURCES.md for citations.
+# LAST VERIFIED: 2026-04-04 against canada.ca
+# NEXT REVIEW: 2026-05-04 (monthly)
+#
+# IMPORTANT: These questions collect INTAKE DATA only.
+# They do NOT assess eligibility — that is the RCIC's role.
+# See docs/04_compliance/trust_boundaries.md.
 # ============================================
 
 # Common questions asked for ALL programs

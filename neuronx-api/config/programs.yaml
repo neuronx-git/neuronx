@@ -7,6 +7,22 @@
 #
 # Top 3 programs (80% of revenue) have full IRCC form mappings.
 # Other programs have checklists + timelines but manual form prep.
+#
+# SOURCES: All data sourced from official IRCC (canada.ca).
+# See docs/09_domain_knowledge/GOVERNMENT_SOURCES.md for full citations.
+# LAST VERIFIED: 2026-04-04 against canada.ca
+# NEXT REVIEW: 2026-05-04 (monthly)
+#
+# WARNING: Processing times are ESTIMATES from IRCC and change frequently.
+# Always include disclaimer in client-facing content.
+# Live processing times: https://www.canada.ca/en/immigration-refugees-citizenship/services/application/check-processing-times.html
+#
+# WARNING: IRCC may update or retire form codes at any time.
+# Form index: https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html
+#
+# NOC CLASSIFICATION: Canada uses NOC 2021 (TEER 0-5) since Nov 2022.
+# NOC 2016 (levels 0/A/B/C/D) is DEPRECATED. Do not use.
+# NOC lookup: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/find-national-occupation-code.html
 # ============================================
 
 programs:
