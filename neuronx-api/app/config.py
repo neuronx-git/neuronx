@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     briefing_model: str = "claude-sonnet-4-6"
 
+    # Database
+    database_url: str = ""  # postgresql+asyncpg://user:pass@host:5432/dbname (Railway provides this)
+
+    # Documenso (Block 2)
+    documenso_url: str = ""  # https://documenso.your-railway.app
+    documenso_api_key: str = ""
+
     # Service config
     cors_origins: List[str] = ["http://localhost:3000"]
     compliance_log_path: str = "logs/compliance.jsonl"

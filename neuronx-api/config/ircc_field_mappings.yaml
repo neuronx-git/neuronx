@@ -1,0 +1,177 @@
+# ============================================
+# IRCC FORM FIELD MAPPINGS
+# ============================================
+# Maps NeuronX questionnaire fields → IRCC PDF form field names.
+# When IRCC changes a form, download new PDF, run field discovery,
+# update mappings below, push. No code changes needed.
+#
+# FIELD DISCOVERY: Run this to find PDF field names:
+#   python3 -c "from pypdf import PdfReader; r=PdfReader('template.pdf'); print(r.get_form_text_fields())"
+#
+# SOURCES: Official IRCC forms from canada.ca
+# See docs/09_domain_knowledge/GOVERNMENT_SOURCES.md
+# LAST VERIFIED: 2026-04-04
+# ============================================
+
+# Common field mappings used across multiple IRCC forms
+# Keys = NeuronX questionnaire field names
+# Values = IRCC PDF form field names (discovered via pypdf)
+# NOTE: Actual PDF field names will be discovered after downloading official forms.
+# These mappings use EXPECTED field names based on common IRCC PDF patterns.
+
+common_fields:
+  full_name: "FamilyName"  # Most IRCC forms split first/last
+  full_name_given: "GivenName"
+  date_of_birth: "DOBYear"  # Some forms use DOBYear/DOBMonth/DOBDay
+  date_of_birth_month: "DOBMonth"
+  date_of_birth_day: "DOBDay"
+  country_of_citizenship: "CountryCitizenship"
+  current_country: "CountryResidence"
+  passport_number: "PassportNumber"
+  passport_expiry: "PassportExpiryDate"
+  email: "Email"
+  phone: "Phone"
+  marital_status: "MaritalStatus"
+
+forms:
+
+  IMM_0008:
+    form_code: "IMM 0008"
+    form_name: "Generic Application Form for Canada"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm0008.html"
+    programs: ["Express Entry", "Spousal Sponsorship", "Work Permit"]
+    field_mappings:
+      full_name: "form1[0].Page1[0].FamilyName[0]"
+      full_name_given: "form1[0].Page1[0].GivenName[0]"
+      date_of_birth: "form1[0].Page1[0].DOB[0]"
+      country_of_citizenship: "form1[0].Page1[0].CountryOfCitizenship[0]"
+      current_country: "form1[0].Page1[0].CountryOfResidence[0]"
+      marital_status: "form1[0].Page1[0].MaritalStatus[0]"
+      passport_number: "form1[0].Page1[0].PassportNum[0]"
+      passport_expiry: "form1[0].Page1[0].PassportExpiryDate[0]"
+      email: "form1[0].Page1[0].Email[0]"
+      phone: "form1[0].Page1[0].Phone[0]"
+      # Express Entry specific
+      primary_occupation: "form1[0].Page2[0].Occupation[0]"
+      noc_code: "form1[0].Page2[0].NOCCode[0]"
+    notes: "Field names are estimates. Run field discovery on downloaded PDF to confirm."
+
+  IMM_5669:
+    form_code: "IMM 5669"
+    form_name: "Schedule A - Background/Declaration"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Express Entry", "Spousal Sponsorship"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "Citizenship"
+      criminal_history: "CriminalOffence"
+      previous_refusal: "PreviousRefusal"
+    notes: "Background declaration — criminal and immigration history questions."
+
+  IMM_5406:
+    form_code: "IMM 5406"
+    form_name: "Additional Family Information"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Express Entry", "Spousal Sponsorship"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      marital_status: "MaritalStatus"
+      has_dependents: "DependantChildren"
+      num_dependents: "NumberOfDependants"
+    notes: "Family member details form."
+
+  IMM_5476:
+    form_code: "IMM 5476"
+    form_name: "Use of a Representative"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5476.html"
+    programs: ["Express Entry", "Spousal Sponsorship", "Work Permit"]
+    field_mappings:
+      full_name: "ClientFamilyName"
+      full_name_given: "ClientGivenName"
+      date_of_birth: "ClientDOB"
+      # Representative fields filled by the firm
+    notes: "Representative authorization. Firm info auto-filled."
+
+  IMM_1344:
+    form_code: "IMM 1344"
+    form_name: "Application to Sponsor, Sponsorship Agreement"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Spousal Sponsorship"]
+    field_mappings:
+      sponsor_name: "SponsorFamilyName"
+      sponsor_status: "SponsorStatus"
+      sponsor_province: "SponsorProvince"
+      full_name: "ApplicantFamilyName"
+      full_name_given: "ApplicantGivenName"
+      relationship_type: "RelationshipType"
+      marriage_date: "MarriageDate"
+    notes: "Sponsor-specific form. Requires both sponsor and applicant data."
+
+  IMM_5532:
+    form_code: "IMM 5532"
+    form_name: "Relationship Information and Sponsorship Evaluation"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Spousal Sponsorship"]
+    field_mappings:
+      sponsor_name: "SponsorName"
+      full_name: "ApplicantName"
+      relationship_type: "TypeOfRelationship"
+      marriage_date: "DateOfMarriage"
+      met_in_person: "MetInPerson"
+    notes: "Detailed relationship questionnaire — extensive form."
+
+  IMM_1295:
+    form_code: "IMM 1295"
+    form_name: "Application for Work Permit Made Outside of Canada"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Work Permit"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "Citizenship"
+      passport_number: "PassportNumber"
+      employer_name: "EmployerName"
+      job_title: "JobTitle"
+      lmia_status: "LMIANumber"
+    notes: "Work permit application from outside Canada."
+
+  IMM_5710:
+    form_code: "IMM 5710"
+    form_name: "Application for Work Permit - Worker"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Work Permit"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      employer_name: "EmployerName"
+      job_title: "Position"
+      noc_code: "NOCCode"
+      work_permit_type: "WorkPermitType"
+    notes: "Worker-specific section of work permit application."
+
+# Field value transformers
+# Some IRCC fields need value conversion from questionnaire format
+transformers:
+  marital_status:
+    "Single": "01"
+    "Married": "02"
+    "Common-Law": "03"
+    "Divorced": "04"
+    "Widowed": "06"
+    "Separated": "05"
+  boolean_to_yesno:
+    true: "Yes"
+    false: "No"
+
+# Firm details (auto-filled on representative forms)
+firm_defaults:
+  firm_name: "Visa Master Canada Immigration Services"
+  rcic_name: "Rajiv Mehta"
+  rcic_license: "R000000"  # Update with real license number
+  firm_address: "Toronto, ON, Canada"
+  firm_phone: "+16479315181"
+  firm_email: "rcic@neuronx.co"

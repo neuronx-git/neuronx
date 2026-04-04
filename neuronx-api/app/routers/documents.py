@@ -3,9 +3,13 @@ Document Generation Endpoints
 POST /documents/retainer     — Generate retainer agreement from GHL contact data
 POST /documents/assessment   — Generate assessment report from scoring data
 POST /documents/checklist    — Generate program-specific document checklist
+GET  /documents/ircc-forms   — List available IRCC forms for a program
+POST /documents/ircc-fill    — Auto-fill IRCC form with client data
+GET  /documents/ircc-fields  — Discover fillable fields in IRCC PDF (dev tool)
+GET  /documents/ircc-coverage — Check how much of a form can be auto-filled
 
 Uses python-docx-template (docxtpl) for .docx generation.
-Falls back to HTML generation if no .docx template exists.
+Uses pypdf for IRCC PDF form auto-population.
 """
 
 from fastapi import APIRouter, HTTPException
@@ -302,3 +306,96 @@ async def generate_assessment_report(payload: AssessmentReportRequest):
     })
 
     return report
+
+
+# ── IRCC Form Auto-Population ──
+
+
+class IRCCFillRequest(BaseModel):
+    form_key: str = Field(..., description="e.g., IMM_0008, IMM_1344")
+    client_data: dict = Field(..., description="Questionnaire answers (keys from questionnaires.yaml)")
+
+
+@router.get("/ircc-forms/{program_type}")
+async def list_ircc_forms(program_type: str):
+    """List available IRCC forms for auto-fill for a given program."""
+    from app.services.ircc_form_service import IRCCFormService
+    service = IRCCFormService()
+    forms = service.list_available_forms(program_type)
+    return {
+        "program_type": program_type,
+        "forms": forms,
+        "total": len(forms),
+        "fillable": sum(1 for f in forms if f["pdf_available"]),
+    }
+
+
+@router.post("/ircc-fill")
+async def fill_ircc_form(payload: IRCCFillRequest):
+    """
+    Auto-fill an IRCC PDF form with client questionnaire data.
+    Returns the filled PDF as base64, or error if template not available.
+    """
+    import base64
+    from app.services.ircc_form_service import IRCCFormService
+
+    service = IRCCFormService()
+    pdf_bytes = service.fill_form(payload.form_key, payload.client_data)
+
+    if not pdf_bytes:
+        raise HTTPException(
+            status_code=404,
+            detail=f"IRCC form template '{payload.form_key}' not available or no matching data. "
+                   "Download the PDF from canada.ca and place in templates/ircc/."
+        )
+
+    return {
+        "form_key": payload.form_key,
+        "filled": True,
+        "pdf_base64": base64.b64encode(pdf_bytes).decode("utf-8"),
+        "size_bytes": len(pdf_bytes),
+    }
+
+
+@router.get("/ircc-fields/{form_key}")
+async def discover_ircc_fields(form_key: str):
+    """
+    Dev tool: discover fillable field names in an IRCC PDF.
+    Used for building field mappings in ircc_field_mappings.yaml.
+    """
+    from app.services.ircc_form_service import IRCCFormService
+    service = IRCCFormService()
+    return service.discover_pdf_fields(form_key)
+
+
+@router.get("/ircc-coverage/{form_key}")
+async def check_ircc_coverage(form_key: str, contact_id: Optional[str] = None):
+    """
+    Check how much of an IRCC form can be auto-filled with available client data.
+    Useful for RCIC to see what percentage is pre-filled vs manual.
+    """
+    from app.services.ircc_form_service import IRCCFormService
+
+    service = IRCCFormService()
+
+    # If contact_id provided, fetch data from GHL
+    client_data = {}
+    if contact_id:
+        ghl = GHLClient()
+        try:
+            contact = await ghl.get_contact(contact_id)
+            # Build client_data from custom fields
+            for field in contact.get("customFields", []):
+                key = field.get("id", "")
+                value = field.get("value", "")
+                if value:
+                    client_data[key] = value
+            # Also add standard fields
+            client_data["full_name"] = contact.get("lastName", "")
+            client_data["full_name_given"] = contact.get("firstName", "")
+            client_data["email"] = contact.get("email", "")
+            client_data["phone"] = contact.get("phone", "")
+        except Exception as e:
+            logger.warning("Could not fetch contact %s: %s", contact_id, e)
+
+    return service.get_mapping_coverage(form_key, client_data)
