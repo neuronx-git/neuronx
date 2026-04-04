@@ -1,0 +1,245 @@
+"""
+Case Processing Service
+
+Handles post-retainer case lifecycle:
+  Onboarding → Doc Collection → Form Prep → Review → Submit → Processing → Decision → Closed
+
+Integrates with GHL Pipeline #2 (Case Processing) via tags + custom fields.
+Program-aware: content (checklists, timelines, forms) varies by program type.
+"""
+
+import logging
+from datetime import datetime, timezone, timedelta
+from typing import Optional
+
+from app.services.ghl_client import GHLClient
+from app.utils.compliance_log import log_event
+
+logger = logging.getLogger("neuronx.cases")
+
+# Expected processing times by program (months) — used for client expectations
+PROCESSING_TIMES = {
+    "Express Entry": {"min": 5, "max": 8, "avg": 6},
+    "Spousal Sponsorship": {"min": 12, "max": 18, "avg": 15},
+    "Work Permit": {"min": 2, "max": 6, "avg": 4},
+    "Study Permit": {"min": 2, "max": 4, "avg": 3},
+    "LMIA": {"min": 2, "max": 5, "avg": 3},
+    "PR Renewal": {"min": 2, "max": 6, "avg": 4},
+    "Citizenship": {"min": 8, "max": 14, "avg": 12},
+    "Visitor Visa": {"min": 0.5, "max": 3, "avg": 1.5},
+}
+
+# Core IRCC forms by top 3 programs (80% of revenue)
+IRCC_FORMS = {
+    "Express Entry": [
+        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": True},
+        {"code": "IMM 5669", "name": "Schedule A – Background/Declaration", "required": True},
+        {"code": "IMM 5406", "name": "Additional Family Information", "required": True},
+        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
+        {"code": "Schedule 1", "name": "Application for PR – Federal Skilled Worker", "required": True},
+        {"code": "IMM 5562", "name": "Supplementary Information – Your Travels", "required": False},
+    ],
+    "Spousal Sponsorship": [
+        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": True},
+        {"code": "IMM 1344", "name": "Application to Sponsor, Sponsorship Agreement", "required": True},
+        {"code": "IMM 5532", "name": "Relationship Information and Sponsorship Evaluation", "required": True},
+        {"code": "IMM 5406", "name": "Additional Family Information", "required": True},
+        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
+        {"code": "IMM 5669", "name": "Schedule A – Background/Declaration", "required": True},
+        {"code": "IMM 5540", "name": "Sponsor Questionnaire", "required": True},
+        {"code": "IMM 5481", "name": "Sponsorship Evaluation (if common-law)", "required": False},
+    ],
+    "Work Permit": [
+        {"code": "IMM 1295", "name": "Application for Work Permit", "required": True},
+        {"code": "IMM 5710", "name": "Application for a Work Permit – Worker", "required": True},
+        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": False},
+        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
+        {"code": "IMM 5645", "name": "Family Information Form", "required": True},
+    ],
+}
+
+
+class CaseService:
+    """Manages case processing lifecycle and program-specific content."""
+
+    async def initiate_case(self, contact_id: str, program_type: str, assigned_rcic: str) -> dict:
+        """
+        Start a new case after retainer is signed.
+        Sets case fields, adds onboarding tag, generates doc checklist.
+        """
+        ghl = GHLClient()
+        now = datetime.now(tz=timezone.utc)
+
+        # Generate case ID
+        case_id = f"NX-{now.strftime('%Y%m%d')}-{contact_id[:6].upper()}"
+
+        # Set doc collection deadline (14 days)
+        deadline = now + timedelta(days=14)
+
+        # Get processing time estimate
+        proc_time = PROCESSING_TIMES.get(program_type, {"min": 3, "max": 12, "avg": 6})
+
+        # Update GHL custom fields
+        await ghl.update_custom_fields(contact_id, {
+            "case_id": case_id,
+            "case_program_type": program_type,
+            "case_assigned_rcic": assigned_rcic,
+            "case_assigned_at": now.strftime("%Y-%m-%d"),
+            "case_deadline_date": deadline.strftime("%Y-%m-%d"),
+            "case_deadline_type": "Doc Collection",
+            "case_complexity": "Standard",
+            "ircc_decision": "Pending",
+        })
+
+        # Add onboarding tag
+        await ghl.add_tags(contact_id, ["nx:case:onboarding", "nx:case:docs_pending"])
+
+        # Add case initiation note
+        contact = await ghl.get_contact(contact_id)
+        name = f"{contact.get('firstName', '')} {contact.get('lastName', '')}".strip()
+
+        await ghl.add_note(contact_id, (
+            f"CASE INITIATED — {case_id}\n"
+            f"{'=' * 40}\n"
+            f"Program: {program_type}\n"
+            f"Assigned RCIC: {assigned_rcic}\n"
+            f"Document deadline: {deadline.strftime('%Y-%m-%d')}\n"
+            f"Estimated processing: {proc_time['min']}-{proc_time['max']} months\n"
+            f"{'=' * 40}\n"
+            f"Generated by NeuronX at {now.strftime('%Y-%m-%d %H:%M')} UTC"
+        ))
+
+        log_event("case_initiated", {
+            "case_id": case_id,
+            "contact_id": contact_id,
+            "program_type": program_type,
+            "assigned_rcic": assigned_rcic,
+        })
+
+        return {
+            "case_id": case_id,
+            "contact_id": contact_id,
+            "program_type": program_type,
+            "assigned_rcic": assigned_rcic,
+            "doc_deadline": deadline.isoformat(),
+            "estimated_processing_months": proc_time,
+            "ircc_forms": IRCC_FORMS.get(program_type, []),
+            "status": "onboarding",
+        }
+
+    async def update_stage(self, contact_id: str, new_stage: str, notes: Optional[str] = None) -> dict:
+        """Update case stage via tag management."""
+        ghl = GHLClient()
+
+        # Map stage to tag
+        stage_tags = {
+            "onboarding": "nx:case:onboarding",
+            "doc_collection": "nx:case:docs_pending",
+            "docs_complete": "nx:case:docs_complete",
+            "form_prep": "nx:case:form_prep",
+            "under_review": "nx:case:under_review",
+            "submitted": "nx:case:submitted",
+            "processing": "nx:case:processing",
+            "rfi": "nx:case:rfi",
+            "decision": "nx:case:decision",
+            "closed": "nx:case:closed",
+        }
+
+        tag = stage_tags.get(new_stage)
+        if not tag:
+            return {"error": f"Unknown stage: {new_stage}"}
+
+        await ghl.add_tag(contact_id, tag)
+
+        if notes:
+            await ghl.update_custom_fields(contact_id, {"case_status_notes": notes})
+            await ghl.add_note(contact_id, f"[CASE UPDATE] Stage: {new_stage}\n{notes}")
+
+        log_event("case_stage_update", {
+            "contact_id": contact_id,
+            "new_stage": new_stage,
+            "tag": tag,
+        })
+
+        return {"contact_id": contact_id, "stage": new_stage, "tag_added": tag}
+
+    async def record_submission(self, contact_id: str, receipt_number: str, submission_date: Optional[str] = None) -> dict:
+        """Record IRCC submission with receipt number."""
+        ghl = GHLClient()
+        now = datetime.now(tz=timezone.utc)
+
+        sub_date = submission_date or now.strftime("%Y-%m-%d")
+
+        await ghl.update_custom_fields(contact_id, {
+            "ircc_receipt_number": receipt_number,
+            "ircc_submission_date": sub_date,
+            "case_deadline_date": (now + timedelta(days=30)).strftime("%Y-%m-%d"),
+            "case_deadline_type": "IRCC Response",
+        })
+
+        await ghl.add_tags(contact_id, ["nx:case:submitted"])
+        await ghl.add_note(contact_id, (
+            f"APPLICATION SUBMITTED TO IRCC\n"
+            f"Receipt: {receipt_number}\n"
+            f"Date: {sub_date}\n"
+            f"Next check-in: {(now + timedelta(days=30)).strftime('%Y-%m-%d')}"
+        ))
+
+        log_event("ircc_submission", {
+            "contact_id": contact_id,
+            "receipt_number": receipt_number,
+            "submission_date": sub_date,
+        })
+
+        return {
+            "contact_id": contact_id,
+            "receipt_number": receipt_number,
+            "submission_date": sub_date,
+            "next_checkin": (now + timedelta(days=30)).strftime("%Y-%m-%d"),
+        }
+
+    async def record_decision(self, contact_id: str, decision: str, decision_date: Optional[str] = None, notes: Optional[str] = None) -> dict:
+        """Record IRCC decision (Approved, Refused, Withdrawn, Returned)."""
+        ghl = GHLClient()
+        now = datetime.now(tz=timezone.utc)
+
+        dec_date = decision_date or now.strftime("%Y-%m-%d")
+
+        fields = {
+            "ircc_decision": decision,
+            "ircc_decision_date": dec_date,
+        }
+        if notes:
+            fields["case_status_notes"] = notes
+
+        await ghl.update_custom_fields(contact_id, fields)
+
+        tag = f"nx:case:{'approved' if decision == 'Approved' else 'refused' if decision == 'Refused' else 'decision'}"
+        await ghl.add_tags(contact_id, ["nx:case:decision", tag])
+
+        await ghl.add_note(contact_id, (
+            f"IRCC DECISION: {decision.upper()}\n"
+            f"Date: {dec_date}\n"
+            f"{f'Notes: {notes}' if notes else ''}"
+        ))
+
+        log_event("ircc_decision", {
+            "contact_id": contact_id,
+            "decision": decision,
+            "decision_date": dec_date,
+        })
+
+        return {
+            "contact_id": contact_id,
+            "decision": decision,
+            "decision_date": dec_date,
+            "tag_added": tag,
+        }
+
+    def get_ircc_forms(self, program_type: str) -> list:
+        """Get required IRCC forms for a program."""
+        return IRCC_FORMS.get(program_type, [])
+
+    def get_processing_estimate(self, program_type: str) -> dict:
+        """Get estimated processing time for a program."""
+        return PROCESSING_TIMES.get(program_type, {"min": 3, "max": 12, "avg": 6})
