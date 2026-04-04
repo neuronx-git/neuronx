@@ -1,0 +1,207 @@
+# ============================================
+# IMMIGRATION PROGRAM CONFIGURATION
+# ============================================
+# Edit this file to add/change programs, IRCC forms,
+# document checklists, and processing times.
+# Push to GitHub → Railway auto-deploys in 90s.
+#
+# Top 3 programs (80% of revenue) have full IRCC form mappings.
+# Other programs have checklists + timelines but manual form prep.
+# ============================================
+
+programs:
+
+  Express Entry:
+    tier: P0  # Top 3 — full automation
+    processing_months:
+      min: 5
+      max: 8
+      avg: 6
+    ircc_forms:
+      - {code: "IMM 0008", name: "Generic Application Form for Canada", required: true}
+      - {code: "IMM 5669", name: "Schedule A – Background/Declaration", required: true}
+      - {code: "IMM 5406", name: "Additional Family Information", required: true}
+      - {code: "IMM 5476", name: "Use of a Representative", required: true}
+      - {code: "Schedule 1", name: "Application for PR – Federal Skilled Worker", required: true}
+      - {code: "IMM 5562", name: "Supplementary Information – Your Travels", required: false}
+    required_documents:
+      - "Valid passport (all pages)"
+      - "Educational Credential Assessment (ECA) from WES or equivalent"
+      - "IELTS or CELPIP language test results (General Training)"
+      - "Reference letters from all employers (last 10 years)"
+      - "Police clearance certificates (from all countries lived 6+ months)"
+      - "Proof of funds (bank statements, investments — last 6 months)"
+      - "Digital photo (IRCC specifications)"
+      - "Medical exam results (from IRCC-designated panel physician)"
+    conditional_documents:
+      - "Provincial nomination certificate (if PNP stream)"
+      - "Job offer letter with LMIA (if applicable)"
+      - "Spouse/partner documents (if applicable)"
+      - "Dependent children documents (birth certificates, custody)"
+      - "TEF results (if claiming French language points)"
+
+  Spousal Sponsorship:
+    tier: P0
+    processing_months:
+      min: 12
+      max: 18
+      avg: 15
+    ircc_forms:
+      - {code: "IMM 0008", name: "Generic Application Form for Canada", required: true}
+      - {code: "IMM 1344", name: "Application to Sponsor, Sponsorship Agreement", required: true}
+      - {code: "IMM 5532", name: "Relationship Information and Sponsorship Evaluation", required: true}
+      - {code: "IMM 5406", name: "Additional Family Information", required: true}
+      - {code: "IMM 5476", name: "Use of a Representative", required: true}
+      - {code: "IMM 5669", name: "Schedule A – Background/Declaration", required: true}
+      - {code: "IMM 5540", name: "Sponsor Questionnaire", required: true}
+      - {code: "IMM 5481", name: "Sponsorship Evaluation (if common-law)", required: false}
+    required_documents:
+      - "Valid passport (sponsor + applicant)"
+      - "Marriage certificate or proof of common-law (12+ months cohabitation)"
+      - "Relationship evidence package (photos, communications, travel, joint finances)"
+      - "IMM 5532 — Relationship information and sponsorship evaluation"
+      - "Police clearance certificates"
+      - "Medical exam results"
+      - "Proof of sponsor's income (NOA, T4, employment letter)"
+      - "Digital photos (both parties)"
+    conditional_documents:
+      - "Divorce decree (if previously married)"
+      - "Children's birth certificates and custody documents"
+      - "Statutory declarations from friends/family attesting to relationship"
+      - "Open work permit application (if applicant in Canada)"
+
+  Work Permit:
+    tier: P0
+    processing_months:
+      min: 2
+      max: 6
+      avg: 4
+    ircc_forms:
+      - {code: "IMM 1295", name: "Application for Work Permit", required: true}
+      - {code: "IMM 5710", name: "Application for a Work Permit – Worker", required: true}
+      - {code: "IMM 0008", name: "Generic Application Form for Canada", required: false}
+      - {code: "IMM 5476", name: "Use of a Representative", required: true}
+      - {code: "IMM 5645", name: "Family Information Form", required: true}
+    required_documents:
+      - "Valid passport"
+      - "Job offer letter from Canadian employer"
+      - "Employment contract with terms and conditions"
+      - "Resume/CV"
+      - "Educational credentials relevant to position"
+      - "Police clearance certificates"
+      - "Medical exam (if applicable)"
+      - "Digital photo"
+    conditional_documents:
+      - "LMIA confirmation (if employer-specific)"
+      - "LMIA exemption documentation (if IMP/CUSMA/intra-company)"
+      - "Provincial nomination (if PNP work permit)"
+      - "Proof of current immigration status (if in Canada)"
+      - "Spousal open work permit docs (if applicable)"
+
+  Study Permit:
+    tier: P1
+    processing_months:
+      min: 2
+      max: 4
+      avg: 3
+    ircc_forms: []  # Manual form prep by RCIC
+    required_documents:
+      - "Valid passport"
+      - "Letter of acceptance from Designated Learning Institution (DLI)"
+      - "Proof of financial support (tuition + living expenses for 1 year)"
+      - "Statement of purpose / study plan"
+      - "Transcripts from previous education"
+      - "Language test results (if applicable)"
+      - "Police clearance certificates"
+      - "Medical exam results"
+      - "Digital photo"
+    conditional_documents:
+      - "Custodianship declaration (if minor)"
+      - "Quebec Acceptance Certificate (CAQ) (if studying in Quebec)"
+      - "GIC receipt (if SDS stream)"
+      - "Scholarship/funding letters"
+
+  LMIA:
+    tier: P2
+    processing_months:
+      min: 2
+      max: 5
+      avg: 3
+    ircc_forms: []
+    required_documents:
+      - "Employer's business registration documents"
+      - "Job description with NOC code"
+      - "Proof of recruitment efforts (4 weeks advertising evidence)"
+      - "Prevailing wage documentation"
+      - "Business financial statements"
+      - "Transition plan (for high-wage LMIA)"
+      - "Employer compliance history"
+    conditional_documents:
+      - "Provincial assessment (if required by province)"
+      - "Union consultation results (if unionized workplace)"
+      - "Caregiver-specific documents (if caregiver stream)"
+      - "Agricultural stream documents (if SAWP/agricultural)"
+
+  PR Renewal:
+    tier: P2
+    processing_months:
+      min: 2
+      max: 6
+      avg: 4
+    ircc_forms: []
+    required_documents:
+      - "Current PR card (both sides)"
+      - "Valid passport"
+      - "Residency calculation — proof of 730+ days in Canada in last 5 years"
+      - "Travel history (entry/exit records, passport stamps)"
+      - "IMM 5644 application form"
+      - "Digital photos (2)"
+      - "Processing fee payment receipt"
+    conditional_documents:
+      - "Employment letters (if counting time abroad with Canadian employer)"
+      - "Spouse's Canadian citizenship certificate (if counting spousal time)"
+      - "CBSA traveller records (from CBSA ATIP request)"
+
+  Citizenship:
+    tier: P2
+    processing_months:
+      min: 8
+      max: 14
+      avg: 12
+    ircc_forms: []
+    required_documents:
+      - "Valid PR card or proof of PR status"
+      - "Valid passport"
+      - "Physical presence calculator (1,095+ days in last 5 years as PR)"
+      - "Tax returns (NOA) for 3 of last 5 years"
+      - "Language test results (CLB 4+ for ages 18-54)"
+      - "Police clearance (if applicable)"
+      - "Digital photos (2)"
+      - "Processing fee payment receipt"
+    conditional_documents:
+      - "Name change documents (if applicable)"
+      - "Permanent Resident Travel Document (if PR card expired)"
+      - "Military service records (if applicable)"
+      - "Prohibition order documentation (if previously prohibited)"
+
+  Visitor Visa:
+    tier: P2
+    processing_months:
+      min: 0.5
+      max: 3
+      avg: 1.5
+    ircc_forms: []
+    required_documents:
+      - "Valid passport (6+ months validity beyond planned stay)"
+      - "Digital photo"
+      - "Purpose of visit letter"
+      - "Proof of ties to home country (employment, property, family)"
+      - "Proof of financial means for the visit"
+      - "Travel itinerary"
+      - "Invitation letter from Canadian host (if visiting someone)"
+    conditional_documents:
+      - "Hotel/accommodation bookings"
+      - "Return flight booking"
+      - "Business meeting details (if business visit)"
+      - "Super Visa requirements (if parent/grandparent — medical + insurance)"
+      - "Event registration (if attending conference/event)"

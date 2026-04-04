@@ -53,7 +53,15 @@ app.include_router(cases.router, prefix="/cases", tags=["Case Processing"])
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": "neuronx-api", "version": "0.1.0"}
+    return {"status": "ok", "service": "neuronx-api", "version": "0.2.0"}
+
+
+@app.post("/admin/reload-config")
+async def reload_config():
+    """Reload YAML config files without redeploying. For hot config changes."""
+    from app.config_loader import reload_all
+    reload_all()
+    return {"status": "ok", "message": "All configs reloaded from YAML"}
 
 
 @app.get("/")

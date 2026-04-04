@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 import logging
 
 from app.services.ghl_client import GHLClient
+from app.config_loader import load_programs_config
 from app.utils.compliance_log import log_event
 
 router = APIRouter()
@@ -188,23 +189,38 @@ class ChecklistResponse(BaseModel):
 
 @router.post("/checklist", response_model=ChecklistResponse)
 async def generate_checklist(payload: ChecklistRequest):
-    """Generate program-specific document checklist."""
+    """Generate program-specific document checklist. Reads from config/programs.yaml."""
+    programs = load_programs_config()
     program = payload.program_type
-    checklist = PROGRAM_CHECKLISTS.get(program)
+    prog_data = programs.get(program)
 
-    if not checklist:
+    if not prog_data:
         # Fuzzy match
-        for key in PROGRAM_CHECKLISTS:
+        for key in programs:
             if key.lower() in program.lower() or program.lower() in key.lower():
-                checklist = PROGRAM_CHECKLISTS[key]
+                prog_data = programs[key]
                 program = key
                 break
 
-    if not checklist:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown program type: {payload.program_type}. Valid: {list(PROGRAM_CHECKLISTS.keys())}",
-        )
+    # Fallback to hardcoded if config doesn't have it
+    if not prog_data:
+        checklist = PROGRAM_CHECKLISTS.get(program)
+        if not checklist:
+            for key in PROGRAM_CHECKLISTS:
+                if key.lower() in program.lower() or program.lower() in key.lower():
+                    checklist = PROGRAM_CHECKLISTS[key]
+                    program = key
+                    break
+        if not checklist:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown program type: {payload.program_type}. Valid: {list(programs.keys())}",
+            )
+    else:
+        checklist = {
+            "required": prog_data.get("required_documents", []),
+            "conditional": prog_data.get("conditional_documents", []),
+        }
 
     log_event("checklist_generated", {
         "contact_id": payload.contact_id,

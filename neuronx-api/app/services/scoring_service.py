@@ -16,9 +16,9 @@ from datetime import datetime, timezone
 
 from app.models.readiness import (
     ReadinessScore, ReadinessOutcome,
-    TimelineUrgency, PriorApplications, BudgetAwareness,
-    COMPLEXITY_KEYWORDS, GHL_FIELD_MAP,
+    GHL_FIELD_MAP,
 )
+from app.config_loader import load_scoring_config
 from app.utils.compliance_log import log_event
 
 
@@ -50,64 +50,69 @@ class ScoringService:
         call_id: Optional[str] = None,
     ) -> ReadinessScore:
 
+        cfg = load_scoring_config()
+        base = cfg["dimension_base_points"]
+        mods = cfg["modifiers"]
+
         score = 0
         flags = []
         answered = 0
 
-        # R1: Program Interest (+16 if answered)
+        # R1: Program Interest
         if r1_program_interest:
             answered += 1
-            score += 16
+            score += base
 
-        # R2: Current Location (+16 if answered)
+        # R2: Current Location
         if r2_current_location:
             answered += 1
-            score += 16
+            score += base
 
-        # R3: Timeline Urgency (+16 base, modifiers)
+        # R3: Timeline Urgency
         if r3_timeline_urgency:
             answered += 1
-            score += 16
+            score += base
             urgency = r3_timeline_urgency.lower().replace("-", "_").replace(" ", "_")
             if urgency in ("urgent", "urgent_(30_days)", "urgent (30 days)"):
-                score += 10
+                score += mods["urgent_timeline_bonus"]
                 flags.append("urgent_timeline")
             elif urgency in ("near_term", "near-term", "near_term_(1_3_months)", "near-term (1-3 months)"):
-                score += 5
+                score += mods["near_term_bonus"]
             elif urgency in ("long_term", "long-term", "long_term_(6+_months)", "long-term (6+ months)"):
-                score -= 5
+                score += mods["long_term_penalty"]
 
-        # R4: Prior Applications (+16 base, modifiers)
+        # R4: Prior Applications
         if r4_prior_applications:
             answered += 1
-            score += 16
+            score += base
             prior = r4_prior_applications.lower().replace(" ", "_")
             if prior in ("has_refusal", "has refusal"):
-                score -= 10
+                score += mods["prior_refusal_penalty"]
                 flags.append("prior_refusal")
             elif prior == "complex":
-                score -= 5
+                score += mods["complex_history_penalty"]
                 flags.append("complex_history")
 
-        # R5: Budget Awareness (+16 base, modifiers)
+        # R5: Budget Awareness
         if r5_budget_awareness:
             answered += 1
-            score += 16
+            score += base
             budget = r5_budget_awareness.lower()
             if budget == "aware":
-                score += 10  # Strong buy signal
+                score += mods["budget_aware_bonus"]
             elif budget == "unaware":
-                score -= 5
+                score += mods["budget_unaware_penalty"]
                 flags.append("budget_education_needed")
 
         # Clamp score to 0-100
         score = max(0, min(100, score))
         confidence = answered / 5.0
 
-        # Check for complexity keywords (requires human escalation)
+        # Check for complexity keywords from config (requires human escalation)
         if transcript_excerpt:
             transcript_lower = transcript_excerpt.lower()
-            complexity_found = [kw for kw in COMPLEXITY_KEYWORDS if kw in transcript_lower]
+            keywords = cfg.get("complexity_keywords", [])
+            complexity_found = [kw for kw in keywords if kw in transcript_lower]
             if complexity_found:
                 flags.extend([f"complexity:{kw}" for kw in complexity_found])
                 flags.append("requires_human_escalation")
@@ -148,32 +153,32 @@ class ScoringService:
         return result
 
     def _determine_outcome(self, answered: int, score: int, flags: list) -> ReadinessOutcome:
+        cfg = load_scoring_config()
+        med = cfg["thresholds"]["med"]
+        min_dims = cfg.get("min_dimensions_for_ready", 2)
+
         # Complexity keywords ALWAYS override — human must review
         if "requires_human_escalation" in flags:
             return ReadinessOutcome.READY_COMPLEX
-        if answered < 2:
+        if answered < min_dims:
             return ReadinessOutcome.NOT_READY
         # Urgent only if no complexity flags
-        if "urgent_timeline" in flags and score >= 40:
+        if "urgent_timeline" in flags and score >= med:
             return ReadinessOutcome.READY_URGENT
-        if score >= 40:
+        if score >= med:
             return ReadinessOutcome.READY_STANDARD
         return ReadinessOutcome.NOT_READY
 
     def _outcome_to_tags(self, outcome: ReadinessOutcome, score: int, flags: list) -> list[str]:
-        """
-        Map outcome + score to GHL tags.
-        These tags trigger WF-04B routing:
-          nx:score:high (>=70) → WF-04 → booking invite
-          nx:score:med (40-69) → WF-12 → operator hold
-          nx:score:low (<40)   → WF-11 → nurture
-        """
-        tags = []
+        """Map outcome + score to GHL tags using config thresholds."""
+        cfg = load_scoring_config()
+        high = cfg["thresholds"]["high"]
+        med = cfg["thresholds"]["med"]
 
-        # Score tier tag (WF-04B routing)
-        if score >= 70:
+        tags = []
+        if score >= high:
             tags.append("nx:score:high")
-        elif score >= 40:
+        elif score >= med:
             tags.append("nx:score:med")
         else:
             tags.append("nx:score:low")

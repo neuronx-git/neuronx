@@ -1,0 +1,53 @@
+# ============================================
+# LEAD SCORING CONFIGURATION
+# ============================================
+# Edit this file to change scoring behavior.
+# Push to GitHub → Railway auto-deploys in 90s.
+# No code changes needed.
+#
+# Score range: 0-100
+# WF-04B routing thresholds:
+#   >= high_threshold → nx:score:high → booking invite
+#   >= med_threshold  → nx:score:med  → operator review
+#   < med_threshold   → nx:score:low  → nurture
+# ============================================
+
+thresholds:
+  high: 70
+  med: 40
+
+# Points awarded for each dimension answered
+dimension_base_points: 16
+
+# Bonus/penalty modifiers
+modifiers:
+  urgent_timeline_bonus: 10
+  near_term_bonus: 5
+  long_term_penalty: -5
+  prior_refusal_penalty: -10
+  complex_history_penalty: -5
+  budget_aware_bonus: 10
+  budget_unaware_penalty: -5
+
+# Minimum dimensions to be considered "ready" (not NOT_READY)
+min_dimensions_for_ready: 2
+
+# Keywords in transcript that force human escalation
+# If ANY of these appear, outcome = ready_complex regardless of score
+complexity_keywords:
+  - deport
+  - removal order
+  - inadmissib
+  - criminal
+  - misrepresent
+  - fraud
+  - fake
+  - refused
+  - refusal
+  - detained
+  - detention
+  - banned
+  - visa ban
+  - overstay
+  - illegal
+  - undocumented

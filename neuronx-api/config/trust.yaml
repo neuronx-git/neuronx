@@ -1,0 +1,66 @@
+# ============================================
+# TRUST BOUNDARY CONFIGURATION
+# ============================================
+# BINDING: docs/04_compliance/trust_boundaries.md
+# These patterns determine when AI calls must
+# escalate to a human. Edit carefully.
+# ============================================
+
+# Patterns in PROSPECT speech that trigger escalation
+escalation_triggers:
+  eligibility_question:
+    - "am i eligible"
+    - "do i qualify"
+    - "can i apply"
+    - "will i get approved"
+    - "what are my chances"
+  deportation_removal:
+    - "deport"
+    - "removal order"
+    - "deportation"
+    - "removal process"
+    - "being removed"
+  inadmissibility:
+    - "inadmissib"
+    - "banned from canada"
+    - "visa ban"
+    - "criminally inadmissible"
+  fraud_misrepresentation:
+    - "fake document"
+    - "false document"
+    - "misrepresentation"
+    - "fraud"
+    - "lie on"
+  emotional_distress:
+    - "desperate"
+    - "crying"
+    - "suicidal"
+    - "very scared"
+    - "terrified"
+    - "please help me"
+  explicit_human_request:
+    - "speak to a human"
+    - "talk to a person"
+    - "real person"
+    - "not a robot"
+    - "human agent"
+    - "transfer me"
+
+# Patterns in AI RESPONSE that are violations (AI should never say these)
+ai_violations:
+  eligibility_assessment:
+    - "you (are|would be) eligible"
+    - "you qualify for"
+    - "you should apply for"
+    - "your chances are"
+    - "you will (likely |probably )?get approved"
+  legal_advice:
+    - "the law says"
+    - "legally you"
+    - "according to immigration law"
+    - "ircc requires you to"
+  outcome_promises:
+    - "guarantee"
+    - "100% success"
+    - "definitely get"
+    - "will be approved"
