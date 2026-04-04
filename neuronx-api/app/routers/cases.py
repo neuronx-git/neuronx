@@ -6,6 +6,8 @@ POST /cases/submission     — Record IRCC submission
 POST /cases/decision       — Record IRCC decision
 GET  /cases/forms          — Get IRCC forms for a program
 GET  /cases/timeline       — Get estimated processing time
+GET  /cases/questionnaire  — Smart onboarding questionnaire (program-specific)
+GET  /cases/status         — Client-facing case status
 """
 
 from fastapi import APIRouter, HTTPException
@@ -14,6 +16,7 @@ from typing import Optional
 import logging
 
 from app.services.case_service import CaseService
+from app.config_loader import load_yaml_config
 
 router = APIRouter()
 logger = logging.getLogger("neuronx.cases")
@@ -126,4 +129,94 @@ async def get_processing_timeline(program_type: str):
         "program_type": program_type,
         "estimated_months": estimate,
         "disclaimer": "Processing times are estimates based on IRCC averages. Actual times may vary.",
+    }
+
+
+@router.get("/questionnaire/{program_type}")
+async def get_onboarding_questionnaire(program_type: str):
+    """
+    Returns program-specific onboarding questionnaire.
+    Common questions + program-specific questions combined.
+    Used by GHL form or Next.js portal to render the smart intake form.
+    """
+    config = load_yaml_config("questionnaires")
+    if not config:
+        raise HTTPException(status_code=500, detail="Questionnaire config not found")
+
+    common = config.get("common_questions", [])
+    programs = config.get("programs", {})
+
+    program_config = programs.get(program_type)
+    if not program_config:
+        # Return common questions only for unknown programs
+        return {
+            "program_type": program_type,
+            "sections": ["Personal Information", "Contact", "Family", "Background"],
+            "questions": common,
+            "total_questions": len(common),
+            "note": f"No program-specific questions for '{program_type}'. Using common questions only.",
+        }
+
+    program_questions = program_config.get("questions", [])
+    program_sections = program_config.get("sections", [])
+
+    # Combine common + program-specific
+    all_questions = common + program_questions
+    all_sections = ["Personal Information", "Contact", "Family", "Background"] + program_sections
+
+    return {
+        "program_type": program_type,
+        "sections": all_sections,
+        "questions": all_questions,
+        "total_questions": len(all_questions),
+        "common_count": len(common),
+        "program_specific_count": len(program_questions),
+    }
+
+
+@router.get("/status/{contact_id}")
+async def get_case_status(contact_id: str):
+    """
+    Client-facing case status. Returns current stage, timeline,
+    outstanding docs, and next steps — safe for client portal display.
+    """
+    service = CaseService()
+    ghl = service._get_ghl_client()
+
+    try:
+        contact = await ghl.get_contact(contact_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Contact not found")
+
+    # Extract case fields from contact custom fields
+    custom = {}
+    for field in contact.get("customFields", []):
+        custom[field.get("id", "")] = field.get("value", "")
+
+    # Map stage tags to human-readable status
+    tags = contact.get("tags", [])
+    stage = "Unknown"
+    stage_map = {
+        "nx:case:onboarding": "Onboarding — We're setting up your case",
+        "nx:case:docs_pending": "Document Collection — Waiting for your documents",
+        "nx:case:docs_complete": "Documents Received — All documents collected",
+        "nx:case:form_prep": "Form Preparation — Your RCIC is preparing your application",
+        "nx:case:under_review": "Internal Review — Quality check in progress",
+        "nx:case:submitted": "Submitted to IRCC — Your application is with Immigration Canada",
+        "nx:case:processing": "Processing — IRCC is reviewing your application",
+        "nx:case:rfi": "Additional Information Required — IRCC needs more documents",
+        "nx:case:decision": "Decision Received — IRCC has made a decision",
+        "nx:case:closed": "Case Closed",
+    }
+    for tag, label in stage_map.items():
+        if tag in tags:
+            stage = label
+
+    return {
+        "contact_id": contact_id,
+        "name": f"{contact.get('firstName', '')} {contact.get('lastName', '')}".strip(),
+        "current_stage": stage,
+        "program_type": next((f.get("value") for f in contact.get("customFields", []) if "case_program_type" in str(f.get("id", ""))), "Unknown"),
+        "safe_for_client_display": True,
+        "disclaimer": "For detailed case updates, please contact your assigned consultant.",
     }

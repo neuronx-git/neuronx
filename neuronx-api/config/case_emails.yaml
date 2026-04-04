@@ -1,0 +1,278 @@
+# ============================================
+# CASE PROCESSING EMAIL TEMPLATES
+# ============================================
+# One template per workflow stage. Variables use {{variable}} syntax.
+# GHL workflows reference these subjects/bodies.
+# Edit this file to change email content without touching workflows.
+# ============================================
+
+emails:
+
+  cp_01_welcome:
+    workflow: "WF-CP-01"
+    stage: "ONBOARDING"
+    subject: "Welcome to {{firm_name}} — Your Immigration Case Has Begun"
+    body: |
+      Hi {{first_name}},
+
+      Thank you for choosing {{firm_name}} for your immigration journey. We're excited to begin working on your {{program_type}} application.
+
+      YOUR CASE DETAILS:
+      - Case ID: {{case_id}}
+      - Program: {{program_type}}
+      - Assigned Consultant: {{assigned_rcic}}
+      - Estimated Processing Time: {{processing_min}}-{{processing_max}} months (after submission)
+
+      NEXT STEPS:
+      1. Complete your onboarding questionnaire (link below)
+      2. Upload your documents to your secure portal
+      3. Your consultant will review and begin preparing your application
+
+      Complete Your Questionnaire: {{questionnaire_link}}
+      Upload Documents: {{portal_link}}
+
+      DOCUMENT DEADLINE: Please upload all required documents within 14 days (by {{doc_deadline}}).
+
+      Your required documents:
+      {{document_checklist}}
+
+      If you have questions, reply to this email or call us at {{firm_phone}}.
+
+      Warm regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+      Licensed Immigration Consulting
+
+  cp_02_doc_reminder_7day:
+    workflow: "WF-CP-02"
+    stage: "DOC COLLECTION"
+    subject: "Friendly Reminder — Documents Still Needed for Your Case"
+    body: |
+      Hi {{first_name}},
+
+      We're making progress on your {{program_type}} application, but we're still waiting for some documents:
+
+      STILL NEEDED:
+      {{outstanding_docs}}
+
+      Upload here: {{portal_link}}
+
+      Submitting documents early helps us prepare your application faster and avoid delays.
+
+      If you're having trouble gathering any documents, let us know — we can discuss alternatives.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_02_doc_reminder_14day:
+    workflow: "WF-CP-02"
+    stage: "DOC COLLECTION"
+    subject: "Action Required — Document Deadline Approaching"
+    body: |
+      Hi {{first_name}},
+
+      Your document submission deadline is approaching. We still need the following to proceed with your {{program_type}} application:
+
+      OUTSTANDING DOCUMENTS:
+      {{outstanding_docs}}
+
+      Upload here: {{portal_link}}
+
+      Delays in document submission may affect your application timeline. If you need more time or have questions about any document, please contact us immediately.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_03_docs_complete:
+    workflow: "WF-CP-03"
+    stage: "FORM PREPARATION"
+    subject: "All Documents Received — Application Preparation Begins"
+    body: |
+      Hi {{first_name}},
+
+      Great news! We've received all required documents for your {{program_type}} application.
+
+      WHAT HAPPENS NEXT:
+      1. Your consultant ({{assigned_rcic}}) will prepare your IRCC application forms
+      2. We'll conduct an internal quality review
+      3. Once approved, we'll submit your application to IRCC
+
+      Estimated time to submission: 5-10 business days
+
+      We'll keep you updated at each step. No action needed from you right now — sit back and let us handle the rest.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_05_submitted:
+    workflow: "WF-CP-05"
+    stage: "SUBMITTED TO IRCC"
+    subject: "Your Application Has Been Submitted to IRCC"
+    body: |
+      Hi {{first_name}},
+
+      We're pleased to confirm that your {{program_type}} application has been submitted to Immigration, Refugees and Citizenship Canada (IRCC).
+
+      SUBMISSION DETAILS:
+      - IRCC Receipt Number: {{receipt_number}}
+      - Submission Date: {{submission_date}}
+      - Estimated Processing Time: {{processing_min}}-{{processing_max}} months
+
+      WHAT TO EXPECT:
+      - IRCC will process your application in the order received
+      - We will monitor your case and provide monthly updates
+      - If IRCC requires additional information, we'll contact you immediately
+      - You can check your case status anytime through your portal
+
+      IMPORTANT: Do not contact IRCC directly about your application. If you have questions, reach out to us and we'll handle all communication with IRCC on your behalf.
+
+      Keep your contact information and travel plans up to date with us.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_06_monthly_update:
+    workflow: "WF-CP-06"
+    stage: "PROCESSING"
+    subject: "Monthly Update — Your {{program_type}} Application"
+    body: |
+      Hi {{first_name}},
+
+      Here's your monthly update on your {{program_type}} application:
+
+      CASE STATUS:
+      - Receipt Number: {{receipt_number}}
+      - Current Stage: Processing
+      - Days Since Submission: {{days_since_submission}}
+      - Status: {{status_notes}}
+
+      Your application is being processed by IRCC. Current processing times for {{program_type}} applications are averaging {{processing_avg}} months.
+
+      We'll continue to monitor your case and will contact you immediately if IRCC requests any additional information.
+
+      No action needed from you at this time.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_07_rfi:
+    workflow: "WF-CP-07"
+    stage: "ADDITIONAL INFO (RFI)"
+    subject: "ACTION REQUIRED — IRCC Needs Additional Documents"
+    body: |
+      Hi {{first_name}},
+
+      Immigration Canada (IRCC) has requested additional information for your {{program_type}} application.
+
+      WHAT IRCC NEEDS:
+      {{rfi_details}}
+
+      DEADLINE: {{rfi_deadline}}
+
+      Please gather the requested documents and upload them to your portal as soon as possible:
+      Upload here: {{portal_link}}
+
+      Your consultant ({{assigned_rcic}}) is available to discuss the request and help you prepare the documents. Please call or email us immediately if you have questions.
+
+      This is time-sensitive — responding promptly helps avoid delays.
+
+      Best regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_08_approved:
+    workflow: "WF-CP-08"
+    stage: "DECISION RECEIVED"
+    subject: "Congratulations — Your Application Has Been Approved!"
+    body: |
+      Hi {{first_name}},
+
+      We are thrilled to share wonderful news — your {{program_type}} application has been APPROVED by IRCC!
+
+      DECISION DETAILS:
+      - Decision: Approved
+      - Date: {{decision_date}}
+      - Receipt Number: {{receipt_number}}
+
+      NEXT STEPS:
+      Your consultant ({{assigned_rcic}}) will schedule a call to discuss:
+      - What this approval means for you
+      - Any next steps (landing procedures, PR card, etc.)
+      - Important deadlines to be aware of
+
+      We'll be in touch shortly to set up this call.
+
+      Congratulations on this milestone in your Canadian immigration journey!
+
+      Warm regards,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_08_refused:
+    workflow: "WF-CP-08"
+    stage: "DECISION RECEIVED"
+    subject: "Important Update About Your Application"
+    body: |
+      Hi {{first_name}},
+
+      We've received a decision from IRCC regarding your {{program_type}} application.
+
+      Unfortunately, the application was not approved at this time.
+
+      We understand this is disappointing news. Your consultant ({{assigned_rcic}}) will schedule a call with you to:
+      - Review the reasons for the decision
+      - Discuss your available options (appeal, reapply, alternative pathways)
+      - Determine the best path forward for your situation
+
+      We'll be in touch within 24 hours to set up this call.
+
+      Please know that a refusal does not necessarily mean the end of your immigration journey — there are often alternative routes available.
+
+      Sincerely,
+      {{assigned_rcic}}
+      {{firm_name}}
+
+  cp_09_satisfaction:
+    workflow: "WF-CP-09"
+    stage: "CASE CLOSED"
+    subject: "How Was Your Experience with {{firm_name}}?"
+    body: |
+      Hi {{first_name}},
+
+      Your case has been completed. We hope we were able to provide you with excellent service throughout your immigration journey.
+
+      We'd love to hear about your experience. Your feedback helps us improve our services for future clients.
+
+      Share Your Feedback: {{survey_link}}
+
+      It only takes 2 minutes and means a lot to our team.
+
+      Thank you for choosing {{firm_name}}.
+
+      Warm regards,
+      The {{firm_name}} Team
+
+  cp_09_review_request:
+    workflow: "WF-CP-09"
+    stage: "CASE CLOSED"
+    subject: "Would You Recommend {{firm_name}}?"
+    body: |
+      Hi {{first_name}},
+
+      It's been a week since your case was completed. We hope everything is going well!
+
+      If you were satisfied with our service, we'd be grateful if you could leave us a review on Google. It helps other people in similar situations find trustworthy immigration help.
+
+      Leave a Review: {{review_link}}
+
+      And if you have friends or family who need immigration assistance, we'd be honored to help them too. They can book a free assessment here: {{booking_link}}
+
+      Thank you for being part of the {{firm_name}} family.
+
+      Warm regards,
+      The {{firm_name}} Team

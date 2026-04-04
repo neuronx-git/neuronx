@@ -44,6 +44,16 @@ def load_trust_config() -> dict:
     return config
 
 
+def load_yaml_config(name: str) -> dict:
+    """Load any YAML config file by name (without .yaml extension)."""
+    path = CONFIG_DIR / f"{name}.yaml"
+    if not path.exists():
+        logger.warning("Config file not found: %s", path)
+        return {}
+    with open(path) as f:
+        return yaml.safe_load(f) or {}
+
+
 def reload_all():
     """Clear cached configs. Call after config file changes."""
     load_scoring_config.cache_clear()

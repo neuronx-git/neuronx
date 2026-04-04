@@ -59,3 +59,42 @@ def test_invalid_decision(client):
         "decision": "Maybe",
     })
     assert r.status_code == 400
+
+
+def test_questionnaire_express_entry(client):
+    r = client.get("/cases/questionnaire/Express Entry")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["program_type"] == "Express Entry"
+    assert data["common_count"] > 0
+    assert data["program_specific_count"] > 0
+    assert data["total_questions"] == data["common_count"] + data["program_specific_count"]
+    # Must have program-specific sections
+    assert "Education" in data["sections"]
+    assert "Language" in data["sections"]
+
+
+def test_questionnaire_spousal(client):
+    r = client.get("/cases/questionnaire/Spousal Sponsorship")
+    assert r.status_code == 200
+    data = r.json()
+    assert "Sponsor Information" in data["sections"]
+    assert "Relationship" in data["sections"]
+    assert data["program_specific_count"] > 0
+
+
+def test_questionnaire_unknown_program(client):
+    r = client.get("/cases/questionnaire/Martian Visa")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total_questions"] > 0  # Still returns common questions
+    assert "note" in data  # Has a note about using common questions only
+
+
+def test_questionnaire_has_conditional_fields(client):
+    r = client.get("/cases/questionnaire/Express Entry")
+    data = r.json()
+    # ECA question should have show_if conditional
+    eca_q = next((q for q in data["questions"] if q.get("key") == "eca_organization"), None)
+    assert eca_q is not None
+    assert "show_if" in eca_q

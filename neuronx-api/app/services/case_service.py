@@ -243,3 +243,7 @@ class CaseService:
     def get_processing_estimate(self, program_type: str) -> dict:
         """Get estimated processing time for a program."""
         return PROCESSING_TIMES.get(program_type, {"min": 3, "max": 12, "avg": 6})
+
+    def _get_ghl_client(self):
+        """Return a GHL client instance."""
+        return GHLClient()
