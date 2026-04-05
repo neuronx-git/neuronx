@@ -41,9 +41,12 @@ async def seed_demo_data():
     now = datetime.now(timezone.utc)
 
     async with database.async_session_factory() as session:
-        # Clear existing demo data
-        for model in [Activity, Signature, Case, Opportunity, Contact]:
-            await session.execute(delete(model).where(model.__table__.c.id.like("demo-%") if hasattr(model.__table__.c, 'id') and model != Activity and model != Signature else model.__table__.c.contact_id.like("demo-%")))
+        # Clear existing demo data (delete children first due to FK constraints)
+        await session.execute(delete(Activity).where(Activity.contact_id.like("demo-%")))
+        await session.execute(delete(Signature).where(Signature.contact_id.like("demo-%")))
+        await session.execute(delete(Case).where(Case.contact_id.like("demo-%")))
+        await session.execute(delete(Opportunity).where(Opportunity.contact_id.like("demo-%")))
+        await session.execute(delete(Contact).where(Contact.id.like("demo-%")))
 
         # Insert contacts
         for c in DEMO_CONTACTS:
