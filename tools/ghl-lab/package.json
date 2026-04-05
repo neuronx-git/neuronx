@@ -1,0 +1,20 @@
+{
+  "name": "ghl-lab",
+  "version": "1.0.0",
+  "description": "Purpose: Provision and validate the **GHL-only** NeuronX v1 system for visual UAT.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@skyvern/client": "^1.0.24",
+    "dotenv": "^17.3.1",
+    "tsx": "^4.21.0"
+  }
+}

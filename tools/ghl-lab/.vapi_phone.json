@@ -1,0 +1,11 @@
+{
+  "id": "ea133993-7c18-4437-88a6-fa7a2d15efbe",
+  "orgId": "ddcf719e-5187-4560-b5db-c2aec5c9ce43",
+  "assistantId": "289a9701-9199-4d03-9416-49d18bec2f69",
+  "number": "+16479315181",
+  "createdAt": "2026-03-19T00:11:02.629Z",
+  "updatedAt": "2026-03-19T00:11:05.948Z",
+  "name": "NeuronX Intake Line",
+  "provider": "twilio",
+  "status": "active"
+}

@@ -380,6 +380,9 @@ This ledger provides a human-readable snapshot of the Autonomous Engineering OS'
 
 | Timestamp | Updated By | What Changed | Files Modified |
 |-----------|------------|--------------|----------------|
+| 2026-02-04 | CTO Agent | ✅ Factory CLI Execution PROVEN OPERATIONAL: Both workflow_dispatch (Run #21670295185) and issues:labeled (Run #21670501850) triggers work. Factory CLI v0.57.2 installs, API key accepted (4M+ tokens consumed), droid exec responds. Needs `--auto high` for destructive commands (expected). Evidence: COCKPIT/artifacts/EXECUTION/proof-run-2/ | COCKPIT/artifacts/EXECUTION/proof-run-2/execution-proof-report.md |
+| 2026-02-04 | CTO Agent | Fixed Factory CLI Integration: Updated dispatcher.yml v3.0 to use `droid exec` CLI instead of non-existent REST API. Removed REST API calls from dispatch_factory.py (now validation-only). PR #21 merged. | .github/workflows/dispatcher.yml, scripts/dispatch_factory.py |
+| 2026-02-04 | CTO Agent | ❌ Factory Execution Proof Run FAILED: API endpoint `api.factory.ai/v1/executions` does not exist. Factory uses CLI-based execution (`droid exec`), not REST API. FACTORY_API_KEY is valid format but script implementation is incorrect. Governance gates remain intact. Evidence: COCKPIT/artifacts/EXECUTION/proof-run/ | COCKPIT/artifacts/EXECUTION/proof-run/execution-proof-report.md |
 | 2026-02-04 | CTO Agent | ✅ Factory Execution SEALED: Configured FACTORY_API_KEY secret. Upgraded dispatch_factory.py (v2.0) with real Factory Cloud API integration. Added SDLC phase validation. Enforced PR-only execution mode. All Factory PRs subject to machine-board + autonomous-reviewer gates. | .github/workflows/dispatcher.yml, scripts/dispatch_factory.py, GOVERNANCE/DECISIONS/0002-factory-execution-seal.md |
 | 2026-02-04 | CTO Agent | ✅ Governance Health Check: Created weekly health monitor workflow (GREEN/YELLOW/RED summary). Verifies workflows, core files, ADR system, workflow runs, branch protection. | .github/workflows/governance-health.yml |
 | 2026-02-04 | CTO Agent | ✅ Trae Reference Cleanup + ADR System: Fixed remaining Trae refs in ANTIGRAVITY_SYSTEM_PROMPT.md (v1.2), machine-board.yml. Added workflow_dispatch to autonomous-reviewer.yml. Created ADR system (GOVERNANCE/DECISIONS/). Updated PR template. | AGENTS/ANTIGRAVITY_SYSTEM_PROMPT.md, .github/workflows/machine-board.yml, .github/workflows/autonomous-reviewer.yml, .github/PULL_REQUEST_TEMPLATE.md, GOVERNANCE/DECISIONS/ |
@@ -454,6 +457,8 @@ The Autonomous Engineering OS framework is now complete and stable with:
 
 ## Version History
 
+- v1.12 (2026-02-04): Factory CLI Execution PROVEN OPERATIONAL - Both triggers work, CLI v0.57.2, API auth verified
+- v1.11 (2026-02-04): Factory Proof Run FAILED - API endpoint doesn't exist (CLI-based, not REST)
 - v1.10 (2026-02-04): Factory execution sealed (API key, dispatcher v2.0, SDLC validation, PR-only mode)
 - v1.9 (2026-02-04): Trae reference cleanup, ADR system created, PR template updated
 - v1.8 (2026-02-04): Tool-agnostic reviewer normalization (Trae → Autonomous Reviewer)
@@ -468,8 +473,9 @@ The Autonomous Engineering OS framework is now complete and stable with:
 ---
 
 **Last Updated**: 2026-02-04
-**State Ledger Version**: v1.10
+**State Ledger Version**: v1.12
 **Framework Status**: STABLE ✅
 **Governance Enforcement**: ACTIVE ✅
 **Machine Board**: OPERATIONAL ✅
 **Best Practices Closure Loop**: IMPLEMENTED ✅
+**Factory Execution**: ✅ PROVEN OPERATIONAL (CLI-based, `--auto medium`)

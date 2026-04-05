@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complex Case Alert</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4;padding:20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
+
+          <!-- Header — Red alert bar -->
+          <tr>
+            <td style="background-color:#DC2626;padding:16px 24px;">
+              <h1 style="margin:0;font-size:18px;color:#ffffff;font-weight:700;">
+                &#x1F6A8; Complex Case Flagged — Immediate Review Required
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:24px;">
+              <p style="margin:0 0 16px;font-size:15px;color:#1a1a1a;line-height:1.6;">
+                The NeuronX AI intake system has flagged a new case as <strong>complex</strong> and requiring manual RCIC review before proceeding.
+              </p>
+
+              <!-- Contact card -->
+              <table width="100%" cellpadding="12" cellspacing="0" style="background:#FEF2F2;border-left:4px solid #DC2626;border-radius:4px;margin:16px 0;">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 8px;font-size:14px;color:#666;">Contact</p>
+                    <p style="margin:0 0 4px;font-size:16px;font-weight:600;color:#1a1a1a;">{{contact.full_name}}</p>
+                    <p style="margin:0 0 4px;font-size:14px;color:#333;">{{contact.email}}</p>
+                    <p style="margin:0 0 4px;font-size:14px;color:#333;">{{contact.phone}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Assessment summary -->
+              <table width="100%" cellpadding="8" cellspacing="0" style="border:1px solid #e5e5e5;border-radius:4px;margin:16px 0;">
+                <tr style="background:#f9f9f9;">
+                  <td style="font-size:13px;font-weight:600;color:#666;padding:10px 12px;" colspan="2">AI Assessment Summary</td>
+                </tr>
+                <tr>
+                  <td style="font-size:13px;color:#666;padding:6px 12px;width:40%;">Program Interest</td>
+                  <td style="font-size:13px;color:#1a1a1a;padding:6px 12px;">{{contact.ai_program_interest}}</td>
+                </tr>
+                <tr style="background:#fafafa;">
+                  <td style="font-size:13px;color:#666;padding:6px 12px;">Current Location</td>
+                  <td style="font-size:13px;color:#1a1a1a;padding:6px 12px;">{{contact.ai_current_location}}</td>
+                </tr>
+                <tr>
+                  <td style="font-size:13px;color:#666;padding:6px 12px;">Timeline</td>
+                  <td style="font-size:13px;color:#1a1a1a;padding:6px 12px;">{{contact.ai_timeline_urgency}}</td>
+                </tr>
+                <tr style="background:#fafafa;">
+                  <td style="font-size:13px;color:#666;padding:6px 12px;">Prior Applications</td>
+                  <td style="font-size:13px;color:#1a1a1a;padding:6px 12px;font-weight:600;color:#DC2626;">{{contact.ai_prior_applications}}</td>
+                </tr>
+                <tr>
+                  <td style="font-size:13px;color:#666;padding:6px 12px;">Budget Awareness</td>
+                  <td style="font-size:13px;color:#1a1a1a;padding:6px 12px;">{{contact.ai_budget_awareness}}</td>
+                </tr>
+                <tr style="background:#fafafa;">
+                  <td style="font-size:13px;color:#666;padding:6px 12px;">Escalation Reason</td>
+                  <td style="font-size:13px;color:#DC2626;padding:6px 12px;font-weight:600;">{{contact.ai_escalation_reason}}</td>
+                </tr>
+              </table>
+
+              <p style="margin:16px 0;font-size:14px;color:#666;line-height:1.5;">
+                <strong>Required Actions:</strong>
+              </p>
+              <ol style="margin:0;padding-left:20px;font-size:14px;color:#333;line-height:1.8;">
+                <li>Review the AI call transcript in the contact record</li>
+                <li>Check for conflicts of interest</li>
+                <li>Determine if case requires lawyer referral</li>
+                <li>If accepting: manually confirm the Strategy Session booking</li>
+                <li>If referring out: update contact status and notify prospect</li>
+              </ol>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="{{contact.contact_link}}" style="display:inline-block;background-color:#E8380D;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:6px;">
+                      View Contact Record
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f9f9f9;padding:16px 24px;border-top:1px solid #e5e5e5;">
+              <p style="margin:0;font-size:12px;color:#999;text-align:center;">
+                Automated alert from NeuronX Intake System &bull; Tag: nx:human_escalation<br>
+                This is an internal notification. Do not forward to the prospect.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

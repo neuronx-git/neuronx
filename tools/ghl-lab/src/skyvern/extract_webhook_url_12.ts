@@ -1,0 +1,68 @@
+import { SkyvernAgent } from "./SkyvernAgent";
+import * as fs from 'fs';
+import * as path from 'path';
+
+async function main() {
+  const agent = new SkyvernAgent();
+  
+  const resumed = await agent.loadSession();
+  
+  if (!resumed) {
+      console.log("No valid Skyvern session found. Please run skyvernOrchestrator.ts first to log in.");
+      process.exit(1);
+  }
+
+  const LOCATION_ID = "FlRL82M0D6nclmKT7eXH";
+  const URL_WORKFLOWS_LIST = `https://app.gohighlevel.com/v2/location/${LOCATION_ID}/automation/workflows`;
+
+  try {
+      console.log("\nTrying to find the newly created WF-04B and extract the URL (Attempt 12)...");
+      
+      const result1 = await agent.executeStep(
+          "Navigate to the 'Automation' > 'Workflows' page. Wait for the page to load. Find the workflow named 'WF-04B - AI Call Receiver'. Click on its name to open the builder.",
+          URL_WORKFLOWS_LIST
+      );
+      console.log("Step 1 (Open Workflow) Complete:", result1.status);
+
+      const result2 = await agent.executeStep(
+          "Click on the 'Inbound Webhook' trigger box to open its settings panel on the right side of the screen.",
+          null
+      );
+      console.log("Step 2 (Open Trigger Panel) Complete:", result2.status);
+
+      // Attempt to read the value directly by describing the element very specifically
+      const result3 = await agent.executeStep(
+          "In the settings panel on the right, look for the 'Webhook URL' field. It is a text input field that displays a URL starting with 'https://'. Read the full text contained inside this input field. Return the text in your extraction output as {\"webhook_url\": \"...\"}.",
+          null
+      );
+      console.log("Step 3 (Extract URL) Complete:", result3.status);
+
+      let extractedUrl = "NOT_FOUND";
+      if (result3.extracted_information) {
+         try {
+             const info = typeof result3.extracted_information === 'string' 
+                ? JSON.parse(result3.extracted_information) 
+                : result3.extracted_information;
+             extractedUrl = info.webhook_url || "NOT_FOUND";
+         } catch(e) {
+             console.log("Failed to parse extracted info:", result3.extracted_information);
+             extractedUrl = result3.extracted_information;
+         }
+      }
+      
+      console.log("Extracted Webhook URL:", extractedUrl);
+      
+      if (extractedUrl !== "NOT_FOUND" && typeof extractedUrl === 'string' && extractedUrl.startsWith('http')) {
+        const outputPath = path.join(__dirname, '..', '..', '.ghl_webhook_url.json');
+        fs.writeFileSync(outputPath, JSON.stringify({ webhook_url: extractedUrl, timestamp: new Date().toISOString() }, null, 2));
+        console.log(`Saved webhook URL to ${outputPath}`);
+      } else {
+        console.log("Failed to extract a valid URL. Skyvern returned:", extractedUrl);
+      }
+
+  } catch (error) {
+      console.error("Extraction Failed:", error);
+  }
+}
+
+main();

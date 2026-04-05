@@ -1,0 +1,35 @@
+{
+  "templateId": "2.9",
+  "name": "Assessment SMS Variants (R1-R5 Post-Call Follow-ups)",
+  "type": "sms",
+  "note": "SMS templates are configured directly in workflow actions (WF-03/WF-04). These are the text drafts. GHL merge fields: {{contact.first_name}}, {{contact.full_name}}, custom fields use {{contact.custom_field_name}}.",
+  "trigger": "Post AI-call readiness scoring → R1-R5 fields populated",
+
+  "variants": {
+    "ready_standard": {
+      "tag": "nx:assessment:complete",
+      "criteria": "R1-R5 all answered, no flags",
+      "sms": "Hi {{contact.first_name}}, great speaking with you! Based on our conversation, we'd love to book your free initial assessment with a licensed RCIC. Pick a time that works: {{calendars.booking_link.To1U2KbcvJ0EAX0RGKHS}} — Visa Master Canada"
+    },
+    "ready_urgent": {
+      "tag": "nx:assessment:complete + nx:urgent",
+      "criteria": "R3 = Urgent (within 30 days)",
+      "sms": "Hi {{contact.first_name}}, we understand your timeline is tight. We've flagged your case as urgent and have priority slots available this week. Book now: {{calendars.booking_link.To1U2KbcvJ0EAX0RGKHS}} — Visa Master Canada"
+    },
+    "ready_complex": {
+      "tag": "nx:human_escalation",
+      "criteria": "Refusal history, inadmissibility, or complexity keywords detected",
+      "sms": "Hi {{contact.first_name}}, thank you for sharing your situation. Your case may require specialized attention. Our senior RCIC will reach out within 24 hours to discuss next steps. — Visa Master Canada"
+    },
+    "not_ready": {
+      "tag": "nx:not_ready",
+      "criteria": "Prospect not ready to proceed",
+      "sms": "Hi {{contact.first_name}}, thanks for your interest in immigration services. When you're ready to explore your options, we're here. Book a free assessment anytime: {{calendars.booking_link.To1U2KbcvJ0EAX0RGKHS}} — Visa Master Canada"
+    },
+    "disqualified": {
+      "tag": "nx:disqualified",
+      "criteria": "Inquiry unrelated to immigration consulting",
+      "sms": "Hi {{contact.first_name}}, thank you for reaching out to Visa Master Canada. Based on our conversation, our immigration consulting services may not be the right fit for your needs at this time. If your situation changes, feel free to contact us. — VMC"
+    }
+  }
+}

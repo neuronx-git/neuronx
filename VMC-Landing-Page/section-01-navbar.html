@@ -1,0 +1,82 @@
+<style>
+.vmc-nav {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #F3F4F6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  font-family: 'Inter', sans-serif;
+}
+.vmc-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vmc-nav-logo img {
+  height: 46px;
+  width: auto;
+}
+.vmc-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vmc-nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.vmc-nav-links a:hover { color: #E8380D; }
+.vmc-nav-cta {
+  background: #E8380D;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.vmc-nav-cta:hover { background: #DC2626 !important; color: #fff !important; }
+@media (max-width: 768px) {
+  .vmc-nav-links { display: none; }
+  .vmc-nav-inner { padding: 0 20px; }
+  .vmc-nav-logo img { height: 38px; }
+  .vmc-nav-cta { font-size: 13px; padding: 9px 16px; }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<nav class="vmc-nav">
+  <div class="vmc-nav-inner">
+    <a href="https://www.visamastercanada.com" class="vmc-nav-logo">
+      <img src="https://www.visamastercanada.com/vmc-logo.png" alt="Visa Master Canada" />
+    </a>
+    <ul class="vmc-nav-links">
+      <li><a href="https://www.visamastercanada.com/#services">Programs</a></li>
+      <li><a href="https://www.visamastercanada.com/refusals">Refusals</a></li>
+      <li><a href="https://www.visamastercanada.com/for-employers">For Employers</a></li>
+      <li><a href="https://www.visamastercanada.com/about-us">About</a></li>
+      <li><a href="https://www.visamastercanada.com/contact-us">Contact</a></li>
+      <li><a href="#vmc-form" class="vmc-nav-cta">Book Free Consultation</a></li>
+    </ul>
+    <a href="#vmc-form" class="vmc-nav-cta" style="display:none" id="vmc-mobile-cta">Book Free Consultation</a>
+  </div>
+</nav>
+<script>
+if(window.innerWidth <= 768) {
+  document.getElementById('vmc-mobile-cta').style.display = 'block';
+}
+</script>

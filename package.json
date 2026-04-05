@@ -12,7 +12,9 @@
         "test": "vitest run",
         "test:coverage": "vitest run --coverage",
         "build": "pnpm -r build",
-        "dev": "pnpm -r start:dev"
+        "dev": "pnpm -r start:dev",
+        "ghl:lab": "tsx tools/ghl-lab/src/cli.ts",
+        "ghl:lab:ui": "playwright test -c tools/ghl-lab/playwright.config.ts"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.0",
@@ -37,6 +39,8 @@
         "vitest": "^2.0.0"
     },
     "dependencies": {
+        "browser-use-sdk": "^3.3.0",
+        "dotenv": "^17.3.1",
         "uuid": "^13.0.0",
         "zod": "^4.3.5"
     }

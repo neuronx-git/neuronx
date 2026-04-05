@@ -1,0 +1,15 @@
+# AI Call Branching Matrix
+
+This matrix defines how the AI voice agent should route the conversation and trigger subsequent GoHighLevel (GHL) actions based on the prospect's answers during the qualification sequence.
+
+| Scenario / Condition | AI Conversational Response | GHL Data Payload (End of Call) | Resulting GHL Workflow Action |
+| :--- | :--- | :--- | :--- |
+| **Happy Path (Standard)**<br>Express Entry, inside Canada, 3-6 months, no refusals, ready to book. | "I'll send you a secure booking link directly to your phone right now..." | `ai_call_outcome: "qualified"`<br>`ai_booking_status: "requested"` | WF-04 triggers: Moves to CONSULT READY, sends SMS with calendar link. |
+| **High Urgency**<br>Permit expiring in < 30 days, ready to book. | "Because of your timeline, I am flagging this as urgent. I'm sending a priority booking link now." | `ai_urgency: "Immediate"`<br>`ai_booking_status: "requested"` | WF-04 triggers: Sends SMS link, alerts Intake team to ensure fast booking. |
+| **Complexity Flag: Refusals**<br>Lead indicates previous visa refusals. | "Thank you for sharing that. It's very common, and our consultants specialize in overcoming past refusals." | `ai_complexity_flag: "Previous Refusal"` | Appends flag to Consultant Briefing. Lead proceeds to standard booking flow. |
+| **Severe Complexity (Escalation)**<br>Mentions deportation, removal order, or criminality. | "Given the specifics of your case, I want to have our senior consultant review this directly. They will call you back shortly." | `ai_requires_human: true`<br>`ai_complexity_flag: "Inadmissibility/Removal"` | Adds tag `nx:human_escalation`. Alerts Firm Owner. Halts automated booking. |
+| **Legal Advice Request**<br>Lead asks "Am I eligible?" or "Will I get approved?" | "As an AI assistant, I cannot provide legal advice or assess eligibility. That is exactly what the licensed consultant will do during your strategy session." | *None specific* | AI attempts to return to the Booking Close script. |
+| **Budget Objection**<br>Lead refuses paid consultation. | "I understand. We do charge a fee for formal legal assessments. I'll email you some free resources for now." | `ai_call_outcome: "not_ready"`<br>`ai_booking_status: "declined"` | Moves to NURTURE. Triggers WF-11. |
+| **Unreachable (Voicemail)**<br>Call goes to voicemail. | Plays voicemail drop script (H). | `ai_call_outcome: "voicemail"` | Triggers WF-02 (Attempt 2 SMS follow-up). |
+| **Hostile / Angry / Confused**<br>Lead is frustrated by talking to AI. | "I apologize. Let me transfer this file to a human coordinator who will call you right back." | `ai_requires_human: true` | Adds tag `nx:human_escalation`. |
+| **Call Dropped / Disconnected**<br>Call ends abruptly mid-conversation. | *None* | `ai_call_outcome: "disconnected"` | GHL Wait step (15 min) -> Send SMS: "Looks like we got disconnected! Here is the booking link..." |

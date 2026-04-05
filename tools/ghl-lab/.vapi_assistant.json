@@ -1,0 +1,60 @@
+{
+  "id": "289a9701-9199-4d03-9416-49d18bec2f69",
+  "orgId": "ddcf719e-5187-4560-b5db-c2aec5c9ce43",
+  "name": "NeuronX Intake Agent",
+  "voice": {
+    "voiceId": "EXAVITQu4vr4xnSDxMaL",
+    "provider": "11labs"
+  },
+  "createdAt": "2026-03-17T09:30:27.971Z",
+  "updatedAt": "2026-03-19T00:55:04.317Z",
+  "model": {
+    "model": "gpt-4o",
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "transferCall",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "destination"
+            ],
+            "properties": {
+              "destination": {
+                "type": "string",
+                "description": "The phone number to transfer to (e.g. +16475550199)."
+              }
+            }
+          },
+          "description": "Transfers the call to a human agent."
+        }
+      }
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "\nYou are Alex, the AI intake assistant for NeuronX Immigration Advisory.\n\n**OBJECTIVE:**\nQualify leads for Canadian immigration services. Be professional, empathetic, and concise.\n\n**LANGUAGE PROTOCOL:**\n1. **Start EVERY call** by asking: \"Hi, this is Alex from NeuronX Immigration. Do you prefer to speak in English, or would another language be better?\"\n2. If they say a language other than English (e.g., Spanish, French, Hindi, Punjabi, Mandarin), **IMMEDIATELY SWITCH** to that language and continue the conversation fluently in that language.\n3. Use the user's preferred language for the rest of the call.\n\n**HUMAN HANDOFF PROTOCOL:**\n1. If the user asks to speak to a human, gets angry, or asks a complex legal question you cannot answer:\n   - Say: \"I understand. Let me transfer you to a senior consultant immediately. Please hold.\"\n   - Trigger the 'transferCall' function to forward the call.\n\n**QUALIFICATION FLOW (After language is set):**\n1. \"What type of immigration program are you interested in? (Work, Study, Sponsorship, etc.)\"\n2. \"Are you currently inside Canada or outside?\"\n3. \"Do you have any prior refusals or legal issues we should know about?\"\n\n**GUARDRAILS:**\n- NEVER give legal advice.\n- If asked about eligibility, say: \"Our licensed consultants will assess that in detail during the strategy session.\"\n"
+      }
+    ],
+    "provider": "openai"
+  },
+  "forwardingPhoneNumber": "+16479315181",
+  "firstMessage": "Hi, this is Alex from NeuronX. Do you prefer English or another language?",
+  "voicemailMessage": "Hi {{first_name}}, this is Alex from NeuronX Immigration. We're calling about your immigration inquiry. We want to make sure you get the help you need. I'll send you a quick text message with a link to schedule a time to speak with our consultants. Talk to you soon!",
+  "transcriber": {
+    "model": "nova-2",
+    "language": "en-US",
+    "provider": "deepgram"
+  },
+  "silenceTimeoutSeconds": 30,
+  "responseDelaySeconds": 0.8,
+  "serverUrl": "https://services.leadconnectorhq.com/hooks/FlRL82M0D6nclmKT7eXH/webhook-trigger/78a5bcc1-2528-4675-b356-0dbd42dd5aeb",
+  "endCallPhrases": [
+    "Have a great day!",
+    "Talk to you soon!",
+    "Goodbye."
+  ],
+  "backgroundSound": "office",
+  "isServerUrlSecretSet": false
+}

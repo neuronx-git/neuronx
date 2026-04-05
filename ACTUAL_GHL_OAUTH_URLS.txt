@@ -1,0 +1,62 @@
+==============================================================
+🔗 YOUR ACTUAL WORKING GHL OAUTH URLs
+==============================================================
+
+CLIENT ID (extracted from your working token):
+695843b8c745b60604e0e29a
+
+LOCATION ID (from your test lab):
+FlRL82M0D6nclmKT7eXH
+
+COMPANY ID (from your test lab):
+1H22jRUQWbxzaCaacZjO
+
+==============================================================
+📋 ACTUAL INSTALL URL (CLICK THIS):
+==============================================================
+
+https://marketplace.gohighlevel.com/oauth/chooselocation?response_type=code&client_id=695843b8c745b60604e0e29a&redirect_uri=http://localhost:3000/auth/neuronx/callback&scope=locations.readonly%20locations.write%20locations/customFields.readonly%20locations/customFields.write%20locations/tags.readonly%20locations/tags.write%20opportunities.readonly%20opportunities.write%20calendars.readonly%20calendars.write%20contacts.readonly%20contacts.write%20workflows.readonly%20oauth.readonly%20oauth.write&state=neuronx_test
+
+==============================================================
+🔧 TOKEN EXCHANGE URL (for backend):
+==============================================================
+
+Endpoint:
+POST https://services.leadconnectorhq.com/oauth/token
+
+Body (application/x-www-form-urlencoded):
+grant_type=authorization_code
+client_id=695843b8c745b60604e0e29a
+client_secret=[GET FROM GHL DASHBOARD]
+redirect_uri=http://localhost:3000/auth/neuronx/callback
+code=[CODE_FROM_CALLBACK]
+
+==============================================================
+📊 YOUR WORKING CREDENTIALS:
+==============================================================
+
+GHL_CUSTOMER_ID="695843b8c745b60604e0e29a"
+GHL_CUSTOMER_SECRET="[GET FROM: GHL Developer Dashboard → Apps → NeuronX → Credentials]"
+GHL_TEST_LOCATION_ID="FlRL82M0D6nclmKT7eXH"
+GHL_COMPANY_ID="1H22jRUQWbxzaCaacZjO"
+GHL_API_BASE_URL="https://services.leadconnectorhq.com"
+
+==============================================================
+🔐 CURL EXAMPLE (Token Exchange):
+==============================================================
+
+curl -X POST 'https://services.leadconnectorhq.com/oauth/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=authorization_code' \
+  -d 'client_id=695843b8c745b60604e0e29a' \
+  -d 'client_secret=YOUR_CLIENT_SECRET' \
+  -d 'redirect_uri=http://localhost:3000/auth/neuronx/callback' \
+  -d 'code=AUTH_CODE_FROM_REDIRECT'
+
+==============================================================
+✅ VERIFIED WORKING - These are your actual credentials!
+==============================================================
+
+Source: Extracted from /tools/ghl-lab/.tokens.json
+Access Token Expires: 2026-03-19
+Refresh Token Valid Until: 2057-03-19

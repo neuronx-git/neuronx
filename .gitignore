@@ -71,3 +71,18 @@ Thumbs.db
 
 # Factory Artifacts (protected)
 .factory/
+
+# GHL lab tokens (never commit)
+tools/ghl-lab/.tokens.json
+tools/ghl-lab/.ghl-auth-state.json
+
+# NeuronX API
+neuronx-api/.env
+neuronx-api/logs/
+neuronx-api/__pycache__/
+
+# Compliance logs (contain PII — do not commit)
+logs/compliance.jsonl
+neuronx-api/logs/compliance.jsonl
+.private-integration-token
+.team-registry.json

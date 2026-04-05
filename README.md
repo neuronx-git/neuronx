@@ -1,191 +1,111 @@
-# Autonomous Engineering OS
+# NeuronX
 
-A self-governing, self-documenting AI engineering organization designed for solo non-technical founders to build SaaS products.
-
-## Overview
-
-This repository is a reusable framework and operating system for autonomous software development. It encodes engineering best practices, governance rules, agent responsibilities, and decision-making processes so that an AI system can understand itself on every restart and operate autonomously with human-in-the-loop governance.
-
-## What This Is
-
-- **Not** a specific software product
-- **Yes** a template/framework for building products
-- **Not** just documentation — it's executable doctrine
-- **Yes** a complete engineering organization structure
-
-## Quick Start
-
-### As a Template for New Products
-
-1. Clone this repository
-2. Customize the structure for your product
-3. Populate `PRODUCT/` with your product requirements
-4. Use `APP/` for your actual application code
-5. The framework guides autonomous development
-
-### Understanding the Framework
-
-The framework is organized into key areas:
-
-- **GOVERNANCE/**: Rules, guardrails, risk tiers, cost policy, definition of done
-- **AGENTS/**: Agent roles, contracts, best practices, prompt templates
-- **FRAMEWORK_KNOWLEDGE/**: Autonomy principles, product practices, engineering standards, testing strategy, deployment philosophy
-- **ARCHITECTURE/**: Your product's architecture (to be filled)
-- **RUNBOOKS/**: Operational runbooks (to be filled)
-- **BACKLOG/**: Product backlog and work items (to be filled)
-- **PRODUCT/**: Product requirements, user stories (to be filled)
-- **APP/**: Application code that you build
-
-## Folder Structure
-
-```
-.
-├── FRAMEWORK_REQUIREMENTS.md       # Core system requirements and state machine
-├── GOVERNANCE/                      # Rules and guardrails
-│   ├── GUARDRAILS.md               # One-writer rule, approval gates, safe terminal
-│   ├── DEFINITION_OF_DONE.md       # When work is considered complete
-│   ├── RISK_TIERS.md               # Risk classification system
-│   └── COST_POLICY.md              # Cost management and thresholds
-├── AGENTS/                          # Agent definitions and contracts
-│   ├── ROLES.md                    # Product, Code, Reliability, Knowledge, Advisor
-│   ├── CONTRACTS.md                # Contracts for each agent and task type
-│   ├── BEST_PRACTICES.md           # 50+ best practices for agents
-│   └── PROMPT_TEMPLATES.md         # Reusable prompt templates
-├── FRAMEWORK_KNOWLEDGE/             # Engineered knowledge base
-│   ├── autonomy_principles.md      # How autonomous operation works
-│   ├── product_best_practices.md   # Product development principles
-│   ├── engineering_standards.md    # Code quality standards
-│   ├── testing_strategy.md         # Comprehensive testing approach
-│   └── deployment_philosophy.md    # Safe deployment practices
-├── ARCHITECTURE/                    # Your product architecture (fill this)
-├── RUNBOOKS/                        # Operational runbooks (fill this)
-├── BACKLOG/                         # Product backlog items (fill this)
-├── PRODUCT/                         # Product requirements (fill this)
-├── APP/                            # Your application code (fill this)
-├── .github/workflows/               # CI/CD automation
-│   ├── ci.yml                      # Continuous integration
-│   └── release.yml                 # Release workflow
-└── README.md                       # This file
-```
-
-## Core Concepts
-
-### One-Writer Rule
-
-Only Factory (this system) writes to the repository. External AIs (ChatGPT, Claude, etc.) function in advisors-only capacity.
-
-### State Machine
-
-The system operates as a deterministic state machine:
-```
-IDLE → PLANNING → EXECUTING → WAITING_FOR_HUMAN
-```
-
-The system stops only at explicit gates: ambiguity, cost thresholds, production deployment, security risk.
-
-### Risk Tiers
-
-| Tier | Name | Autonomy | Approval |
-|------|------|----------|----------|
-| T1 | Critical | None | Always required |
-| T2 | High | Limited | Required for gates |
-| T3 | Medium | Conditional | Optional for routine |
-| T4 | Low | High | Never required |
-
-### Agent Roles
-
-- **Product Agent**: Translates founder vision into user stories and backlog
-- **Code Agent**: Implements features, fixes bugs, writes code
-- **Reliability Agent**: Validates quality, runs tests, monitors system health
-- **Knowledge Agent**: Captures decisions, maintains documentation, learns from operations
-- **Advisor Agent**: Provides external advisory counsel (never writes to repo)
-
-## Using This Framework
-
-### Step 1: Initialize for Your Product
-
-Clone and customize:
-```bash
-git clone https://github.com/your-org/autonomous-engineering-os.git my-product
-cd my-product
-# Customize for your product
-```
-
-### Step 2: Define Your Product
-
-Populate `PRODUCT/` with:
-- Product vision and positioning
-- Target users and problems solved
-- Core features for MVP
-
-### Step 3: Start Development
-
-The autonomous system will:
-1. Parse your product requirements
-2. Create user stories in BACKLOG/
-3. Implement features per best practices
-4. Validate with tests
-5. Deploy safely (with your approval)
-
-### Step 4: Iterate
-
-- Founder provides feedback and new requirements
-- System captures decisions and learns
-- Architecture and runbooks built up over time
-- Product evolves with minimal founder engineering time
-
-## Key Documents
-
-### Start Here
-
-1. **FRAMEWORK_REQUIREMENTS.md**: Understand what this system is and how it works
-2. **GOVERNANCE/GUARDRAILS.md**: Review approval gates and safety rules
-3. **AGENTS/ROLES.md**: Understand how agents work together
-
-### For Reference
-
-4. **AGENTS/CONTRACTS.md**: What each agent must produce
-5. **FRAMEWORK_KNOWLEDGE/engineering_standards.md**: Code quality expectations
-6. **FRAMEWORK_KNOWLEDGE/testing_strategy.md**: How we test
-7. **FRAMEWORK_KNOWLEDGE/deployment_philosophy.md**: How we deploy safely
-
-## System Requirements
-
-To use this framework effectively:
-
-- Git repository management
-- CI/CD pipeline (GitHub Actions, CircleCI, etc.)
-- Ability to provide approval at gates
-- Access to deploy to environments (staging, production)
-
-## Non-Goals
-
-- This is not a chatbot or code generation tool
-- This is not a no-code platform
-- This is not a product idea — it's how to build products autonomously
-- This does not replace human founder decision-making
-
-## Contributing
-
-This is a framework, not a product. When adapting:
-
-1. Keep the framework structure intact
-2. Extend with product-specific content
-3. Share improvements back if useful for others
-
-## License
-
-This framework is provided as-is for building products. Adapt and use per your needs.
-
-## Support
-
-For questions about this framework:
-- Review documentation in `FRAMEWORK_KNOWLEDGE/`
-- Check `AGENTS/` for agent behavior expectations
-- Reference `GOVERNANCE/` for rules and guardrails
+**AI-Assisted Sales and Intake Operating System for Immigration Consulting Firms**
 
 ---
 
-**Built for solo founders who need engineering power without being engineers.**
+## Quick Start
 
- autonomous-engineering-os © Factory
+| I want to... | Go to |
+|---|---|
+| Understand what NeuronX is | `/docs/01_product/vision.md` |
+| See what v1 must do | `/docs/01_product/prd.md` |
+| Build or operate the system | `/docs/02_operating_system/operating_spec.md` |
+| Run the sales process | `/docs/02_operating_system/sales_playbook.md` |
+| Build Phase 1 in GoHighLevel (no code) | `/docs/02_operating_system/ghl_configuration_blueprint.md` |
+| Integrate with GoHighLevel | `/docs/03_infrastructure/ghl_capability_map.md` |
+| Understand system boundaries | `/docs/03_infrastructure/product_boundary.md` |
+| Validate GHL leverage (capability audit) | `/docs/03_infrastructure/capability_lock_audit.md` |
+| Run the live bake-off before architecture | `/docs/03_infrastructure/live_tenant_bakeoff_scorecard.md` |
+| Ensure compliance | `/docs/04_compliance/trust_boundaries.md` |
+| See what's undecided | `/docs/05_governance/open_decisions.md` |
+
+---
+
+## Document Authority
+
+**Authoritative (Live Canon)**
+
+Only `/docs/...` is authoritative. The governing hierarchy:
+
+1. `/docs/04_compliance/trust_boundaries.md` — **overrides everything**
+2. `/docs/01_product/vision.md` — product direction
+3. `/docs/01_product/prd.md` — requirements
+4. `/docs/02_operating_system/operating_spec.md` — implementation blueprint
+5. `/docs/02_operating_system/sales_playbook.md` — human operations
+6. `/docs/03_infrastructure/` — infrastructure and boundaries
+7. `/docs/05_governance/open_decisions.md` — unresolved decisions
+
+**Non-Authoritative (Reference Only)**
+
+`/archive/` contains historical documents. If archive conflicts with `/docs`,
+`/docs` wins.
+
+---
+
+## What NeuronX Is
+
+NeuronX is the AI-assisted sales and intake operating system for Canadian
+immigration consulting firms. It transforms the inquiry-to-retainer pipeline
+into a high-performance, operationally disciplined system.
+
+**Core principle**: GoHighLevel is the infrastructure. NeuronX is the
+orchestration and intelligence layer on top.
+
+---
+
+## What NeuronX Is NOT
+
+- NOT a CRM (GoHighLevel is the CRM)
+- NOT a case management system
+- NOT a voice provider
+- NOT a multi-vertical platform (v1)
+- NOT a self-serve product (premium onboarding)
+
+---
+
+## Repository Structure
+
+```
+NeuronX/
+├── docs/                    ← AUTHORITATIVE CANON
+│   ├── 01_product/          ← Vision and requirements
+│   ├── 02_operating_system/ ← Operating spec and sales playbook
+│   ├── 03_infrastructure/   ← GHL capabilities and product boundaries
+│   ├── 04_compliance/       ← Trust boundaries and regulatory rules
+│   └── 05_governance/       ← Open decisions
+├── archive/                 ← HISTORICAL REFERENCE
+│   ├── _legacy_product/
+│   ├── _legacy_cockpit/
+│   ├── _legacy_agents/
+│   ├── _legacy_governance/
+│   └── _legacy_foundation/
+├── APP/                     ← Code (existing, reference only for v1)
+│   ├── libs/
+│   ├── services/
+│   └── web/
+└── README.md                ← This file
+```
+
+---
+
+## Status
+
+- **Product Canon**: v3.0 CANONICAL (in `/docs/`)
+- **V1 Scope**: Defined in `/docs/02_operating_system/operating_spec.md`
+- **Open Decisions**: 13 (see `/docs/05_governance/open_decisions.md`)
+- **Build Status**: Not started — architecture phase pending
+
+---
+
+## Next Steps
+
+1. **Resolve open decisions** (especially OD-01 voice provider, OD-13 tech boundary)
+2. **Architecture phase** — design the orchestration service
+3. **Build v1** — implement per operating_spec.md
+
+---
+
+## Contact
+
+This is a founder-led project. All canon changes require founder approval.
