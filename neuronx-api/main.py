@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
-from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures
+from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -60,6 +60,7 @@ app.include_router(documents.router, prefix="/documents", tags=["Document Genera
 app.include_router(cases.router, prefix="/cases", tags=["Case Processing"])
 app.include_router(sync.router, prefix="/sync", tags=["Data Sync"])
 app.include_router(signatures.router, prefix="/signatures", tags=["E-Signatures"])
+app.include_router(demo.router, prefix="/demo", tags=["Demo Data"])
 
 
 @app.get("/health")
