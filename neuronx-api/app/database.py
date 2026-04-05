@@ -23,7 +23,8 @@ class Base(DeclarativeBase):
 
 
 def is_db_configured() -> bool:
-    return bool(settings.database_url)
+    """Check if database is configured. Uses engine as truth (set during init_db)."""
+    return engine is not None or bool(settings.database_url)
 
 
 async def init_db():
