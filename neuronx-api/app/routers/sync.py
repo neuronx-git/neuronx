@@ -8,7 +8,7 @@ from fastapi import APIRouter
 import logging
 
 from app.services.sync_service import SyncService
-from app.database import is_db_configured
+from app.database import async_session_factory
 
 router = APIRouter()
 logger = logging.getLogger("neuronx.sync")
@@ -21,7 +21,8 @@ async def full_sync():
     Paginates through all contacts and opportunities.
     Call daily or on-demand.
     """
-    if not is_db_configured():
+    from app.database import async_session_factory as sf
+    if not sf:
         return {"error": "Database not configured. Set DATABASE_URL env var."}
 
     service = SyncService()
@@ -31,10 +32,9 @@ async def full_sync():
 @router.get("/status")
 async def sync_status():
     """Get the last sync timestamp and record count."""
-    if not is_db_configured():
-        return {"database": "not configured", "last_sync": None}
-
     from app.database import async_session_factory
+    if not async_session_factory:
+        return {"database": "not configured", "last_sync": None}
     from app.models.db_models import SyncLog
     from sqlalchemy import select
 

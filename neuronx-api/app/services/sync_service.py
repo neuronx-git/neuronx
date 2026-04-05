@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from app.services.ghl_client import GHLClient
-from app.database import is_db_configured, async_session_factory
+from app import database
 from app.config import settings
 
 logger = logging.getLogger("neuronx.sync")
@@ -26,12 +26,12 @@ class SyncService:
     async def record_activity(self, contact_id: str, activity_type: str,
                                 detail: str = "", metadata: dict = None):
         """Record a webhook event as an activity row. Called from webhook handler."""
-        if not is_db_configured() or not async_session_factory:
+        if not database.async_session_factory:
             return  # Gracefully skip if no DB
 
         from app.models.db_models import Activity
 
-        async with async_session_factory() as session:
+        async with database.async_session_factory() as session:
             activity = Activity(
                 contact_id=contact_id,
                 activity_type=activity_type,
@@ -44,7 +44,7 @@ class SyncService:
 
     async def sync_contact(self, contact_id: str):
         """Sync a single contact from GHL to PostgreSQL."""
-        if not is_db_configured() or not async_session_factory:
+        if not database.async_session_factory:
             return
 
         from app.models.db_models import Contact
@@ -72,7 +72,7 @@ class SyncService:
             elif "program_interest" in key.lower():
                 program = val
 
-        async with async_session_factory() as session:
+        async with database.async_session_factory() as session:
             # Upsert
             result = await session.execute(select(Contact).where(Contact.id == contact_id))
             existing = result.scalar_one_or_none()
@@ -113,7 +113,7 @@ class SyncService:
         Full sync: paginate through all GHL contacts and opportunities.
         Call daily via POST /sync/full or a scheduled job.
         """
-        if not is_db_configured() or not async_session_factory:
+        if not database.async_session_factory:
             return {"error": "Database not configured"}
 
         from app.models.db_models import SyncLog
@@ -150,7 +150,7 @@ class SyncService:
             from app.models.db_models import Opportunity
             from sqlalchemy import select
 
-            async with async_session_factory() as session:
+            async with database.async_session_factory() as session:
                 for opp in opp_list:
                     result = await session.execute(
                         select(Opportunity).where(Opportunity.id == opp["id"])
@@ -185,7 +185,7 @@ class SyncService:
         # Log sync
         duration = (datetime.now(timezone.utc) - start_time).total_seconds()
 
-        async with async_session_factory() as session:
+        async with database.async_session_factory() as session:
             log = SyncLog(
                 entity_type="full_sync",
                 records_synced=contacts_synced + opps_synced,
