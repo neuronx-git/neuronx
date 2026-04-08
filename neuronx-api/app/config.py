@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     documenso_url: str = ""  # https://documenso.your-railway.app
     documenso_api_key: str = ""
 
+    # Typebot (Smart Questionnaire Forms)
+    typebot_url: str = ""  # https://typebot-builder.up.railway.app
+    typebot_api_token: str = ""
+    typebot_viewer_url: str = ""  # https://typebot-viewer.up.railway.app
+
     # Service config
     cors_origins: List[str] = ["http://localhost:3000"]
     compliance_log_path: str = "logs/compliance.jsonl"

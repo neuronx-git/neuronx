@@ -1,0 +1,223 @@
+"""
+Typebot Webhook & Form Management Endpoints
+POST /typebot/webhook         — Receive form submissions from Typebot
+POST /typebot/create-form     — Generate and create a Typebot form from questionnaires.yaml
+GET  /typebot/form-url        — Get the published form URL for a program
+"""
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field
+from typing import Optional
+import logging
+
+from app.services.ghl_client import GHLClient
+from app.services.typebot_service import TypebotService
+from app.config_loader import load_yaml_config
+from app.utils.compliance_log import log_event
+
+router = APIRouter()
+logger = logging.getLogger("neuronx.typebot")
+
+
+class TypebotWebhookPayload(BaseModel):
+    """Payload from Typebot webhook on form submission."""
+    contact_id: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    answers: dict = Field(default_factory=dict)
+
+
+class CreateFormRequest(BaseModel):
+    """Request to generate a Typebot form for a program."""
+    program_type: str
+    firm_name: str = "Visa Master Canada"
+    webhook_url: Optional[str] = None
+
+
+@router.post("/webhook")
+async def typebot_webhook(request: Request):
+    """
+    Receive form submission from Typebot.
+    Maps answers to GHL custom fields, generates doc checklist, adds tags.
+
+    Flow:
+    1. Typebot conversational form collects client answers
+    2. On submit, Typebot fires webhook to this endpoint
+    3. We parse answers and map to GHL custom fields
+    4. Generate program-specific document checklist
+    5. Add nx:case:docs_pending tag (triggers WF-CP-02)
+    6. Return success
+    """
+    payload = await request.json()
+    logger.info("Typebot webhook received: %s", list(payload.keys()))
+
+    # Typebot sends data in different formats depending on configuration
+    # Support both flat answers and nested result set
+    answers = payload.get("answers", payload)
+    contact_id = (
+        payload.get("contact_id")
+        or payload.get("contactId")
+        or answers.get("contact_id")
+    )
+    email = payload.get("email") or answers.get("email")
+    phone = payload.get("phone") or answers.get("phone")
+
+    ghl = GHLClient()
+
+    # Find or identify the contact
+    if not contact_id and email:
+        # Search by email in GHL
+        results = await ghl.search_contacts(email, limit=1)
+        contacts = results.get("contacts", [])
+        if contacts:
+            contact_id = contacts[0]["id"]
+
+    if not contact_id and phone:
+        results = await ghl.search_contacts(phone, limit=1)
+        contacts = results.get("contacts", [])
+        if contacts:
+            contact_id = contacts[0]["id"]
+
+    if not contact_id:
+        logger.warning("Typebot webhook: could not identify contact (email=%s, phone=%s)", email, phone)
+        return {"status": "unmatched", "note": "Could not find contact in GHL"}
+
+    # Map Typebot answers to GHL custom fields
+    field_mapping = {
+        # Personal info
+        "full_name": "full_name",
+        "date_of_birth": "date_of_birth",
+        "country_of_citizenship": "country_of_citizenship",
+        "current_country": "current_country",
+        "passport_number": "passport_number",
+        "passport_expiry": "passport_expiry",
+        "marital_status": "marital_status",
+        "has_dependents": "has_dependents",
+        "num_dependents": "num_dependents",
+        "criminal_history": "criminal_history",
+        "previous_refusal": "previous_refusal",
+        "medical_conditions": "medical_conditions",
+        # Express Entry
+        "education_level": "r2_education_level",
+        "eca_completed": "eca_completed",
+        "years_work_experience": "years_work_experience",
+        "canadian_work_experience": "canadian_work_experience",
+        "primary_occupation": "primary_occupation",
+        "noc_code": "noc_code",
+        "language_test_type": "language_test_type",
+        "language_scores": "language_scores",
+        "french_ability": "french_ability",
+        "settlement_funds": "settlement_funds",
+        "has_job_offer": "has_job_offer",
+        "provincial_nomination": "provincial_nomination",
+        # Spousal
+        "sponsor_name": "sponsor_name",
+        "sponsor_status": "sponsor_status",
+        "sponsor_province": "sponsor_province",
+        "relationship_type": "relationship_type",
+        "marriage_date": "marriage_date",
+        "met_in_person": "met_in_person",
+        "applicant_in_canada": "applicant_in_canada",
+        "applicant_current_status": "applicant_current_status",
+        # Work Permit
+        "employer_name": "employer_name",
+        "job_title": "job_title",
+        "lmia_status": "lmia_status",
+        "work_permit_type": "work_permit_type",
+        # Study Permit
+        "dli_name": "dli_name",
+        "program_name": "program_name",
+        "program_duration": "program_duration",
+        "has_acceptance_letter": "has_acceptance_letter",
+        "tuition_amount": "tuition_amount",
+        "funding_source": "funding_source",
+        # Program interest
+        "program_interest": "ai_program_interest",
+    }
+
+    # Build GHL custom field updates
+    custom_fields = {}
+    for typebot_key, ghl_key in field_mapping.items():
+        value = answers.get(typebot_key)
+        if value is not None and value != "":
+            custom_fields[ghl_key] = str(value)
+
+    # Update GHL contact
+    if custom_fields:
+        await ghl.update_custom_fields(contact_id, custom_fields)
+        logger.info("Updated %d GHL fields for contact %s", len(custom_fields), contact_id)
+
+    # Add tag to trigger document collection workflow
+    await ghl.add_tag(contact_id, "nx:case:docs_pending")
+
+    # Log the event
+    log_event("typebot_submission", {
+        "contact_id": contact_id,
+        "fields_updated": len(custom_fields),
+        "program": answers.get("program_interest", "unknown"),
+    })
+
+    # Record activity in database if available
+    try:
+        from app import database
+        if database.async_session_factory:
+            from app.services.sync_service import SyncService
+            sync = SyncService()
+            await sync.record_activity(
+                contact_id=contact_id,
+                activity_type="onboarding_questionnaire_completed",
+                detail=f"Typebot form submitted — {len(custom_fields)} fields collected",
+                metadata={"program": answers.get("program_interest", ""), "fields": list(custom_fields.keys())},
+            )
+    except Exception as e:
+        logger.warning("Could not record activity: %s", e)
+
+    return {
+        "status": "processed",
+        "contact_id": contact_id,
+        "fields_updated": len(custom_fields),
+        "tag_added": "nx:case:docs_pending",
+        "program": answers.get("program_interest", "unknown"),
+    }
+
+
+@router.post("/create-form")
+async def create_typebot_form(payload: CreateFormRequest):
+    """
+    Generate a Typebot form JSON from questionnaires.yaml and create it via API.
+    Returns the form URL for embedding or sharing.
+    """
+    service = TypebotService()
+    if not service.is_configured():
+        raise HTTPException(status_code=503, detail="Typebot not configured. Set TYPEBOT_URL and TYPEBOT_API_TOKEN.")
+
+    result = await service.create_onboarding_form(
+        program_type=payload.program_type,
+        firm_name=payload.firm_name,
+        webhook_url=payload.webhook_url,
+    )
+
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to create Typebot form")
+
+    return result
+
+
+@router.get("/form-url/{program_type}")
+async def get_form_url(program_type: str):
+    """Get the Typebot form URL for a specific program. Used in WF-CP-01 emails."""
+    from app.config import settings
+    if not settings.typebot_viewer_url:
+        return {
+            "program_type": program_type,
+            "url": None,
+            "note": "Typebot not deployed yet. Set TYPEBOT_VIEWER_URL.",
+        }
+
+    # Convention: form slug = program type slugified
+    slug = program_type.lower().replace(" ", "-").replace("/", "-")
+    return {
+        "program_type": program_type,
+        "url": f"{settings.typebot_viewer_url}/{slug}-onboarding",
+        "embed_js": f'<script src="{settings.typebot_viewer_url}/embed.js"></script>',
+    }
