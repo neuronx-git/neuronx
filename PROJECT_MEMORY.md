@@ -278,13 +278,51 @@ Note: `README.md` still states "Build Status: Not started". Treat this as outdat
 - **VAPI**: structuredDataPlan + summaryPlan configured
 - **All API-capable work COMPLETE** — remaining work is GHL UI or production account
 
+## Session Summary — 2026-04-05
+
+### Completed This Session (Massive)
+
+| Item | What Was Done |
+|------|--------------|
+| OD-01 RESOLVED | VAPI locked as voice provider (GHL Voice AI rejected) ✅ |
+| Smart Questionnaire API | GET /cases/questionnaire/{program} — 8 programs with conditional fields ✅ |
+| Case Emails Config | 11 case processing email templates in case_emails.yaml ✅ |
+| PostgreSQL on Railway | 6 tables (contacts, opportunities, cases, activities, signatures, sync_log) ✅ |
+| GHL → PostgreSQL Sync | POST /sync/full + GET /sync/status — dual sync (webhook + daily) ✅ |
+| Documenso Integration | POST /signatures/send, /webhook, GET /status — retainer e-signing ✅ |
+| IRCC Form Auto-Fill | POST /documents/ircc-fill + field mappings YAML — pypdf PDF filling ✅ |
+| Document Service | docxtpl wrapper for retainer + assessment .docx generation ✅ |
+| Metabase Deployed | Railway, connected to PostgreSQL, 5 unique-value dashboards ✅ |
+| Demo Data | POST /demo/seed — 12 contacts, 8 cases, 28 activities for presentations ✅ |
+| Government Sources | docs/09_domain_knowledge/GOVERNMENT_SOURCES.md — 50+ canada.ca URLs ✅ |
+| WF-CP-01 through WF-CP-09 | ALL 9 case processing workflows built and published in GHL ✅ |
+| Architecture Decisions | memory/project_architecture_decisions.md — permanent decision record ✅ |
+| Bootstrap Doc Map | docs/06_execution/BOOTSTRAP_DOCUMENT_MAP.md — 100+ files inventoried ✅ |
+| Metabase Cleanup | Removed 4 GHL-duplicate cards, added 4 unique immigration analytics ✅ |
+| Tests | 59/59 passing (up from 43) ✅ |
+
+### Key Decisions Made (2026-04-05)
+- OD-01: VAPI locked (structured data extraction, already wired)
+- Metabase: unique-value analytics ONLY (IRCC rates, time-in-stage, RCIC workload)
+- GHL forms: conditional logic v2 supports dynamic fields (no Next.js for forms)
+- Multi-tenant: GHL location_id = tenant_id, $297 plan, add column when firm #2 joins
+- Case assignment: manual for v1 (round-robin Phase 2)
+- Document collection: GHL Portal + email reply fallback
+
+### Current Status (2026-04-05)
+- **24/24 Workflows PUBLISHED** (15 intake + 9 case processing) ✅
+- **29 API endpoints, 59 tests** ✅
+- **3 Railway services** (NeuronX API + PostgreSQL + Metabase) ✅
+- **ALL API-capable work COMPLETE**
+- **ALL case processing workflows COMPLETE**
+
 ### What's Next (Priority Order)
-1. **Take GHL Snapshot** → NeuronX Gold Build v2 — 2026-04-04
-2. **Upgrade GHL to production** ($297-497/mo) → unlocks email/SMS/phone
-3. **Resolve OD-01** → lock VAPI (already fully wired, skip bake-off recommended)
-4. **E2E UAT** → submit test lead → VAPI call → scoring → pipeline → email
-5. **Build 9 Case Processing workflows** (WF-CP-01→09) in GHL UI
-6. **Build additional forms** (onboarding, outcome, satisfaction)
+1. **Fix WF-CP-01** — add nx:case:docs_pending tag (connects to WF-CP-02)
+2. **Smart onboarding form** — GHL conditional logic (Block 6)
+3. **Consultation outcome form + Satisfaction survey** — GHL forms
+4. **Take Snapshot v3** — backup everything
+5. **Upgrade GHL to $297** → unlocks email/SMS/phone
+6. **E2E UAT** → full lifecycle test
 
 ---
 

@@ -50,16 +50,36 @@
 - R1-R5 extracted as structured JSON after every call
 - summaryPlan configured for compliance-safe summaries
 
-## Case Processing — PIPELINE BUILT, WORKFLOWS PENDING
+## Case Processing — COMPLETE (Pipeline + 9 Workflows)
 
 20 fields + 13 tags created via API. Pipeline #2 created in GHL UI (9 stages).
-9 case processing workflows (WF-CP-01→09) NOT yet built (specs at docs/06_execution/CASE_PROCESSING_PIPELINE.md).
+9 case processing workflows (WF-CP-01→09) ALL BUILT AND PUBLISHED ✅ (2026-04-05)
+
+| Workflow | Trigger | Status |
+|----------|---------|--------|
+| WF-CP-01 | nx:retainer:signed | ✅ Published |
+| WF-CP-02 | nx:case:docs_pending | ✅ Published |
+| WF-CP-03 | nx:case:docs_complete | ✅ Published |
+| WF-CP-04 | nx:case:under_review | ✅ Published |
+| WF-CP-05 | nx:case:submitted | ✅ Published |
+| WF-CP-06 | nx:case:processing | ✅ Published |
+| WF-CP-07 | nx:case:rfi | ✅ Published |
+| WF-CP-08 | nx:case:decision (IF/ELSE approved/refused) | ✅ Published |
+| WF-CP-09 | nx:case:closed | ✅ Published |
 
 ## Content — ALL DONE
 
 11 email templates, 8 nurture templates (now in WF-11 as inline content), 6 NX-WF drafts, 7 sales scripts.
 .docx templates: retainer agreement + assessment report (neuronx-api/templates/).
 
+## INFRASTRUCTURE — LIVE
+
+| Service | URL | Status |
+|---------|-----|--------|
+| NeuronX API | neuronx-production-62f9.up.railway.app | ✅ 29 endpoints, 59 tests |
+| PostgreSQL | postgres.railway.internal | ✅ 6 tables, connected |
+| Metabase | metabase-production-1846.up.railway.app | ✅ 5 dashboards, demo data seeded |
+
 ## NOT BUILT
 
-WF-CP workflows (case processing), additional forms (onboarding, outcome, satisfaction), production account, Metabase, Next.js, ERPNext.
+Additional forms (onboarding with conditional logic, outcome, satisfaction), production GHL account, Documenso deployment, Next.js portal, ERPNext.
