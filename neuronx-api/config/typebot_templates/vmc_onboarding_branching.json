@@ -1,0 +1,133 @@
+{
+  "description": "World-class VMC onboarding form with program branching. Apply via PATCH to Typebot API when rate limit resets.",
+  "typebot_id": "cmnrdpdnq000004i8gtwapm4k",
+  "public_url": "https://typebot.com/vmc-onboarding",
+  "payload": {
+    "typebot": {
+      "variables": [
+        {"id": "v1", "name": "full_name", "isSessionVariable": false},
+        {"id": "v2", "name": "country_of_citizenship", "isSessionVariable": false},
+        {"id": "v3", "name": "passport_number", "isSessionVariable": false},
+        {"id": "v4", "name": "email", "isSessionVariable": false},
+        {"id": "v5", "name": "phone", "isSessionVariable": false},
+        {"id": "v6", "name": "program_interest", "isSessionVariable": false},
+        {"id": "v7", "name": "marital_status", "isSessionVariable": false},
+        {"id": "v8", "name": "has_dependents", "isSessionVariable": false},
+        {"id": "v9", "name": "criminal_history", "isSessionVariable": false},
+        {"id": "v10", "name": "previous_refusal", "isSessionVariable": false},
+        {"id": "v11", "name": "education_level", "isSessionVariable": false},
+        {"id": "v12", "name": "work_experience", "isSessionVariable": false},
+        {"id": "v13", "name": "language_test", "isSessionVariable": false},
+        {"id": "v14", "name": "sponsor_status", "isSessionVariable": false},
+        {"id": "v15", "name": "employer_name", "isSessionVariable": false}
+      ],
+      "groups": [
+        {"id": "g1", "title": "Welcome", "graphCoordinates": {"x": 250, "y": 0}, "blocks": [
+          {"id": "b1a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Welcome to Visa Master Canada! 👋"}]}]}},
+          {"id": "b1b", "type": "image", "content": {"url": "https://media1.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"}},
+          {"id": "b1c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "I'll help you complete your onboarding questionnaire. This takes about 10 minutes."}]}]}},
+          {"id": "b1d", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Ready to get started?"}]}]}},
+          {"id": "b1e", "type": "choice input", "items": [{"id": "start_yes", "outgoingEdgeId": "e_to_name", "content": "Let's go! 🚀"}]}
+        ]},
+        {"id": "g_name", "title": "Name", "graphCoordinates": {"x": 600, "y": 0}, "blocks": [
+          {"id": "b2a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "What is your full legal name? (as on passport)"}]}]}},
+          {"id": "b2b", "outgoingEdgeId": "e_to_personal", "type": "text input", "options": {"labels": {"placeholder": "e.g., Priya Sharma"}, "variableId": "v1"}}
+        ]},
+        {"id": "g2", "title": "Personal Info", "graphCoordinates": {"x": 950, "y": 0}, "blocks": [
+          {"id": "b2c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Nice to meet you, {{full_name}}! 😊"}]}]}},
+          {"id": "b3", "type": "text input", "options": {"labels": {"placeholder": "Country of citizenship"}, "variableId": "v2"}},
+          {"id": "b4", "type": "text input", "options": {"labels": {"placeholder": "Passport number"}, "variableId": "v3"}},
+          {"id": "b5", "type": "email input", "options": {"variableId": "v4"}},
+          {"id": "b6", "outgoingEdgeId": "e_to_program", "type": "text input", "options": {"labels": {"placeholder": "Phone number with country code"}, "variableId": "v5"}}
+        ]},
+        {"id": "g3", "title": "Program Selection", "graphCoordinates": {"x": 1300, "y": 0}, "blocks": [
+          {"id": "b7a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Great, {{full_name}}! Now the important question:"}]}]}},
+          {"id": "b7b", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "What immigration program are you applying for?"}]}]}},
+          {"id": "b8", "type": "choice input", "items": [
+            {"id": "i_ee", "outgoingEdgeId": "e_to_ee", "content": "Express Entry 🍁"},
+            {"id": "i_sp", "outgoingEdgeId": "e_to_sp", "content": "Spousal Sponsorship 💑"},
+            {"id": "i_wp", "outgoingEdgeId": "e_to_wp", "content": "Work Permit 💼"},
+            {"id": "i_other", "outgoingEdgeId": "e_to_family", "content": "Study / LMIA / Other 📚"}
+          ], "options": {"variableId": "v6", "isMultipleChoice": false}}
+        ]},
+        {"id": "g_ee", "title": "Express Entry Questions", "graphCoordinates": {"x": 1650, "y": -300}, "blocks": [
+          {"id": "bee1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Express Entry — great choice! A few program-specific questions:"}]}]}},
+          {"id": "bee2", "type": "choice input", "items": [
+            {"id": "edu1", "content": "High School"}, {"id": "edu2", "content": "Diploma (1-2 yrs)"},
+            {"id": "edu3", "content": "Bachelor's"}, {"id": "edu4", "content": "Master's"}, {"id": "edu5", "content": "PhD"}
+          ], "options": {"variableId": "v11"}},
+          {"id": "bee3", "type": "text input", "options": {"labels": {"placeholder": "Years of skilled work experience"}, "variableId": "v12"}},
+          {"id": "bee4", "outgoingEdgeId": "e_ee_fam", "type": "choice input", "items": [
+            {"id": "l1", "content": "IELTS General"}, {"id": "l2", "content": "CELPIP"},
+            {"id": "l3", "content": "TEF Canada"}, {"id": "l4", "content": "Not yet taken"}
+          ], "options": {"variableId": "v13"}}
+        ]},
+        {"id": "g_sp", "title": "Spousal Questions", "graphCoordinates": {"x": 1650, "y": 50}, "blocks": [
+          {"id": "bsp1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Spousal Sponsorship — questions about your sponsor:"}]}]}},
+          {"id": "bsp2", "type": "choice input", "items": [
+            {"id": "ss1", "content": "Canadian Citizen"}, {"id": "ss2", "content": "Permanent Resident"}
+          ], "options": {"variableId": "v14"}},
+          {"id": "bsp3", "outgoingEdgeId": "e_sp_fam", "type": "choice input", "items": [
+            {"id": "rt1", "content": "Married"}, {"id": "rt2", "content": "Common-Law (12+ months)"}, {"id": "rt3", "content": "Conjugal Partner"}
+          ], "options": {"variableId": "v7"}}
+        ]},
+        {"id": "g_wp", "title": "Work Permit Questions", "graphCoordinates": {"x": 1650, "y": 350}, "blocks": [
+          {"id": "bwp1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Work Permit — tell me about your employment:"}]}]}},
+          {"id": "bwp2", "type": "text input", "options": {"labels": {"placeholder": "Canadian employer name"}, "variableId": "v15"}},
+          {"id": "bwp3", "outgoingEdgeId": "e_wp_fam", "type": "choice input", "items": [
+            {"id": "lm1", "content": "LMIA Approved"}, {"id": "lm2", "content": "LMIA Pending"},
+            {"id": "lm3", "content": "LMIA Exempt"}, {"id": "lm4", "content": "Not Sure"}
+          ], "options": {"variableId": "v12"}}
+        ]},
+        {"id": "g4", "title": "Family", "graphCoordinates": {"x": 2050, "y": 0}, "blocks": [
+          {"id": "b9a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Almost done, {{full_name}}! A few more questions:"}]}]}},
+          {"id": "b10", "type": "choice input", "items": [
+            {"id": "m1", "content": "Single"}, {"id": "m2", "content": "Married"},
+            {"id": "m3", "content": "Common-Law"}, {"id": "m4", "content": "Divorced"}, {"id": "m5", "content": "Widowed"}
+          ], "options": {"variableId": "v7"}},
+          {"id": "b11", "outgoingEdgeId": "e_to_bg", "type": "choice input", "items": [
+            {"id": "d1", "content": "Yes, I have dependent children"}, {"id": "d2", "content": "No dependents"}
+          ], "options": {"variableId": "v8"}}
+        ]},
+        {"id": "g5", "title": "Background", "graphCoordinates": {"x": 2400, "y": 0}, "blocks": [
+          {"id": "b12a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Last two questions — important for your application:"}]}]}},
+          {"id": "b13", "type": "choice input", "items": [
+            {"id": "c1", "content": "No criminal history ✅"}, {"id": "c2", "content": "Yes, I have a criminal record"}
+          ], "options": {"variableId": "v9"}},
+          {"id": "b14", "outgoingEdgeId": "e_to_done", "type": "choice input", "items": [
+            {"id": "r1", "content": "No previous refusals ✅"}, {"id": "r2", "content": "Yes, I have been refused"}
+          ], "options": {"variableId": "v10"}}
+        ]},
+        {"id": "g6", "title": "Complete", "graphCoordinates": {"x": 2750, "y": 0}, "blocks": [
+          {"id": "b15a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Thank you, {{full_name}}! Your onboarding is complete. ✅"}]}]}},
+          {"id": "b15b", "type": "image", "content": {"url": "https://media0.giphy.com/media/l0amJzVHIAfl7jMDos/giphy.gif"}},
+          {"id": "b15c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Your consultant will review your {{program_interest}} application and contact you within 2 business days."}]}]}},
+          {"id": "b15d", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Call (647) 931-5181 or email rcic@neuronx.co 🚀"}]}]}}
+        ]}
+      ],
+      "edges": [
+        {"id": "e_to_name", "from": {"blockId": "b1e", "itemId": "start_yes"}, "to": {"groupId": "g_name"}},
+        {"id": "e_to_personal", "from": {"blockId": "b2b"}, "to": {"groupId": "g2"}},
+        {"id": "e_to_program", "from": {"blockId": "b6"}, "to": {"groupId": "g3"}},
+        {"id": "e_to_ee", "from": {"blockId": "b8", "itemId": "i_ee"}, "to": {"groupId": "g_ee"}},
+        {"id": "e_to_sp", "from": {"blockId": "b8", "itemId": "i_sp"}, "to": {"groupId": "g_sp"}},
+        {"id": "e_to_wp", "from": {"blockId": "b8", "itemId": "i_wp"}, "to": {"groupId": "g_wp"}},
+        {"id": "e_to_family", "from": {"blockId": "b8", "itemId": "i_other"}, "to": {"groupId": "g4"}},
+        {"id": "e_ee_fam", "from": {"blockId": "bee4"}, "to": {"groupId": "g4"}},
+        {"id": "e_sp_fam", "from": {"blockId": "bsp3"}, "to": {"groupId": "g4"}},
+        {"id": "e_wp_fam", "from": {"blockId": "bwp3"}, "to": {"groupId": "g4"}},
+        {"id": "e_to_bg", "from": {"blockId": "b11"}, "to": {"groupId": "g5"}},
+        {"id": "e_to_done", "from": {"blockId": "b14"}, "to": {"groupId": "g6"}}
+      ],
+      "theme": {
+        "general": {"font": "Inter", "background": {"type": "Color", "content": "#F9FAFB"}},
+        "chat": {
+          "hostBubbles": {"backgroundColor": "#0F172A", "color": "#FFFFFF"},
+          "guestBubbles": {"backgroundColor": "#E8380D", "color": "#FFFFFF"},
+          "buttons": {"backgroundColor": "#E8380D", "color": "#FFFFFF"},
+          "inputs": {"backgroundColor": "#FFFFFF", "color": "#0F172A", "placeholderColor": "#9CA3AF"}
+        }
+      }
+    }
+  }
+}
