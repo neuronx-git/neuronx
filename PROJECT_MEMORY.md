@@ -316,13 +316,55 @@ Note: `README.md` still states "Build Status: Not started". Treat this as outdat
 - **ALL API-capable work COMPLETE**
 - **ALL case processing workflows COMPLETE**
 
-### What's Next (Priority Order)
-1. **Fix WF-CP-01** — add nx:case:docs_pending tag (connects to WF-CP-02)
-2. **Smart onboarding form** — GHL conditional logic (Block 6)
-3. **Consultation outcome form + Satisfaction survey** — GHL forms
-4. **Take Snapshot v3** — backup everything
-5. **Upgrade GHL to $297** → unlocks email/SMS/phone
-6. **E2E UAT** → full lifecycle test
+## Session Summary — 2026-04-05 (Massive Session)
+
+### Infrastructure Deployed
+- PostgreSQL on Railway (6 tables, connected to NeuronX API) ✅
+- Metabase on Railway (5 unique dashboards, demo data seeded) ✅
+- Typebot self-hosted on Railway (7 services, all features free) ✅
+- Typebot form: 16 groups, 55 blocks, 8 program branches, file upload, webhook ✅
+
+### Key Builds
+- 9 case processing workflows (WF-CP-01→09) — all published in GHL ✅
+- Chrome Extension (NeuronX RCIC Assistant) — IRCC portal auto-fill ✅
+- 5 new client API endpoints (form-data, data-sheet, validate, copy-paste, search) ✅
+- Typebot API mastery — discovered correct JSON format (items at block level, outgoingEdgeId on events)
+- IRCC PDFs downloaded (IMM 0008, 5406, 5476, 5669) — IMM 5476 auto-fill tested ✅
+- Government source citations (50+ canada.ca URLs) ✅
+- GHL → PostgreSQL sync service ✅
+- Documenso e-signature integration code ✅
+- IRCC form auto-fill service (pypdf) ✅
+- Demo data seeding endpoint ✅
+
+### Key Decisions
+- OD-01 RESOLVED: VAPI locked as voice provider
+- Typebot wins over Formbricks (conversational UX, mid-flow API, FSL license)
+- Typebot self-hosted > Cloud (all features free, $15/mo Railway)
+- GHL replacement: NOT RECOMMENDED (no open-source covers >55%)
+- GHL $97 plan sufficient for 2-3 customers (not $297)
+- IRCC forms: mostly web-only now, generate Data Sheets for copy-paste
+- Chrome extension: IRCC portal auto-fill (same approach as VisaFlo, Visto)
+
+### Critical Typebot Learnings
+- Start event MUST have outgoingEdgeId (root cause of blank page)
+- items at block level for choice input (NOT inside options)
+- PATCH groups + events separately (not together)
+- Hardcode DATABASE_URL on Railway (not reference variables)
+- Self-hosted deployment: Railway template → hardcode DB URL → works
+
+### Stats
+- Tests: 78/78 passing
+- API endpoints: 33+
+- GHL workflows: 24 published
+- Typebot form: 16 groups, 55 blocks, 8 programs
+- Railway services: 10 (NeuronX project: 3, Typebot project: 7)
+
+### What's Next
+1. **Upgrade GHL to $97 plan** → unlocks email/SMS/phone
+2. **Install Chrome extension** → test on IRCC pages
+3. **E2E UAT** → full lifecycle test
+4. **Detailed product audit** → gaps, improvements, competitor analysis
+5. **Take GHL Snapshot v3**
 
 ---
 
