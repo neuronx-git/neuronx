@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "NeuronX RCIC Assistant",
+  "description": "Auto-fill IRCC portal forms with client data from NeuronX. Saves 2-3 hours per case.",
+  "version": "1.0.0",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://prson-srpj.apps.cic.gc.ca/*",
+    "https://secure.cic.gc.ca/*",
+    "https://www.canada.ca/*",
+    "https://ircc.canada.ca/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://prson-srpj.apps.cic.gc.ca/*",
+        "https://secure.cic.gc.ca/*",
+        "https://www.canada.ca/*",
+        "https://ircc.canada.ca/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

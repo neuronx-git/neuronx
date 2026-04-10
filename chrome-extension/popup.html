@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 380px; font-family: 'Inter', -apple-system, sans-serif; background: #F9FAFB; color: #0F172A; }
+    .header { background: #0F172A; color: white; padding: 16px; display: flex; align-items: center; gap: 12px; }
+    .header img { width: 32px; height: 32px; border-radius: 6px; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header .subtitle { font-size: 11px; color: #94A3B8; }
+    .content { padding: 16px; }
+    .section { margin-bottom: 16px; }
+    .section-title { font-size: 12px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .input-group input, .input-group select { width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px; outline: none; }
+    .input-group input:focus, .input-group select:focus { border-color: #E8380D; box-shadow: 0 0 0 2px rgba(232,56,13,0.1); }
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: #E8380D; color: white; }
+    .btn-primary:hover { background: #DC2626; }
+    .btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
+    .btn-secondary { background: white; color: #0F172A; border: 1px solid #D1D5DB; margin-top: 8px; }
+    .btn-secondary:hover { background: #F3F4F6; }
+    .status { padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-top: 12px; display: none; }
+    .status.success { display: block; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+    .status.error { display: block; background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+    .status.info { display: block; background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+    .client-info { background: white; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .client-info .name { font-weight: 600; font-size: 14px; }
+    .client-info .program { font-size: 12px; color: #E8380D; margin-top: 2px; }
+    .client-info .details { font-size: 11px; color: #6B7280; margin-top: 4px; }
+    .field-count { display: flex; justify-content: space-between; font-size: 12px; color: #6B7280; margin-top: 8px; }
+    .field-count .count { font-weight: 600; color: #0F172A; }
+    .footer { padding: 12px 16px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #9CA3B8; text-align: center; }
+    #loading { display: none; text-align: center; padding: 20px; }
+    #loading.show { display: block; }
+    .spinner { width: 24px; height: 24px; border: 3px solid #E5E7EB; border-top-color: #E8380D; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>NeuronX RCIC Assistant</h1>
+      <div class="subtitle">IRCC Portal Auto-Fill</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Settings (shown first time) -->
+    <div id="settings-panel" style="display:none;">
+      <div class="section">
+        <div class="section-title">API Configuration</div>
+        <div class="input-group">
+          <label>NeuronX API URL</label>
+          <input type="text" id="api-url" value="https://neuronx-production-62f9.up.railway.app" placeholder="https://your-api.railway.app">
+        </div>
+        <div class="input-group">
+          <label>GHL Location ID</label>
+          <input type="text" id="location-id" placeholder="FlRL82M0D6nclmKT7eXH">
+        </div>
+        <button class="btn btn-primary" id="save-settings">Save Settings</button>
+      </div>
+    </div>
+
+    <!-- Main panel -->
+    <div id="main-panel">
+      <div class="section">
+        <div class="section-title">Select Client</div>
+        <div class="input-group">
+          <input type="text" id="client-search" placeholder="Search by name, email, or phone...">
+        </div>
+        <select id="client-select" size="4" style="width:100%; font-size:13px; border:1px solid #D1D5DB; border-radius:6px;">
+          <option value="" disabled selected>Search for a client above...</option>
+        </select>
+      </div>
+
+      <!-- Client info (shown after selection) -->
+      <div id="client-info-panel" style="display:none;">
+        <div class="client-info">
+          <div class="name" id="client-name"></div>
+          <div class="program" id="client-program"></div>
+          <div class="details" id="client-details"></div>
+        </div>
+
+        <div class="field-count">
+          <span>Fields to fill:</span>
+          <span class="count" id="field-count">--</span>
+        </div>
+
+        <button class="btn btn-primary" id="autofill-btn">
+          ⚡ Auto-Fill This Page
+        </button>
+
+        <button class="btn btn-secondary" id="datasheet-btn">
+          📋 Generate Data Sheet
+        </button>
+
+        <button class="btn btn-secondary" id="validate-btn">
+          ✅ Validate Completeness
+        </button>
+      </div>
+
+      <div id="loading" class="">
+        <div class="spinner"></div>
+        <div>Loading...</div>
+      </div>
+
+      <div id="status" class="status"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    NeuronX v1.0 | Visa Master Canada | Settings: <a href="#" id="open-settings" style="color:#E8380D;">Configure</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
