@@ -146,11 +146,11 @@ class IRCCFormService:
         # Fill the PDF
         reader = PdfReader(str(pdf_path))
         writer = PdfWriter()
-        writer.append_pages_from_reader(reader)
+        writer.clone_reader_document_root(reader)
 
         # Update form fields
-        for page_num in range(len(writer.pages)):
-            writer.update_page_form_field_values(writer.pages[page_num], fill_data)
+        for page in writer.pages:
+            writer.update_page_form_field_values(page, fill_data)
 
         # Write to bytes
         output = BytesIO()
