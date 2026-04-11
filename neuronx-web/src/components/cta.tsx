@@ -28,7 +28,7 @@ export function CTA() {
 
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="https://cal.com"
+            href="https://api.leadconnectorhq.com/widget/booking/clvODWkfByOZnzeqyPPW"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#E8380D] text-white font-semibold text-base hover:bg-[#D42E06] transition-all hover:shadow-xl hover:shadow-[#E8380D]/30 hover:-translate-y-0.5"
           >
             Book a 30-Minute Demo

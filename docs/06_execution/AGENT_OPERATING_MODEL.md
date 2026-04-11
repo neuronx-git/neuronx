@@ -168,8 +168,10 @@ Do NOT use `${{Postgres.DATABASE_URL}}`
 - VMC-branded chat UI (navy header, avatar, animated messages)
 - Hosted on NeuronX API (Railway auto-deploys)
 **Verification**: `python3 -c "import requests; r=requests.post('https://viewer-production-366c.up.railway.app/api/v1/sendMessage',json={'startParams':{'typebot':'vmc-onboarding'}}); print(len(r.json()['messages']),'messages')"` → should return 3 messages
-**Live URL**: `https://neuronx-production-62f9.up.railway.app/static/vmc-onboarding.html`
+**Live URL**: `https://neuronx-production-62f9.up.railway.app/form/vmc/onboarding` (multi-tenant route)
+**Old static URL**: DELETED (2026-04-11) — was `/static/vmc-onboarding.html`, superseded by multi-tenant architecture
 **Form Backup**: `neuronx-api/config/typebot_templates/vmc_onboarding_branching.json` (16 groups, 30 vars, 23 edges)
+**Typebot Cloud**: DELETED (2026-04-11) — duplicate removed, self-hosted is the only source of truth
 
 ### Chrome Extension Client Search
 **Problem**: popup.js was calling wrong endpoint (POST /documents/checklist) with hardcoded demo clients
