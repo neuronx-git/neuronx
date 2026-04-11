@@ -1,78 +1,82 @@
-"use client";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+interface FAQProps {
+  question: string;
+  answer: string;
+  value: string;
+}
 
-const faqs = [
+const FAQList: FAQProps[] = [
   {
-    q: "Does NeuronX replace our CRM?",
-    a: "No. NeuronX works on top of GoHighLevel (GHL), which serves as your CRM. NeuronX is the intelligence layer — it handles AI calling, scoring, briefings, and analytics. GHL handles contacts, pipelines, email/SMS, and workflows.",
+    question: "Does NeuronX replace our CRM?",
+    answer: "No. NeuronX works on top of GoHighLevel (GHL), which serves as your CRM. NeuronX is the intelligence layer — it handles AI calling, scoring, briefings, and analytics. GHL handles contacts, pipelines, email/SMS, and workflows. Together they form a complete system.",
+    value: "item-1",
   },
   {
-    q: "Is the AI compliant with RCIC regulations?",
-    a: "Yes. NeuronX enforces strict trust boundaries. The AI never assesses immigration eligibility, recommends pathways, interprets law, or promises outcomes. It only collects information, asks factual questions, and books consultations. Every interaction is auditable.",
+    question: "Is the AI compliant with RCIC regulations?",
+    answer: "Yes. NeuronX enforces strict trust boundaries. The AI never assesses immigration eligibility, recommends pathways, interprets law, or promises outcomes. It only collects information, asks factual questions, and books consultations. Every AI interaction is auditable and logged for compliance.",
+    value: "item-2",
   },
   {
-    q: "How long does onboarding take?",
-    a: "2-4 hours. We install a pre-configured snapshot into your GHL account, customize branding, configure your RCIC team, and run a live test. Your firm is operational the same day.",
+    question: "How long does onboarding take?",
+    answer: "2-4 hours. We install a pre-configured snapshot into your GHL account, customize branding, configure your RCIC team, and run a live test. Your firm is operational the same day. No lengthy implementation or training required.",
+    value: "item-3",
   },
   {
-    q: "What if a prospect asks for legal advice during the AI call?",
-    a: "The AI immediately escalates. If a prospect asks about eligibility, mentions deportation, or shows emotional distress, the call is flagged for human follow-up. Your team gets an instant alert.",
+    question: "What if a prospect asks the AI for legal advice?",
+    answer: "The AI immediately escalates. If a prospect asks about eligibility, mentions deportation, shows emotional distress, or involves a minor, the call is flagged for human follow-up. Your team gets an instant alert. This is a hard-coded safety boundary that cannot be overridden.",
+    value: "item-4",
   },
   {
-    q: "Can I see analytics on my pipeline?",
-    a: "Yes. NeuronX includes Metabase-powered dashboards showing conversion rates, pipeline velocity, stuck leads, RCIC workload, and revenue per lead source. Metrics that GHL alone cannot provide.",
+    question: "How does NeuronX compare to CaseEasy or Visto?",
+    answer: "CaseEasy, Visto, and VisaFlo are excellent case management tools for AFTER a client signs. NeuronX handles everything BEFORE — the inquiry-to-retainer funnel. Most firms use NeuronX alongside their case management tool. NeuronX gets you clients; case management tools help you serve them.",
+    value: "item-5",
   },
   {
-    q: "Do you support French-language intake?",
-    a: "Multi-language support is on our roadmap for v2. Currently, NeuronX operates in English. The VAPI voice AI supports multiple accents and is trained to understand non-native English speakers.",
+    question: "What immigration programs are supported?",
+    answer: "All 8 major Canadian programs: Express Entry, Spousal Sponsorship, Work Permit, Study Permit, LMIA, PR Renewal, Citizenship, and Visitor Visa. Each has program-specific intake questions, nurture content, and document checklists.",
+    value: "item-6",
   },
   {
-    q: "What immigration programs are supported?",
-    a: "All major Canadian programs: Express Entry, Spousal Sponsorship, Work Permit, Study Permit, LMIA, PR Renewal, Citizenship, and Visitor Visa. Each has program-specific intake questions and nurture content.",
+    question: "What's the ROI on NeuronX?",
+    answer: "One additional retained client ($3,000-$5,000 CAD) pays for 6+ months of NeuronX at the Essentials tier. Most firms see ROI in the first 2-4 weeks. The system pays for itself by converting leads you were already paying to acquire but losing to slow follow-up.",
+    value: "item-7",
   },
 ];
 
-export function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
+export const FAQ = () => {
   return (
-    <section id="faq" className="py-24 px-6 bg-[#FFFBF5]">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] tracking-tight text-center mb-16">
-          Frequently asked questions
-        </h2>
+    <section id="faq" className="container py-24 sm:py-32">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        Frequently Asked{" "}
+        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          Questions
+        </span>
+      </h2>
 
-        <div className="space-y-3">
-          {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className="border border-black/5 rounded-xl bg-white overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full flex items-center justify-between p-5 text-left"
-              >
-                <span className="font-medium text-[#0F172A] pr-4">
-                  {faq.q}
-                </span>
-                <ChevronDown
-                  size={18}
-                  className={`text-slate-400 flex-shrink-0 transition-transform duration-200 ${
-                    openIndex === i ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {openIndex === i && (
-                <div className="px-5 pb-5 text-slate-500 text-sm leading-relaxed border-t border-black/5 pt-4">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Accordion type="single" collapsible className="w-full AccordionRoot">
+        {FAQList.map(({ question, answer, value }: FAQProps) => (
+          <AccordionItem key={value} value={value}>
+            <AccordionTrigger className="text-left">{question}</AccordionTrigger>
+            <AccordionContent>{answer}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      <h3 className="font-medium mt-4">
+        Still have questions?{" "}
+        <a
+          href="mailto:hello@neuronx.co"
+          className="text-primary transition-all border-primary hover:border-b-2"
+        >
+          Contact us
+        </a>
+      </h3>
     </section>
   );
-}
+};
