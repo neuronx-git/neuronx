@@ -25,7 +25,7 @@ export const Sponsors = () => {
         {sponsors.map(({ icon, name }: SponsorProps) => (
           <div
             key={name}
-            className="flex items-center gap-1 text-muted-foreground/60"
+            className="flex items-center gap-1 text-muted-foreground"
           >
             <span>{icon}</span>
             <h3 className="text-xl font-bold">{name}</h3>
