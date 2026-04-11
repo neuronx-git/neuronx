@@ -65,7 +65,7 @@ const phase2Steps: StepProps[] = [
 
 export const HowItWorks = () => {
   return (
-    <section id="howItWorks" className="container text-center py-24 sm:py-32">
+    <section id="howItWorks" className="container text-center py-16 sm:py-20">
       <h2 className="text-3xl md:text-4xl font-bold">
         How{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">

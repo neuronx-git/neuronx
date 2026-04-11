@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import {
   Phone,
   BarChart3,
@@ -64,9 +65,9 @@ const modules = [
 
 export const ProductModules = () => {
   return (
-    <section id="features" className="py-24 sm:py-32">
+    <section id="features" className="py-16 sm:py-20">
       <div className="container">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <ScrollReveal className="text-center mb-16 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             Built for immigration.{" "}
             <span className="gradient-text">Every module.</span>
@@ -75,10 +76,11 @@ export const ProductModules = () => {
             Purpose-built modules for the immigration consulting lifecycle —
             not generic CRM features with immigration labels.
           </p>
-        </div>
+        </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {modules.map((mod) => (
+            <StaggerItem key={mod.title}>
             <Card
               key={mod.title}
               className="border-border bg-card hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1 group"
@@ -104,8 +106,9 @@ export const ProductModules = () => {
                 </p>
               </CardContent>
             </Card>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );

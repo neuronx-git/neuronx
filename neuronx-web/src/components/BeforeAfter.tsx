@@ -20,7 +20,7 @@ const afterItems = [
 
 export const BeforeAfter = () => {
   return (
-    <section className="bg-muted/50 py-24 sm:py-32">
+    <section className="bg-muted/50 py-16 sm:py-20">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">

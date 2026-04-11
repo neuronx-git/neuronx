@@ -25,7 +25,7 @@ const Cell = ({ value }: { value: boolean }) => (
 
 export const Differentiation = () => {
   return (
-    <section id="compare" className="py-24 sm:py-32">
+    <section id="compare" className="py-16 sm:py-20">
       <div className="container">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">

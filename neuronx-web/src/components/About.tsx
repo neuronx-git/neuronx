@@ -2,7 +2,7 @@ import { Statistics } from "./Statistics";
 
 export const About = () => {
   return (
-    <section id="about" className="container py-24 sm:py-32">
+    <section id="about" className="container py-12 sm:py-16">
       <div className="bg-muted/50 border rounded-lg py-12">
         <div className="px-6 flex flex-col-reverse md:flex-row gap-8 md:gap-12">
           <div className="flex flex-col md:flex-row gap-6 flex-shrink-0">

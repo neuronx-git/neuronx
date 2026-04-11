@@ -31,7 +31,7 @@ const roadmapItems = [
 
 export const Roadmap = () => {
   return (
-    <section id="roadmap" className="dark-section py-24 sm:py-32">
+    <section id="roadmap" className="bg-[#0F172A] text-white py-16 sm:py-20">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">

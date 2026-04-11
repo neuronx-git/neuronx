@@ -1,5 +1,6 @@
 import { Card, CardContent } from "./ui/card";
 import { Clock, TrendingDown, FileQuestion, Eye } from "lucide-react";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 
 const painPoints = [
   {
@@ -28,7 +29,7 @@ export const Problem = () => {
   return (
     <section id="problem" className="py-16 sm:py-24">
       <div className="container">
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <ScrollReveal className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             Most immigration firms don't lose leads — they lose{" "}
             <span className="gradient-text">
@@ -40,11 +41,11 @@ export const Problem = () => {
             quality is unclear, consultations start without context, and case
             processing becomes manual and inconsistent.
           </p>
-        </div>
+        </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {painPoints.map((point) => (
-            <Card
+            <StaggerItem key={point.stat}><Card
               key={point.stat}
               className="border-border bg-card hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1"
             >
@@ -57,9 +58,9 @@ export const Problem = () => {
                   {point.label}
                 </p>
               </CardContent>
-            </Card>
+            </Card></StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );

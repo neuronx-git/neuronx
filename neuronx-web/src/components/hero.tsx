@@ -15,7 +15,7 @@ const pipelineStages = [
   { label: "Booked", detail: "Auto booking + reminders", phase: 1 },
   { label: "Briefed", detail: "Consultation prep delivered", phase: 1 },
   { label: "Case Started", detail: "Onboarding + doc collection", phase: 2 },
-  { label: "Form Prep", detail: "SQR + IRCC form auto-fill", phase: 2 },
+  { label: "Form Prep", detail: "Smart intake + IRCC forms", phase: 2 },
   { label: "Submitted", detail: "IRCC submission + tracking", phase: 2 },
   { label: "Decision", detail: "Outcome + next steps", phase: 2 },
 ];
