@@ -1,0 +1,58 @@
+# NeuronX Multi-Tenant Configuration
+# Each tenant = one immigration consulting firm
+# Add a new YAML block per client → push → form automatically available at /form/{slug}/onboarding
+
+tenants:
+  vmc:
+    name: "Visa Master Canada"
+    slug: "vmc"
+    ghl_location_id: "FlRL82M0D6nclmKT7eXH"
+    typebot_viewer_url: "https://viewer-production-366c.up.railway.app"
+    branding:
+      primary: "#1E3A5F"       # VMC Navy
+      accent: "#E8380D"        # VMC Red
+      background: "#F8FAFC"    # Soft slate
+      text_on_primary: "#FFFFFF"
+      text_on_accent: "#FFFFFF"
+      input_border: "#E2E8F0"
+      input_focus: "#1E3A5F"
+      font: "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    bot_name: "VMC Immigration Assistant"
+    bot_status: "Online"
+    avatar_url: "/static/avatars/vmc.png"
+    favicon_url: "/static/favicon.png"
+    forms:
+      onboarding:
+        typebot_id: "vmc-onboarding"
+        title: "VMC Immigration Assessment"
+        description: "Complete your immigration assessment with Visa Master Canada."
+      # consultation-prep:
+      #   typebot_id: "vmc-consultation-prep"
+      #   title: "Pre-Consultation Questionnaire"
+      # satisfaction:
+      #   typebot_id: "vmc-satisfaction"
+      #   title: "Client Feedback"
+
+  # Example: Adding a second client
+  # acme-immigration:
+  #   name: "Acme Immigration Services"
+  #   slug: "acme-immigration"
+  #   ghl_location_id: "NEW_LOCATION_ID"
+  #   typebot_viewer_url: "https://viewer-production-366c.up.railway.app"
+  #   branding:
+  #     primary: "#2563EB"
+  #     accent: "#10B981"
+  #     background: "#F8FAFC"
+  #     text_on_primary: "#FFFFFF"
+  #     text_on_accent: "#FFFFFF"
+  #     input_border: "#E2E8F0"
+  #     input_focus: "#2563EB"
+  #     font: "Inter, -apple-system, sans-serif"
+  #   bot_name: "Acme Assistant"
+  #   bot_status: "Online"
+  #   avatar_url: "/static/avatars/acme.png"
+  #   favicon_url: "/static/favicon.png"
+  #   forms:
+  #     onboarding:
+  #       typebot_id: "acme-onboarding"
+  #       title: "Immigration Assessment"
