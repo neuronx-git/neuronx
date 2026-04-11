@@ -7,6 +7,7 @@ import { Hero } from "./components/Hero";
 import { HowItWorks } from "./components/HowItWorks";
 import { Navbar } from "./components/Navbar";
 import { Pricing } from "./components/Pricing";
+import { Problem } from "./components/Problem";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { Services } from "./components/Services";
 import { Sponsors } from "./components/Sponsors";
@@ -20,6 +21,7 @@ function App() {
       <Navbar />
       <Hero />
       <Sponsors />
+      <Problem />
       <About />
       <HowItWorks />
       <Services />

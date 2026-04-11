@@ -5,28 +5,35 @@ export const About = () => {
     <section id="about" className="container py-24 sm:py-32">
       <div className="bg-muted/50 border rounded-lg py-12">
         <div className="px-6 flex flex-col-reverse md:flex-row gap-8 md:gap-12">
-          <div className="w-[300px] flex-shrink-0 bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-lg flex items-center justify-center p-8">
-            <div className="text-center">
-              <div className="text-5xl font-extrabold text-[#E8380D] mb-2">NX</div>
-              <div className="text-white text-sm font-medium">AI Sales OS</div>
-              <div className="text-slate-400 text-xs mt-1">for Immigration</div>
+          <div className="flex flex-col md:flex-row gap-6 flex-shrink-0">
+            <img
+              src="/team/sanjay.jpg"
+              alt="Sanjay Singh Kumar, RCIC"
+              className="w-32 h-32 rounded-xl object-cover object-top"
+            />
+            <div className="space-y-2">
+              <div className="text-sm font-mono text-primary">R705959</div>
+              <div className="text-lg font-bold">Sanjay Singh Kumar</div>
+              <div className="text-sm text-muted-foreground">Licensed RCIC</div>
+              <div className="text-sm text-muted-foreground">5,000+ cases processed</div>
+              <div className="text-sm text-muted-foreground">5.0 Google Rating</div>
             </div>
           </div>
           <div className="flex flex-col justify-between">
             <div className="pb-6">
               <h2 className="text-3xl md:text-4xl font-bold">
                 <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-                  Why{" "}
+                  Built by an RCIC{" "}
                 </span>
-                NeuronX Exists
+                who processed 5,000+ cases
               </h2>
               <p className="text-xl text-muted-foreground mt-4">
-                Immigration consulting is a high-ticket, trust-dependent business
-                where firms spend thousands on lead generation — then lose prospects
-                to slow follow-up, inconsistent assessments, and unprepared
-                consultations. NeuronX fixes the entire pre-retention funnel with AI.
-                From the moment a prospect inquires to the moment they sign a
-                retainer, every step is automated, measured, and optimized.
+                Most software companies build immigration tools by reading IRCC
+                documentation. We built NeuronX from inside a firm that has filed
+                5,000+ applications, maintained a 5.0 Google rating, and knows
+                exactly where the process breaks — because we lived it. Paired
+                with Big Five consulting expertise in product and sales operations
+                to build the platform that should have existed a decade ago.
               </p>
             </div>
 

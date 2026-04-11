@@ -8,24 +8,18 @@ export const Hero = () => {
       <div className="text-center lg:text-start space-y-6">
         <main className="text-5xl md:text-6xl font-bold">
           <h1 className="inline">
-            From first inquiry to{" "}
+            Your next client just called.{" "}
             <span className="inline bg-gradient-to-r from-[#E8380D] to-[#F59E0B] text-transparent bg-clip-text">
-              final decision
+              You missed it.
             </span>
           </h1>
-          {" — "}
-          <h2 className="inline">
-            <span className="inline bg-gradient-to-r from-[#3B82F6] via-[#6366F1] to-[#8B5CF6] text-transparent bg-clip-text">
-              fully automated.
-            </span>
-          </h2>
         </main>
 
         <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
-          The AI operating system that turns immigration inquiries into
-          retained clients — then manages every case from document collection
-          to IRCC submission. Intake, scoring, briefings, and case processing
-          in one platform. Built for Canadian RCIC firms.
+          Immigration firms lose 60% of qualified leads to slow follow-up.
+          NeuronX calls every inquiry within 5 minutes, scores their readiness,
+          and books consultations automatically — so your RCICs walk in prepared,
+          not guessing.
         </p>
 
         <div className="space-y-4 md:space-y-0 md:space-x-4">
@@ -34,7 +28,7 @@ export const Hero = () => {
             target="_blank"
             rel="noreferrer noopener"
           >
-            <Button className="w-full md:w-1/3">Book a Demo</Button>
+            <Button className="w-full md:w-1/3">Book a Free Demo</Button>
           </a>
 
           <a
