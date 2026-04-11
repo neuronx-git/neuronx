@@ -158,11 +158,18 @@ Do NOT use `${{Postgres.DATABASE_URL}}`
 **Root Cause**: The groups field is a full replacement, not a merge. Sending 1 group deletes the other 15.
 **Prevention**: Before PATCHing groups, GET the full typebot, modify the specific group in the full array, then PATCH the complete array.
 
-### Typebot Viewer Blank Page (Railway)
-**Problem**: Viewer shows blank page even though API returns correct data
-**Symptoms**: `<typebot-standard>` element exists but has no attributes, no shadow root, web component JS not loading
-**Root Cause**: Railway viewer service may need redeploy or service restart
-**Verification**: Test via API: `POST /api/v1/sendMessage` with `{"startParams":{"typebot":"vmc-onboarding"}}` — if messages return, data is fine
+### Typebot Viewer Blank Page (Railway) — SOLVED
+**Problem**: Self-hosted Typebot viewer (Railway) shows blank page. CDN embed script throws cookie domain errors.
+**Root Cause (1)**: Railway viewer's React SSR fails to hydrate `<typebot-standard>` web component — `customElements.get('typebot-standard')` returns undefined
+**Root Cause (2)**: CDN embed script (`@typebot.io/js`) hardcodes `typebot.com` cookie domain, throws `CookieStore` error on non-typebot.com hosts
+**Solution**: Custom lightweight renderer at `/static/vmc-onboarding.html` that calls the viewer's sendMessage API directly
+- Uses `POST /api/v1/sendMessage` with `startParams` and `sessionId` tracking
+- Renders text bubbles, images, choice buttons, text/email inputs
+- VMC-branded chat UI (navy header, avatar, animated messages)
+- Hosted on NeuronX API (Railway auto-deploys)
+**Verification**: `python3 -c "import requests; r=requests.post('https://viewer-production-366c.up.railway.app/api/v1/sendMessage',json={'startParams':{'typebot':'vmc-onboarding'}}); print(len(r.json()['messages']),'messages')"` → should return 3 messages
+**Live URL**: `https://neuronx-production-62f9.up.railway.app/static/vmc-onboarding.html`
+**Form Backup**: `neuronx-api/config/typebot_templates/vmc_onboarding_branching.json` (16 groups, 30 vars, 23 edges)
 
 ### Chrome Extension Client Search
 **Problem**: popup.js was calling wrong endpoint (POST /documents/checklist) with hardcoded demo clients
