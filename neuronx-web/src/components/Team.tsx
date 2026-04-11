@@ -24,16 +24,6 @@ interface SociaNetworkslProps {
 
 const teamList: TeamProps[] = [
   {
-    imageUrl: "/team/ranjan.jpg",
-    name: "Ranjan Singh",
-    position: "Co-Founder & Chief Product Officer",
-    description:
-      "Former Big Five consulting leader with deep expertise in product management, sales operations, and technology transformation. Built and scaled enterprise software products used by Fortune 500 companies. Now applying that discipline to immigration consulting — because every firm deserves enterprise-grade tools without the enterprise price tag.",
-    socialNetworks: [
-      { name: "Linkedin", url: "https://www.linkedin.com/in/ranjansingh/" },
-    ],
-  },
-  {
     imageUrl: "/team/sanjay.jpg",
     name: "Sanjay Singh Kumar",
     position: "Founder & CEO",
@@ -41,6 +31,16 @@ const teamList: TeamProps[] = [
       "Licensed RCIC (R705959) and founder of Visa Master Canada — a 20-person immigration firm with 5,000+ clients served and a perfect 5.0 Google rating. Seven years of hands-on immigration consulting across Express Entry, LMIA, Spousal Sponsorship, and complex refusal cases. The domain expert who ensures every NeuronX feature solves a real problem that RCICs face daily.",
     socialNetworks: [
       { name: "Linkedin", url: "https://www.linkedin.com/in/sanjaysinghkumar/" },
+    ],
+  },
+  {
+    imageUrl: "/team/ranjan.jpg",
+    name: "Ranjan Singh",
+    position: "Co-Founder & Chief Product Officer",
+    description:
+      "Former Big Five consulting leader with deep expertise in product management, sales operations, and technology transformation. Built and scaled enterprise software products used by Fortune 500 companies. Now applying that discipline to immigration consulting — because every firm deserves enterprise-grade tools without the enterprise price tag.",
+    socialNetworks: [
+      { name: "Linkedin", url: "https://www.linkedin.com/in/ranjansingh/" },
     ],
   },
 ];

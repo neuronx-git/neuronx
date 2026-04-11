@@ -1,3 +1,4 @@
+import { About } from "./components/About";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { Credibility } from "./components/Credibility";
@@ -30,6 +31,7 @@ function App() {
       <ProductModules />
       <Roadmap />
       <Pricing />
+      <About />
       <Team />
       <FAQ />
       <Cta />

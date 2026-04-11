@@ -20,13 +20,13 @@ const afterItems = [
 
 export const BeforeAfter = () => {
   return (
-    <section className="dark-section py-24 sm:py-32">
+    <section className="bg-muted/50 py-24 sm:py-32">
       <div className="container">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             The transformation
           </h2>
-          <p className="mt-4 text-lg text-slate-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             What changes when your firm runs on structured workflows instead of
             manual processes.
           </p>
@@ -41,7 +41,7 @@ export const BeforeAfter = () => {
               {beforeItems.map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <span className="text-red-400 mt-0.5">-</span>
-                  <span className="text-slate-300 text-sm">{item}</span>
+                  <span className="text-muted-foreground text-sm">{item}</span>
                 </div>
               ))}
             </CardContent>
@@ -55,7 +55,7 @@ export const BeforeAfter = () => {
               {afterItems.map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <span className="text-[#4F46E5] mt-0.5">+</span>
-                  <span className="text-slate-300 text-sm">{item}</span>
+                  <span className="text-muted-foreground text-sm">{item}</span>
                 </div>
               ))}
             </CardContent>
@@ -64,29 +64,29 @@ export const BeforeAfter = () => {
 
         {/* Briefing Preview */}
         <div className="mt-16 max-w-lg mx-auto">
-          <Card className="bg-white/5 border-white/10 p-6">
-            <div className="text-xs text-slate-500 mb-3 font-mono">AUTO-GENERATED BRIEFING</div>
-            <div className="space-y-3 text-sm text-slate-300">
+          <Card className="bg-card border-border p-6">
+            <div className="text-xs text-muted-foreground mb-3 font-mono">AUTO-GENERATED BRIEFING</div>
+            <div className="space-y-3 text-sm text-muted-foreground">
               <div className="flex justify-between">
-                <span className="text-slate-400">Contact</span>
-                <span className="text-white font-medium">Priya Sharma</span>
+                <span className="text-muted-foreground">Contact</span>
+                <span className="text-foreground font-medium">Priya Sharma</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Program</span>
-                <span className="text-white font-medium">Express Entry</span>
+                <span className="text-muted-foreground">Program</span>
+                <span className="text-foreground font-medium">Express Entry</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Score</span>
+                <span className="text-muted-foreground">Score</span>
                 <span className="text-[#4F46E5] font-bold">87/100 — Ready</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Timeline</span>
-                <span className="text-white">Near-term (1-3 months)</span>
+                <span className="text-muted-foreground">Timeline</span>
+                <span className="text-foreground">Near-term (1-3 months)</span>
               </div>
-              <hr className="border-white/10" />
+              <hr className="border-border" />
               <div>
-                <span className="text-slate-400 text-xs">TALKING POINTS</span>
-                <ul className="mt-1 text-xs text-slate-300 space-y-1">
+                <span className="text-muted-foreground text-xs">TALKING POINTS</span>
+                <ul className="mt-1 text-xs text-muted-foreground space-y-1">
                   <li>- Discuss CRS score calculation</li>
                   <li>- Review education credential assessment</li>
                   <li>- Confirm language test scores</li>
