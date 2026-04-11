@@ -62,34 +62,36 @@ export const BeforeAfter = () => {
           </Card>
         </div>
 
-        {/* Briefing Preview */}
-        <div className="mt-16 max-w-lg mx-auto">
-          <Card className="bg-card border-border p-6">
-            <div className="text-xs text-muted-foreground mb-3 font-mono">AUTO-GENERATED BRIEFING</div>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Contact</span>
-                <span className="text-foreground font-medium">Priya Sharma</span>
+        {/* Briefing Preview — spans full width of both cards above */}
+        <div className="mt-8 max-w-4xl mx-auto">
+          <Card className="bg-card border-border p-6 md:p-8">
+            <div className="text-xs text-muted-foreground mb-4 font-mono tracking-wider">AUTO-GENERATED CONSULTATION BRIEFING</div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Contact</span>
+                  <span className="text-foreground font-medium">Priya Sharma</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Program</span>
+                  <span className="text-foreground font-medium">Express Entry</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Score</span>
+                  <span className="text-[#4F46E5] font-bold">87/100 — Ready</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Timeline</span>
+                  <span className="text-foreground">Near-term (1-3 months)</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Program</span>
-                <span className="text-foreground font-medium">Express Entry</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Score</span>
-                <span className="text-[#4F46E5] font-bold">87/100 — Ready</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Timeline</span>
-                <span className="text-foreground">Near-term (1-3 months)</span>
-              </div>
-              <hr className="border-border" />
-              <div>
-                <span className="text-muted-foreground text-xs">TALKING POINTS</span>
-                <ul className="mt-1 text-xs text-muted-foreground space-y-1">
-                  <li>- Discuss CRS score calculation</li>
-                  <li>- Review education credential assessment</li>
-                  <li>- Confirm language test scores</li>
+              <div className="border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-6">
+                <span className="text-muted-foreground text-xs font-mono tracking-wider">TALKING POINTS</span>
+                <ul className="mt-2 text-sm text-muted-foreground space-y-2">
+                  <li className="flex items-start gap-2"><span className="text-[#4F46E5]">-</span> Discuss CRS score calculation and estimated points</li>
+                  <li className="flex items-start gap-2"><span className="text-[#4F46E5]">-</span> Review education credential assessment status</li>
+                  <li className="flex items-start gap-2"><span className="text-[#4F46E5]">-</span> Confirm language test scores (IELTS/CELPIP)</li>
+                  <li className="flex items-start gap-2"><span className="text-[#4F46E5]">-</span> Discuss settlement funds requirements</li>
                 </ul>
               </div>
             </div>

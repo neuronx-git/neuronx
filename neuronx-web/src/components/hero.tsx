@@ -10,13 +10,13 @@ const proofChips = [
 ];
 
 const pipelineStages = [
-  { label: "Inquiry", detail: "Form capture + webhook", phase: 1 },
-  { label: "Scored", detail: "R1-R5 readiness (0-100)", phase: 1 },
+  { label: "Inquiry", detail: "Automated form capture", phase: 1 },
+  { label: "Scored", detail: "0-100 readiness scoring", phase: 1 },
   { label: "Booked", detail: "Auto booking + reminders", phase: 1 },
-  { label: "Briefed", detail: "Consultation prep delivered", phase: 1 },
+  { label: "Briefed", detail: "Auto-generated prep docs", phase: 1 },
   { label: "Case Started", detail: "Onboarding + doc collection", phase: 2 },
-  { label: "Form Prep", detail: "Smart intake + IRCC forms", phase: 2 },
-  { label: "Submitted", detail: "IRCC submission + tracking", phase: 2 },
+  { label: "Form Prep", detail: "Automated IRCC form filling", phase: 2 },
+  { label: "Submitted", detail: "Submission + tracking", phase: 2 },
   { label: "Decision", detail: "Outcome + next steps", phase: 2 },
 ];
 

@@ -36,7 +36,7 @@ export const HeroCards = () => {
       {/* Speed metric */}
       <Card className="absolute right-[20px] top-4 w-80 flex flex-col justify-center items-center drop-shadow-xl shadow-black/10 dark:shadow-white/10">
         <CardHeader className="mt-8 flex justify-center items-center pb-2">
-          <div className="absolute -top-12 rounded-full w-24 h-24 bg-gradient-to-br from-[#E8380D] to-[#F59E0B] flex items-center justify-center">
+          <div className="absolute -top-12 rounded-full w-24 h-24 bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center">
             <span className="text-white text-2xl font-bold">&lt;5m</span>
           </div>
           <CardTitle className="text-center">Speed to First Contact</CardTitle>
