@@ -31,13 +31,13 @@ const roadmapItems = [
 
 export const Roadmap = () => {
   return (
-    <section id="roadmap" className="bg-[#1E293B] text-white py-16 sm:py-20">
+    <section id="roadmap" className="bg-[#F1F5F9] py-16 sm:py-20">
       <div className="container">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             What's next
           </h2>
-          <p className="mt-4 text-lg text-slate-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             NeuronX is actively expanding. These modules are in development and
             will be available to all plans.
           </p>
@@ -47,20 +47,20 @@ export const Roadmap = () => {
           {roadmapItems.map((item) => (
             <Card
               key={item.title}
-              className="bg-white/5 border-white/10 hover:border-[#7C3AED]/30 transition-all duration-300"
+              className="bg-white border-border hover:border-[#7C3AED]/30 hover:shadow-lg transition-all duration-300"
             >
               <CardContent className="pt-6 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="text-slate-400">{item.icon}</div>
+                  <div className="text-muted-foreground">{item.icon}</div>
                   <Badge
                     variant="outline"
-                    className="text-xs border-[#7C3AED]/40 text-[#A78BFA] bg-[#7C3AED]/10"
+                    className="text-xs border-[#7C3AED]/30 text-[#7C3AED] bg-[#7C3AED]/5"
                   >
                     {item.status}
                   </Badge>
                 </div>
-                <h3 className="text-white font-semibold">{item.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-foreground font-semibold">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
               </CardContent>
