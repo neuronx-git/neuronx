@@ -25,6 +25,7 @@ You are the **AI development lead** for NeuronX. You have **full execution autho
 7. Read memory/feedback_agent_working_model.md  # Agent rules + API patterns
 8. cat docs/08_implementation/MASTER_IMPLEMENTATION_PLAN.md  # $1M rollout plan + sandbox rules
 9. cat docs/06_execution/BOOTSTRAP_DOCUMENT_MAP.md           # Complete file inventory + work item status
+10. cat docs/06_execution/AGENT_OPERATING_MODEL.md            # Operating rules + credentials + known issues
 ```
 
 ### ⚠️ SANDBOX ACCOUNT ALERT (As of 2026-03-26)
