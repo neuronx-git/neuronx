@@ -262,10 +262,17 @@ function showFillNotification(filled, total, pageType) {
     ? `${icon} NeuronX: Filled ${filled} of ${total} fields on this ${pageType.replace(/_/g, ' ')} page. Green = exact match, Yellow = fuzzy match. Please review before submitting.`
     : `${icon} NeuronX: No matching fields found on this page. Try a different IRCC page.`;
 
-  banner.innerHTML = `
-    <span style="font-size:13px;">${message}</span>
-    <button onclick="this.parentElement.remove()" style="background:none; border:none; color:inherit; cursor:pointer; font-size:18px; margin-left:12px;">×</button>
-  `;
+  const span = document.createElement('span');
+  span.style.fontSize = '13px';
+  span.textContent = message;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'background:none; border:none; color:inherit; cursor:pointer; font-size:18px; margin-left:12px;';
+  closeBtn.textContent = '\u00d7';
+  closeBtn.addEventListener('click', () => banner.remove());
+
+  banner.appendChild(span);
+  banner.appendChild(closeBtn);
 
   document.body.prepend(banner);
 

@@ -76,10 +76,29 @@
 
 | Service | URL | Status |
 |---------|-----|--------|
-| NeuronX API | neuronx-production-62f9.up.railway.app | ✅ 29 endpoints, 59 tests |
+| NeuronX API | neuronx-production-62f9.up.railway.app | ✅ 33+ endpoints, 78 tests |
 | PostgreSQL | postgres.railway.internal | ✅ 6 tables, connected |
 | Metabase | metabase-production-1846.up.railway.app | ✅ 5 dashboards, demo data seeded |
+| Typebot Builder | builder-production-6784.up.railway.app | ✅ Form editor (16 groups, 30 vars) |
+| Typebot Viewer | viewer-production-366c.up.railway.app | ⚠️ Blank page — web component not loading (API works, data OK) |
+
+## Chrome Extension — BUILT (needs icons + deploy)
+
+| File | Status |
+|------|--------|
+| manifest.json | ✅ Valid v3 |
+| popup.html/js | ✅ Search fixed (was hardcoded) |
+| content.js | ✅ XSS fixed (was innerHTML) |
+| background.js | ✅ API routing |
+| icons/ | ✅ 3 PNGs generated |
+
+## AUDIT COMPLETED (2026-04-11)
+
+- **Product Audit**: docs/06_execution/PRODUCT_AUDIT_2026_04_11.md (overall 7.1/10)
+- **Competitor Analysis**: docs/06_execution/COMPETITOR_ANALYSIS_2026_04_11.md (6 competitors analyzed)
+- **Form Migration Strategy**: docs/06_execution/TYPEBOT_MIGRATION_STRATEGY.md
+- **Improvement Backlog**: 24 items across P0-P3 priorities
 
 ## NOT BUILT
 
-Additional forms (onboarding with conditional logic, outcome, satisfaction), production GHL account, Documenso deployment, Next.js portal, ERPNext.
+Production GHL account ($97 upgrade), Documenso deployment, Next.js portal, daily briefing endpoint, operator work queue.

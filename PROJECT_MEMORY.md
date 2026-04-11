@@ -360,11 +360,55 @@ Note: `README.md` still states "Build Status: Not started". Treat this as outdat
 - Railway services: 10 (NeuronX project: 3, Typebot project: 7)
 
 ### What's Next
-1. **Upgrade GHL to $97 plan** → unlocks email/SMS/phone
-2. **Install Chrome extension** → test on IRCC pages
-3. **E2E UAT** → full lifecycle test
-4. **Detailed product audit** → gaps, improvements, competitor analysis
-5. **Take GHL Snapshot v3**
+1. **Push code to GitHub** → syncs Railway with bug fixes
+2. **Fix Typebot viewer** → redeploy Railway viewer service
+3. **Upgrade GHL to $97 plan** → unlocks email/SMS/phone
+4. **Set GHL_ACCESS_TOKEN on Railway** → fixes briefing + client search
+5. **E2E UAT** → full lifecycle test
+6. **Take GHL Snapshot v3**
+
+---
+
+## Session Summary — 2026-04-11 (Comprehensive Multi-Round Audit)
+
+### Completed This Session
+
+| Item | What Was Done |
+|------|--------------|
+| Product Audit | Full E2E audit: PRD vs implementation, 7 goals checked, 20 capabilities rated, 24 workflows verified, API endpoints tested, Chrome extension audited. Overall: 7.1/10 |
+| Competitor Analysis | Deep research on VisaFlo, Visto AI, CaseEasy, Docketwise, Filevine, INSZoom. Competitive positioning matrix, pricing comparison, 10 NeuronX differentiators identified |
+| Chrome Extension Fixes | Fixed broken client search (was hardcoded demo data, now calls /clients/search). Fixed XSS vulnerability (innerHTML → textContent). Generated 3 missing icon PNGs |
+| Copy-Paste Endpoint Fix | Removed hardcoded firm defaults in /clients/{id}/copy-paste, now loads from ircc_field_mappings.yaml config |
+| Typebot Welcome Update | Replaced SpongeBob GIF with professional UN Migration GIF. Updated welcome text to professional onboarding assistant copy |
+| Typebot Form Rebuild | CRITICAL: PATCH with partial groups array destroyed 15/16 groups. Rebuilt full 16-group form via API. All data verified working via sendMessage API |
+| Form Migration Strategy | Documented GHL→Typebot migration plan with pros/cons, 3-phase implementation, customizable elements checklist |
+| Improvement Backlog | 24-item prioritized backlog (P0-P3) with owners and effort estimates |
+| Documentation Updates | Updated AGENT_OPERATING_MODEL.md (new known issues), CURRENT_STATE.md, PROJECT_MEMORY.md |
+
+### Key Findings
+
+1. **NeuronX's unique position**: Only product that owns the pre-retention funnel. All 6 competitors focus on post-retainer case management. NeuronX and case management tools are complementary.
+2. **Biggest gap vs competitors**: IRCC form auto-fill (Chrome ext exists but needs polish). CaseEasy, Visto, Docketwise all have mature auto-fill.
+3. **Railway deployment out of sync**: 3 client endpoints (data-sheet, validate, copy-paste) exist in codebase but not deployed. Need git push.
+4. **GHL_ACCESS_TOKEN missing on Railway**: Causes /briefing/generate and /clients/search to fail. Must add env var.
+5. **Typebot viewer blank page**: Web component not initializing in Railway-hosted viewer. API works fine. Needs service redeploy.
+6. **Typebot PATCH lesson learned**: groups array is FULL REPLACEMENT, not merge. Must include ALL groups when PATCHing.
+
+### Key Decisions
+
+- Typebot PATCH must always include ALL groups (not partial) — new permanent rule
+- Competitor positioning: "NeuronX gets you clients. Others help you serve them."
+- CaseEasy is closest Canadian competitor ($99/mo, 500+ firms, AI eligibility scoring)
+- NeuronX pricing ($299-$1,199) justified by revenue generation vs cost center positioning
+
+### Stats (Updated)
+- Tests: 78/78 passing
+- API endpoints: 33+
+- GHL workflows: 24 published
+- Typebot form: 16 groups, 30 variables, 23 edges, 8 program branches
+- Chrome extension: 6 files, 3 icons, manifest v3
+- Competitor analysis: 6 competitors researched
+- Audit docs: 3 new documents created
 
 ---
 

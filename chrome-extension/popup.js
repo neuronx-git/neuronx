@@ -49,23 +49,28 @@ async function searchClients() {
 
   showLoading(true);
   try {
-    const resp = await fetch(`${apiUrl}/documents/checklist`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ program_type: 'Express Entry', contact_id: 'search' }),
-    });
-
-    // For now, use GHL search via our API proxy
-    // In production, this calls GET /clients/search?q=query
+    const resp = await fetch(`${apiUrl}/clients/search?q=${encodeURIComponent(query)}`);
     const select = document.getElementById('client-select');
-    select.innerHTML = `<option value="demo-001">Priya Sharma — Express Entry</option>
-      <option value="demo-002">Ahmed Hassan — Spousal Sponsorship</option>
-      <option value="demo-003">Wei Chen — Work Permit</option>
-      <option value="demo-004">Maria Santos — Express Entry</option>
-      <option value="demo-006">Fatima Al-Rashid — Express Entry</option>
-      <option value="demo-009">Carlos Rivera — Spousal Sponsorship</option>`;
 
-    showStatus('info', `Found clients matching "${query}"`);
+    if (resp.ok) {
+      const data = await resp.json();
+      const clients = data.results || [];
+
+      if (clients.length === 0) {
+        select.innerHTML = '<option value="">No clients found</option>';
+        showStatus('info', `No clients matching "${query}"`);
+      } else {
+        select.innerHTML = clients.map(c => {
+          const program = (c.tags || []).find(t => !t.startsWith('nx:')) || '';
+          const label = `${c.name}${program ? ' — ' + program : ''}`;
+          return `<option value="${c.id}">${label}</option>`;
+        }).join('');
+        showStatus('info', `Found ${clients.length} client(s) matching "${query}"`);
+      }
+    } else {
+      select.innerHTML = '<option value="">Search unavailable</option>';
+      showStatus('error', 'Client search unavailable — check API connection');
+    }
   } catch (err) {
     showStatus('error', `Search failed: ${err.message}`);
   }

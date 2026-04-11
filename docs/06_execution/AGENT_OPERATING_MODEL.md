@@ -152,14 +152,31 @@ Do NOT use `${{Postgres.DATABASE_URL}}`
 **Problem**: Cannot create forms via API
 **Fix**: Build in GHL Form Builder UI, or use Typebot instead
 
+### Typebot PATCH Destroys Other Groups
+**Problem**: PATCH with `groups: [only_one_group]` replaces ALL groups, not just the one specified
+**Fix**: Always include ALL groups in the PATCH payload when updating any group. Never PATCH with a partial groups array.
+**Root Cause**: The groups field is a full replacement, not a merge. Sending 1 group deletes the other 15.
+**Prevention**: Before PATCHing groups, GET the full typebot, modify the specific group in the full array, then PATCH the complete array.
+
+### Typebot Viewer Blank Page (Railway)
+**Problem**: Viewer shows blank page even though API returns correct data
+**Symptoms**: `<typebot-standard>` element exists but has no attributes, no shadow root, web component JS not loading
+**Root Cause**: Railway viewer service may need redeploy or service restart
+**Verification**: Test via API: `POST /api/v1/sendMessage` with `{"startParams":{"typebot":"vmc-onboarding"}}` — if messages return, data is fine
+
+### Chrome Extension Client Search
+**Problem**: popup.js was calling wrong endpoint (POST /documents/checklist) with hardcoded demo clients
+**Fix**: Updated to call GET /clients/search?q=query. Applied 2026-04-11.
+
 ---
 
 ## WHAT TO DO IN THE NEXT SESSION
 
 Priority order:
-1. E2E product requirements audit (every feature vs original spec)
-2. Competitor analysis (VisaFlo, Visto, CaseEasy, Docketwise)
-3. Typebot form customization (GIF, avatar, branding)
-4. GHL → Typebot form migration strategy
-5. Chrome extension testing
-6. GHL upgrade + E2E UAT
+1. **Push code to GitHub** → syncs Railway with client endpoint fixes
+2. **Fix Typebot viewer** → redeploy Railway viewer service, check logs
+3. **Upgrade GHL** → $97 plan unlocks email/SMS/phone
+4. **Set GHL_ACCESS_TOKEN on Railway** → fixes /briefing/generate and /clients/search
+5. **Run E2E UAT** → full lifecycle test (form → call → booking → briefing)
+6. **Take Snapshot v3** → final Gold Build backup
+7. **Review improvement backlog** → docs/06_execution/PRODUCT_AUDIT_2026_04_11.md

@@ -1,133 +1,1562 @@
 {
-  "description": "World-class VMC onboarding form with program branching. Apply via PATCH to Typebot API when rate limit resets.",
-  "typebot_id": "cmnrdpdnq000004i8gtwapm4k",
-  "public_url": "https://typebot.com/vmc-onboarding",
-  "payload": {
-    "typebot": {
-      "variables": [
-        {"id": "v1", "name": "full_name", "isSessionVariable": false},
-        {"id": "v2", "name": "country_of_citizenship", "isSessionVariable": false},
-        {"id": "v3", "name": "passport_number", "isSessionVariable": false},
-        {"id": "v4", "name": "email", "isSessionVariable": false},
-        {"id": "v5", "name": "phone", "isSessionVariable": false},
-        {"id": "v6", "name": "program_interest", "isSessionVariable": false},
-        {"id": "v7", "name": "marital_status", "isSessionVariable": false},
-        {"id": "v8", "name": "has_dependents", "isSessionVariable": false},
-        {"id": "v9", "name": "criminal_history", "isSessionVariable": false},
-        {"id": "v10", "name": "previous_refusal", "isSessionVariable": false},
-        {"id": "v11", "name": "education_level", "isSessionVariable": false},
-        {"id": "v12", "name": "work_experience", "isSessionVariable": false},
-        {"id": "v13", "name": "language_test", "isSessionVariable": false},
-        {"id": "v14", "name": "sponsor_status", "isSessionVariable": false},
-        {"id": "v15", "name": "employer_name", "isSessionVariable": false}
-      ],
-      "groups": [
-        {"id": "g1", "title": "Welcome", "graphCoordinates": {"x": 250, "y": 0}, "blocks": [
-          {"id": "b1a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Welcome to Visa Master Canada! 👋"}]}]}},
-          {"id": "b1b", "type": "image", "content": {"url": "https://media1.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"}},
-          {"id": "b1c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "I'll help you complete your onboarding questionnaire. This takes about 10 minutes."}]}]}},
-          {"id": "b1d", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Ready to get started?"}]}]}},
-          {"id": "b1e", "type": "choice input", "items": [{"id": "start_yes", "outgoingEdgeId": "e_to_name", "content": "Let's go! 🚀"}]}
-        ]},
-        {"id": "g_name", "title": "Name", "graphCoordinates": {"x": 600, "y": 0}, "blocks": [
-          {"id": "b2a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "What is your full legal name? (as on passport)"}]}]}},
-          {"id": "b2b", "outgoingEdgeId": "e_to_personal", "type": "text input", "options": {"labels": {"placeholder": "e.g., Priya Sharma"}, "variableId": "v1"}}
-        ]},
-        {"id": "g2", "title": "Personal Info", "graphCoordinates": {"x": 950, "y": 0}, "blocks": [
-          {"id": "b2c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Nice to meet you, {{full_name}}! 😊"}]}]}},
-          {"id": "b3", "type": "text input", "options": {"labels": {"placeholder": "Country of citizenship"}, "variableId": "v2"}},
-          {"id": "b4", "type": "text input", "options": {"labels": {"placeholder": "Passport number"}, "variableId": "v3"}},
-          {"id": "b5", "type": "email input", "options": {"variableId": "v4"}},
-          {"id": "b6", "outgoingEdgeId": "e_to_program", "type": "text input", "options": {"labels": {"placeholder": "Phone number with country code"}, "variableId": "v5"}}
-        ]},
-        {"id": "g3", "title": "Program Selection", "graphCoordinates": {"x": 1300, "y": 0}, "blocks": [
-          {"id": "b7a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Great, {{full_name}}! Now the important question:"}]}]}},
-          {"id": "b7b", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "What immigration program are you applying for?"}]}]}},
-          {"id": "b8", "type": "choice input", "items": [
-            {"id": "i_ee", "outgoingEdgeId": "e_to_ee", "content": "Express Entry 🍁"},
-            {"id": "i_sp", "outgoingEdgeId": "e_to_sp", "content": "Spousal Sponsorship 💑"},
-            {"id": "i_wp", "outgoingEdgeId": "e_to_wp", "content": "Work Permit 💼"},
-            {"id": "i_other", "outgoingEdgeId": "e_to_family", "content": "Study / LMIA / Other 📚"}
-          ], "options": {"variableId": "v6", "isMultipleChoice": false}}
-        ]},
-        {"id": "g_ee", "title": "Express Entry Questions", "graphCoordinates": {"x": 1650, "y": -300}, "blocks": [
-          {"id": "bee1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Express Entry — great choice! A few program-specific questions:"}]}]}},
-          {"id": "bee2", "type": "choice input", "items": [
-            {"id": "edu1", "content": "High School"}, {"id": "edu2", "content": "Diploma (1-2 yrs)"},
-            {"id": "edu3", "content": "Bachelor's"}, {"id": "edu4", "content": "Master's"}, {"id": "edu5", "content": "PhD"}
-          ], "options": {"variableId": "v11"}},
-          {"id": "bee3", "type": "text input", "options": {"labels": {"placeholder": "Years of skilled work experience"}, "variableId": "v12"}},
-          {"id": "bee4", "outgoingEdgeId": "e_ee_fam", "type": "choice input", "items": [
-            {"id": "l1", "content": "IELTS General"}, {"id": "l2", "content": "CELPIP"},
-            {"id": "l3", "content": "TEF Canada"}, {"id": "l4", "content": "Not yet taken"}
-          ], "options": {"variableId": "v13"}}
-        ]},
-        {"id": "g_sp", "title": "Spousal Questions", "graphCoordinates": {"x": 1650, "y": 50}, "blocks": [
-          {"id": "bsp1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Spousal Sponsorship — questions about your sponsor:"}]}]}},
-          {"id": "bsp2", "type": "choice input", "items": [
-            {"id": "ss1", "content": "Canadian Citizen"}, {"id": "ss2", "content": "Permanent Resident"}
-          ], "options": {"variableId": "v14"}},
-          {"id": "bsp3", "outgoingEdgeId": "e_sp_fam", "type": "choice input", "items": [
-            {"id": "rt1", "content": "Married"}, {"id": "rt2", "content": "Common-Law (12+ months)"}, {"id": "rt3", "content": "Conjugal Partner"}
-          ], "options": {"variableId": "v7"}}
-        ]},
-        {"id": "g_wp", "title": "Work Permit Questions", "graphCoordinates": {"x": 1650, "y": 350}, "blocks": [
-          {"id": "bwp1", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Work Permit — tell me about your employment:"}]}]}},
-          {"id": "bwp2", "type": "text input", "options": {"labels": {"placeholder": "Canadian employer name"}, "variableId": "v15"}},
-          {"id": "bwp3", "outgoingEdgeId": "e_wp_fam", "type": "choice input", "items": [
-            {"id": "lm1", "content": "LMIA Approved"}, {"id": "lm2", "content": "LMIA Pending"},
-            {"id": "lm3", "content": "LMIA Exempt"}, {"id": "lm4", "content": "Not Sure"}
-          ], "options": {"variableId": "v12"}}
-        ]},
-        {"id": "g4", "title": "Family", "graphCoordinates": {"x": 2050, "y": 0}, "blocks": [
-          {"id": "b9a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Almost done, {{full_name}}! A few more questions:"}]}]}},
-          {"id": "b10", "type": "choice input", "items": [
-            {"id": "m1", "content": "Single"}, {"id": "m2", "content": "Married"},
-            {"id": "m3", "content": "Common-Law"}, {"id": "m4", "content": "Divorced"}, {"id": "m5", "content": "Widowed"}
-          ], "options": {"variableId": "v7"}},
-          {"id": "b11", "outgoingEdgeId": "e_to_bg", "type": "choice input", "items": [
-            {"id": "d1", "content": "Yes, I have dependent children"}, {"id": "d2", "content": "No dependents"}
-          ], "options": {"variableId": "v8"}}
-        ]},
-        {"id": "g5", "title": "Background", "graphCoordinates": {"x": 2400, "y": 0}, "blocks": [
-          {"id": "b12a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Last two questions — important for your application:"}]}]}},
-          {"id": "b13", "type": "choice input", "items": [
-            {"id": "c1", "content": "No criminal history ✅"}, {"id": "c2", "content": "Yes, I have a criminal record"}
-          ], "options": {"variableId": "v9"}},
-          {"id": "b14", "outgoingEdgeId": "e_to_done", "type": "choice input", "items": [
-            {"id": "r1", "content": "No previous refusals ✅"}, {"id": "r2", "content": "Yes, I have been refused"}
-          ], "options": {"variableId": "v10"}}
-        ]},
-        {"id": "g6", "title": "Complete", "graphCoordinates": {"x": 2750, "y": 0}, "blocks": [
-          {"id": "b15a", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Thank you, {{full_name}}! Your onboarding is complete. ✅"}]}]}},
-          {"id": "b15b", "type": "image", "content": {"url": "https://media0.giphy.com/media/l0amJzVHIAfl7jMDos/giphy.gif"}},
-          {"id": "b15c", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Your consultant will review your {{program_interest}} application and contact you within 2 business days."}]}]}},
-          {"id": "b15d", "type": "text", "content": {"richText": [{"type": "p", "children": [{"text": "Call (647) 931-5181 or email rcic@neuronx.co 🚀"}]}]}}
-        ]}
-      ],
-      "edges": [
-        {"id": "e_to_name", "from": {"blockId": "b1e", "itemId": "start_yes"}, "to": {"groupId": "g_name"}},
-        {"id": "e_to_personal", "from": {"blockId": "b2b"}, "to": {"groupId": "g2"}},
-        {"id": "e_to_program", "from": {"blockId": "b6"}, "to": {"groupId": "g3"}},
-        {"id": "e_to_ee", "from": {"blockId": "b8", "itemId": "i_ee"}, "to": {"groupId": "g_ee"}},
-        {"id": "e_to_sp", "from": {"blockId": "b8", "itemId": "i_sp"}, "to": {"groupId": "g_sp"}},
-        {"id": "e_to_wp", "from": {"blockId": "b8", "itemId": "i_wp"}, "to": {"groupId": "g_wp"}},
-        {"id": "e_to_family", "from": {"blockId": "b8", "itemId": "i_other"}, "to": {"groupId": "g4"}},
-        {"id": "e_ee_fam", "from": {"blockId": "bee4"}, "to": {"groupId": "g4"}},
-        {"id": "e_sp_fam", "from": {"blockId": "bsp3"}, "to": {"groupId": "g4"}},
-        {"id": "e_wp_fam", "from": {"blockId": "bwp3"}, "to": {"groupId": "g4"}},
-        {"id": "e_to_bg", "from": {"blockId": "b11"}, "to": {"groupId": "g5"}},
-        {"id": "e_to_done", "from": {"blockId": "b14"}, "to": {"groupId": "g6"}}
-      ],
-      "theme": {
-        "general": {"font": "Inter", "background": {"type": "Color", "content": "#F9FAFB"}},
-        "chat": {
-          "hostBubbles": {"backgroundColor": "#0F172A", "color": "#FFFFFF"},
-          "guestBubbles": {"backgroundColor": "#E8380D", "color": "#FFFFFF"},
-          "buttons": {"backgroundColor": "#E8380D", "color": "#FFFFFF"},
-          "inputs": {"backgroundColor": "#FFFFFF", "color": "#0F172A", "placeholderColor": "#9CA3AF"}
+  "version": "6.1",
+  "id": "cmnrfu934000334qxnlmsvw2u",
+  "name": "VMC Client Onboarding",
+  "events": [
+    {
+      "id": "oi6216vun0l85cjuaqvgsxst",
+      "outgoingEdgeId": "e_start",
+      "graphCoordinates": {
+        "x": 0,
+        "y": 0
+      },
+      "type": "start"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "title": "Welcome",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 0
+      },
+      "blocks": [
+        {
+          "id": "b1a",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Welcome to Visa Master Canada! "
+                  },
+                  {
+                    "text": "\ud83c\udde8\ud83c\udde6"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b1b",
+          "type": "image",
+          "content": {
+            "url": "https://media.giphy.com/media/dSdYuZWwJheDcqGFmE/giphy.gif"
+          }
+        },
+        {
+          "id": "b1c",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "I am your onboarding assistant. I will guide you through a few questions about your immigration goals so our RCIC team can prepare for your consultation."
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "This takes about 10 minutes. Your information is kept confidential and secure."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b1e",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "start_yes",
+              "outgoingEdgeId": "e_to_name",
+              "content": "Get Started \ud83d\ude80"
+            }
+          ]
         }
+      ]
+    },
+    {
+      "id": "g2",
+      "title": "Name",
+      "graphCoordinates": {
+        "x": 750,
+        "y": 0
+      },
+      "blocks": [
+        {
+          "id": "b2a",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "What is your full legal name? (as it appears on your passport)"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b2b",
+          "outgoingEdgeId": "e_to_personal",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "e.g. Priya Sharma"
+            },
+            "variableId": "v_full_name"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g3",
+      "title": "Personal Info",
+      "graphCoordinates": {
+        "x": 1250,
+        "y": 0
+      },
+      "blocks": [
+        {
+          "id": "b3a",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Great, {{full_name}}! Now some personal details."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b3b",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Country of citizenship"
+            },
+            "variableId": "v_country"
+          }
+        },
+        {
+          "id": "b3c",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Passport number"
+            },
+            "variableId": "v_passport"
+          }
+        },
+        {
+          "id": "b3d",
+          "type": "email input",
+          "options": {
+            "variableId": "v_email",
+            "labels": {
+              "placeholder": "your@email.com"
+            }
+          }
+        },
+        {
+          "id": "b3e",
+          "outgoingEdgeId": "e_to_program",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "+1 647-xxx-xxxx"
+            },
+            "variableId": "v_phone"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g4",
+      "title": "Program Selection",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 400
+      },
+      "blocks": [
+        {
+          "id": "b4a",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Which immigration program are you interested in?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b4b",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_ee",
+              "outgoingEdgeId": "e_to_ee",
+              "content": "Express Entry"
+            },
+            {
+              "id": "i_sp",
+              "outgoingEdgeId": "e_to_spousal",
+              "content": "Spousal Sponsorship"
+            },
+            {
+              "id": "i_wp",
+              "outgoingEdgeId": "e_to_work",
+              "content": "Work Permit"
+            },
+            {
+              "id": "i_st",
+              "outgoingEdgeId": "e_to_study",
+              "content": "Study Permit"
+            },
+            {
+              "id": "i_lm",
+              "outgoingEdgeId": "e_to_lmia",
+              "content": "LMIA"
+            },
+            {
+              "id": "i_pr",
+              "outgoingEdgeId": "e_to_pr",
+              "content": "PR Renewal"
+            },
+            {
+              "id": "i_cit",
+              "outgoingEdgeId": "e_to_citizen",
+              "content": "Citizenship"
+            },
+            {
+              "id": "i_vis",
+              "outgoingEdgeId": "e_to_visitor",
+              "content": "Visitor Visa"
+            }
+          ],
+          "options": {
+            "variableId": "v_program"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_ee",
+      "title": "Express Entry",
+      "graphCoordinates": {
+        "x": 750,
+        "y": 400
+      },
+      "blocks": [
+        {
+          "id": "b_ee1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Express Entry is one of the fastest pathways to Canadian PR. A few questions:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_ee2",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_ee_ed1",
+              "content": "High school or less"
+            },
+            {
+              "id": "i_ee_ed2",
+              "content": "Bachelor's degree"
+            },
+            {
+              "id": "i_ee_ed3",
+              "content": "Master's degree"
+            },
+            {
+              "id": "i_ee_ed4",
+              "content": "PhD or professional degree"
+            }
+          ],
+          "options": {
+            "variableId": "v_education"
+          }
+        },
+        {
+          "id": "b_ee3",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "e.g. 5 years"
+            },
+            "variableId": "v_work_exp"
+          }
+        },
+        {
+          "id": "b_ee4",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_ee_lt1",
+              "content": "IELTS"
+            },
+            {
+              "id": "i_ee_lt2",
+              "content": "CELPIP"
+            },
+            {
+              "id": "i_ee_lt3",
+              "content": "TEF/TCF (French)"
+            },
+            {
+              "id": "i_ee_lt4",
+              "content": "Not yet taken"
+            }
+          ],
+          "options": {
+            "variableId": "v_lang_test"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_spousal",
+      "title": "Spousal Sponsorship",
+      "graphCoordinates": {
+        "x": 1250,
+        "y": 400
+      },
+      "blocks": [
+        {
+          "id": "b_sp1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Spousal Sponsorship reunites families. Let me ask:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_sp2",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_sp1",
+              "content": "Canadian Citizen"
+            },
+            {
+              "id": "i_sp2",
+              "content": "Permanent Resident"
+            }
+          ],
+          "options": {
+            "variableId": "v_sponsor_status"
+          }
+        },
+        {
+          "id": "b_sp3",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_sp3",
+              "content": "Married"
+            },
+            {
+              "id": "i_sp4",
+              "content": "Common-law"
+            },
+            {
+              "id": "i_sp5",
+              "content": "Conjugal"
+            }
+          ],
+          "options": {
+            "variableId": "v_marital"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_work",
+      "title": "Work Permit",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 800
+      },
+      "blocks": [
+        {
+          "id": "b_wp1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Work Permit \u2014 let's get some details:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_wp2",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Employer name"
+            },
+            "variableId": "v_employer"
+          }
+        },
+        {
+          "id": "b_wp3",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_wp1",
+              "content": "LMIA approved"
+            },
+            {
+              "id": "i_wp2",
+              "content": "LMIA pending"
+            },
+            {
+              "id": "i_wp3",
+              "content": "LMIA-exempt"
+            },
+            {
+              "id": "i_wp4",
+              "content": "Not sure"
+            }
+          ],
+          "options": {
+            "variableId": "v_lmia"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_study",
+      "title": "Study Permit",
+      "graphCoordinates": {
+        "x": 750,
+        "y": 800
+      },
+      "blocks": [
+        {
+          "id": "b_st1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Study Permit \u2014 a few questions about your studies:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_st2",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Name of school/university"
+            },
+            "variableId": "v_dli"
+          }
+        },
+        {
+          "id": "b_st3",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_st1",
+              "content": "Less than 1 year"
+            },
+            {
+              "id": "i_st2",
+              "content": "1-2 years"
+            },
+            {
+              "id": "i_st3",
+              "content": "3-4 years"
+            },
+            {
+              "id": "i_st4",
+              "content": "4+ years"
+            }
+          ],
+          "options": {
+            "variableId": "v_duration"
+          }
+        },
+        {
+          "id": "b_st4",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_st5",
+              "content": "Self-funded"
+            },
+            {
+              "id": "i_st6",
+              "content": "Scholarship"
+            },
+            {
+              "id": "i_st7",
+              "content": "Family support"
+            },
+            {
+              "id": "i_st8",
+              "content": "Student loan"
+            }
+          ],
+          "options": {
+            "variableId": "v_funding"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_lmia",
+      "title": "LMIA",
+      "graphCoordinates": {
+        "x": 1250,
+        "y": 800
+      },
+      "blocks": [
+        {
+          "id": "b_lm1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "LMIA application details:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_lm2",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Business name"
+            },
+            "variableId": "v_employer"
+          }
+        },
+        {
+          "id": "b_lm3",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_lm1",
+              "content": "High-wage stream"
+            },
+            {
+              "id": "i_lm2",
+              "content": "Low-wage stream"
+            },
+            {
+              "id": "i_lm3",
+              "content": "Global Talent Stream"
+            },
+            {
+              "id": "i_lm4",
+              "content": "Not sure"
+            }
+          ],
+          "options": {
+            "variableId": "v_lmia_stream"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_pr",
+      "title": "PR Renewal",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 1200
+      },
+      "blocks": [
+        {
+          "id": "b_pr1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "PR Card renewal \u2014 let's check your eligibility:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_pr2",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Days spent in Canada (last 5 years)"
+            },
+            "variableId": "v_days_canada"
+          }
+        },
+        {
+          "id": "b_pr3",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_pr1",
+              "content": "PR Card expired"
+            },
+            {
+              "id": "i_pr2",
+              "content": "PR Card expiring soon"
+            },
+            {
+              "id": "i_pr3",
+              "content": "Travel document needed"
+            }
+          ],
+          "options": {
+            "variableId": "v_pr_status"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_citizen",
+      "title": "Citizenship",
+      "graphCoordinates": {
+        "x": 750,
+        "y": 1200
+      },
+      "blocks": [
+        {
+          "id": "b_cit1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Canadian Citizenship application:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_cit2",
+          "type": "text input",
+          "options": {
+            "labels": {
+              "placeholder": "Years as PR in Canada"
+            },
+            "variableId": "v_years_pr"
+          }
+        },
+        {
+          "id": "b_cit3",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_cit1",
+              "content": "Yes, filed all years"
+            },
+            {
+              "id": "i_cit2",
+              "content": "Missing some years"
+            },
+            {
+              "id": "i_cit3",
+              "content": "Not sure"
+            }
+          ],
+          "options": {
+            "variableId": "v_tax_filed"
+          }
+        },
+        {
+          "id": "b_cit4",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_cit4",
+              "content": "CLB 4 or higher"
+            },
+            {
+              "id": "i_cit5",
+              "content": "Below CLB 4"
+            },
+            {
+              "id": "i_cit6",
+              "content": "Age 55+ (exempt)"
+            }
+          ],
+          "options": {
+            "variableId": "v_lang_level"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_visitor",
+      "title": "Visitor Visa",
+      "graphCoordinates": {
+        "x": 1250,
+        "y": 1200
+      },
+      "blocks": [
+        {
+          "id": "b_vis1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Visitor Visa (TRV) application:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_vis2",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_vis1",
+              "content": "Tourism"
+            },
+            {
+              "id": "i_vis2",
+              "content": "Family visit"
+            },
+            {
+              "id": "i_vis3",
+              "content": "Business"
+            },
+            {
+              "id": "i_vis4",
+              "content": "Medical treatment"
+            }
+          ],
+          "options": {
+            "variableId": "v_visit_purpose"
+          }
+        },
+        {
+          "id": "b_vis3",
+          "outgoingEdgeId": "e_to_family",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_vis5",
+              "content": "Yes, previous visa"
+            },
+            {
+              "id": "i_vis6",
+              "content": "No, first application"
+            }
+          ],
+          "options": {
+            "variableId": "v_prev_visa"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_family",
+      "title": "Family",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 1600
+      },
+      "blocks": [
+        {
+          "id": "b_fam1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Do you have any dependents (spouse, children) who will be included in your application?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_fam2",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_fam1",
+              "content": "Yes"
+            },
+            {
+              "id": "i_fam2",
+              "content": "No"
+            }
+          ],
+          "options": {
+            "variableId": "v_dependents"
+          }
+        },
+        {
+          "id": "b_fam3",
+          "outgoingEdgeId": "e_to_background",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_fam3",
+              "content": "Single"
+            },
+            {
+              "id": "i_fam4",
+              "content": "Married"
+            },
+            {
+              "id": "i_fam5",
+              "content": "Common-law"
+            },
+            {
+              "id": "i_fam6",
+              "content": "Separated/Divorced"
+            }
+          ],
+          "options": {
+            "variableId": "v_marital_status"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_background",
+      "title": "Background",
+      "graphCoordinates": {
+        "x": 750,
+        "y": 1600
+      },
+      "blocks": [
+        {
+          "id": "b_bg1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Almost done! A couple of background questions:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_bg2",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_bg1",
+              "content": "No criminal record"
+            },
+            {
+              "id": "i_bg2",
+              "content": "Yes, I have a record"
+            },
+            {
+              "id": "i_bg3",
+              "content": "Prefer not to say"
+            }
+          ],
+          "options": {
+            "variableId": "v_criminal"
+          }
+        },
+        {
+          "id": "b_bg3",
+          "outgoingEdgeId": "e_to_upload",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "i_bg4",
+              "content": "No previous refusals"
+            },
+            {
+              "id": "i_bg5",
+              "content": "Yes, I had a refusal"
+            },
+            {
+              "id": "i_bg6",
+              "content": "Not sure"
+            }
+          ],
+          "options": {
+            "variableId": "v_refusal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_upload",
+      "title": "Document Upload",
+      "graphCoordinates": {
+        "x": 1250,
+        "y": 1600
+      },
+      "blocks": [
+        {
+          "id": "b_up1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "If you have your passport and any supporting documents ready, you can upload them now. (Optional \u2014 you can send them later)"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_up2",
+          "type": "file input",
+          "options": {
+            "variableId": "v_passport_file",
+            "labels": {
+              "placeholder": "Upload passport copy"
+            }
+          }
+        },
+        {
+          "id": "b_up3",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Any other documents? (e.g. language test results, education credentials)"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_up4",
+          "outgoingEdgeId": "e_to_complete",
+          "type": "file input",
+          "options": {
+            "variableId": "v_other_docs",
+            "labels": {
+              "placeholder": "Upload other documents (optional)"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "g_complete",
+      "title": "Complete",
+      "graphCoordinates": {
+        "x": 250,
+        "y": 2000
+      },
+      "blocks": [
+        {
+          "id": "b_wh1",
+          "type": "Webhook",
+          "options": {}
+        },
+        {
+          "id": "b_c1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Thank you, {{full_name}}! \ud83c\udf89"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_c2",
+          "type": "image",
+          "content": {
+            "url": "https://media.giphy.com/media/U86xBKmv2JAvmLiJ52/giphy.gif"
+          }
+        },
+        {
+          "id": "b_c3",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Your onboarding information has been submitted to our RCIC team. Here is what happens next:"
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "1. Our team reviews your information within 24 hours"
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "2. You will receive an email to book your consultation"
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "3. Our RCIC will prepare a personalized assessment"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b_c4",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "If you have questions, email us at rcic@neuronx.co or call +1-647-931-5181."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_start",
+      "from": {
+        "eventId": "oi6216vun0l85cjuaqvgsxst"
+      },
+      "to": {
+        "groupId": "g1"
+      }
+    },
+    {
+      "id": "e_to_name",
+      "from": {
+        "blockId": "b1e",
+        "itemId": "start_yes"
+      },
+      "to": {
+        "groupId": "g2"
+      }
+    },
+    {
+      "id": "e_to_personal",
+      "from": {
+        "blockId": "b2b"
+      },
+      "to": {
+        "groupId": "g3"
+      }
+    },
+    {
+      "id": "e_to_program",
+      "from": {
+        "blockId": "b3e"
+      },
+      "to": {
+        "groupId": "g4"
+      }
+    },
+    {
+      "id": "e_to_ee",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_ee"
+      },
+      "to": {
+        "groupId": "g_ee"
+      }
+    },
+    {
+      "id": "e_to_spousal",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_sp"
+      },
+      "to": {
+        "groupId": "g_spousal"
+      }
+    },
+    {
+      "id": "e_to_work",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_wp"
+      },
+      "to": {
+        "groupId": "g_work"
+      }
+    },
+    {
+      "id": "e_to_study",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_st"
+      },
+      "to": {
+        "groupId": "g_study"
+      }
+    },
+    {
+      "id": "e_to_lmia",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_lm"
+      },
+      "to": {
+        "groupId": "g_lmia"
+      }
+    },
+    {
+      "id": "e_to_pr",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_pr"
+      },
+      "to": {
+        "groupId": "g_pr"
+      }
+    },
+    {
+      "id": "e_to_citizen",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_cit"
+      },
+      "to": {
+        "groupId": "g_citizen"
+      }
+    },
+    {
+      "id": "e_to_visitor",
+      "from": {
+        "blockId": "b4b",
+        "itemId": "i_vis"
+      },
+      "to": {
+        "groupId": "g_visitor"
+      }
+    },
+    {
+      "id": "e_ee_fam",
+      "from": {
+        "blockId": "b_ee4"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_sp_fam",
+      "from": {
+        "blockId": "b_sp3"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_wp_fam",
+      "from": {
+        "blockId": "b_wp3"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_st_fam",
+      "from": {
+        "blockId": "b_st4"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_lm_fam",
+      "from": {
+        "blockId": "b_lm3"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_pr_fam",
+      "from": {
+        "blockId": "b_pr3"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_cit_fam",
+      "from": {
+        "blockId": "b_cit4"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_vis_fam",
+      "from": {
+        "blockId": "b_vis3"
+      },
+      "to": {
+        "groupId": "g_family"
+      }
+    },
+    {
+      "id": "e_to_background",
+      "from": {
+        "blockId": "b_fam3"
+      },
+      "to": {
+        "groupId": "g_background"
+      }
+    },
+    {
+      "id": "e_to_upload",
+      "from": {
+        "blockId": "b_bg3"
+      },
+      "to": {
+        "groupId": "g_upload"
+      }
+    },
+    {
+      "id": "e_to_complete",
+      "from": {
+        "blockId": "b_up4"
+      },
+      "to": {
+        "groupId": "g_complete"
       }
     }
-  }
+  ],
+  "variables": [
+    {
+      "id": "v_full_name",
+      "name": "full_name",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_country",
+      "name": "country_of_citizenship",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_passport",
+      "name": "passport_number",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_email",
+      "name": "email",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_phone",
+      "name": "phone",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_program",
+      "name": "program_interest",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_education",
+      "name": "education_level",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_work_exp",
+      "name": "work_experience",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_lang_test",
+      "name": "language_test",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_sponsor_status",
+      "name": "sponsor_status",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_marital",
+      "name": "marital_status",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_employer",
+      "name": "employer_name",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_lmia",
+      "name": "lmia_status",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_dli",
+      "name": "dli_name",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_duration",
+      "name": "program_duration",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_funding",
+      "name": "funding_source",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_lmia_stream",
+      "name": "lmia_stream",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_days_canada",
+      "name": "days_in_canada",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_pr_status",
+      "name": "pr_card_status",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_years_pr",
+      "name": "years_as_pr",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_tax_filed",
+      "name": "taxes_filed",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_lang_level",
+      "name": "language_level",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_visit_purpose",
+      "name": "visit_purpose",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_prev_visa",
+      "name": "previous_visa",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_dependents",
+      "name": "has_dependents",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_marital_status",
+      "name": "marital_status_detail",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_criminal",
+      "name": "criminal_history",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_refusal",
+      "name": "previous_refusal",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_passport_file",
+      "name": "passport_file",
+      "isSessionVariable": false
+    },
+    {
+      "id": "v_other_docs",
+      "name": "other_documents",
+      "isSessionVariable": false
+    }
+  ],
+  "theme": {
+    "general": {
+      "font": "Inter",
+      "background": {
+        "type": "Color",
+        "content": "#F8FAFC"
+      }
+    },
+    "chat": {
+      "hostAvatar": {
+        "isEnabled": true,
+        "url": "https://neuronx-production-62f9.up.railway.app/static/avatar.png"
+      },
+      "hostBubbles": {
+        "backgroundColor": "#1E3A5F",
+        "color": "#FFFFFF"
+      },
+      "guestBubbles": {
+        "backgroundColor": "#E8380D",
+        "color": "#FFFFFF"
+      },
+      "buttons": {
+        "backgroundColor": "#1E3A5F",
+        "color": "#FFFFFF"
+      },
+      "inputs": {
+        "backgroundColor": "#FFFFFF",
+        "color": "#1E3A5F",
+        "placeholderColor": "#94A3B8"
+      }
+    }
+  },
+  "selectedThemeTemplateId": null,
+  "settings": {
+    "general": {
+      "isBrandingEnabled": false,
+      "isInputPrefillEnabled": true
+    },
+    "metadata": {
+      "title": "VMC Immigration Assessment",
+      "description": "Complete your immigration assessment with Visa Master Canada. Get matched with the right RCIC for your case.",
+      "imageUrl": "https://neuronx-production-62f9.up.railway.app/static/og-image.png",
+      "favIconUrl": "https://neuronx-production-62f9.up.railway.app/static/favicon.png"
+    }
+  },
+  "createdAt": "2026-04-09T12:13:16.288Z",
+  "updatedAt": "2026-04-11T06:10:59.403Z",
+  "icon": null,
+  "folderId": null,
+  "publicId": "vmc-onboarding",
+  "customDomain": null,
+  "workspaceId": "cmnrfqc6z000034qx46joy6hf",
+  "resultsTablePreferences": null,
+  "isArchived": false,
+  "isClosed": false,
+  "whatsAppCredentialsId": null,
+  "riskLevel": null,
+  "spaceId": null
 }

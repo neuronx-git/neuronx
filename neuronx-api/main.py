@@ -9,8 +9,10 @@ See: docs/04_compliance/trust_boundaries.md for AI behavioral constraints
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
+import os
 
 from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients
 from app.config import settings
@@ -82,6 +84,12 @@ async def reload_config():
     from app.config_loader import reload_all
     reload_all()
     return {"status": "ok", "message": "All configs reloaded from YAML"}
+
+
+# Serve static assets (avatar, favicon, images)
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.isdir(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/")

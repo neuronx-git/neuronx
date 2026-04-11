@@ -23,7 +23,14 @@ logger = logging.getLogger("neuronx.clients")
 async def search_clients(q: str = Query(..., min_length=2)):
     """Search GHL contacts by name, email, or phone."""
     ghl = GHLClient()
-    results = await ghl.search_contacts(q, limit=10)
+    try:
+        results = await ghl.search_contacts(q, limit=10)
+    except Exception as e:
+        logger.warning("Client search failed (GHL unavailable): %s", e)
+        raise HTTPException(
+            status_code=503,
+            detail="Client search unavailable — GHL access token not configured or expired",
+        )
     contacts = results.get("contacts", [])
     return {
         "query": q,
@@ -305,6 +312,7 @@ async def get_copy_paste_guide(contact_id: str):
     first = contact.get("firstName", "")
     last = contact.get("lastName", "")
     program = _get_custom(custom, "program_interest", "ai_program_interest") or "Unknown"
+    firm_config = load_yaml_config("ircc_field_mappings").get("firm_defaults", {})
 
     guide = {
         "title": f"IRCC Portal Copy-Paste Guide — {first} {last}",
@@ -339,12 +347,12 @@ async def get_copy_paste_guide(contact_id: str):
 
         "representative_information": {
             "Representative type": "Paid representative — RCIC",
-            "Family name": "Mehta",
-            "Given name": "Rajiv",
-            "Organization": "Visa Master Canada Immigration Services",
-            "Membership ID": "R000000",
-            "Email": "rcic@neuronx.co",
-            "Phone": "+16479315181",
+            "Family name": firm_config.get("rcic_name", "").split()[-1] if firm_config.get("rcic_name") else "",
+            "Given name": firm_config.get("rcic_name", "").split()[0] if firm_config.get("rcic_name") else "",
+            "Organization": firm_config.get("firm_name", ""),
+            "Membership ID": firm_config.get("rcic_license", ""),
+            "Email": firm_config.get("firm_email", ""),
+            "Phone": firm_config.get("firm_phone", ""),
         },
     }
 
