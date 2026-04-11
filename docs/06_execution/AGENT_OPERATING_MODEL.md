@@ -123,6 +123,13 @@ When discovering a platform limitation, API quirk, or workaround:
 - **SMTP Username**: resend
 - **Send from**: onboarding@resend.dev (free tier — verify domain for custom)
 
+### Vercel (Marketing Website)
+- **Project**: neuronx-web
+- **Live URL**: https://neuronx-web.vercel.app
+- **Token**: stored in `.env` (VERCEL_TOKEN)
+- **Deploy**: `cd neuronx-web && vercel --prod --token $VERCEL_TOKEN`
+- **Custom domain**: Add via vercel.com/goldenphoenix1216-1965s-projects/neuronx-web/settings/domains
+
 ### GitHub
 - **Repo**: ranjan-expatready/neuronx
 - **Typebot Fork**: ranjan-expatready/typebot.io (has Prisma fix PRs)
