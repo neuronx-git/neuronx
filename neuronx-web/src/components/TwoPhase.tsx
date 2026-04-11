@@ -31,7 +31,7 @@ const phase2Items = [
 
 export const TwoPhase = () => {
   return (
-    <section id="system" className="bg-[#F1F5F9] py-16 sm:py-20">
+    <section id="system" className="bg-muted/30 py-16 sm:py-20">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">

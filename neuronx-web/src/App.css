@@ -97,7 +97,11 @@
 }
 
 /* Dark section */
+/* Hero dark section — dark in light mode, blends with page in dark mode */
 .dark-section {
   background: #1E293B;
   color: #F8FAFC;
+}
+.dark .dark-section {
+  background: hsl(222, 47%, 8%);
 }
