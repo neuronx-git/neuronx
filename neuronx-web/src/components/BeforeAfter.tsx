@@ -1,3 +1,4 @@
+import { ScrollReveal } from "./ui/scroll-reveal";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const beforeItems = [
@@ -22,7 +23,7 @@ export const BeforeAfter = () => {
   return (
     <section className="bg-muted/50 py-16 sm:py-20">
       <div className="container">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             The transformation
           </h2>
@@ -30,7 +31,7 @@ export const BeforeAfter = () => {
             What changes when your firm runs on structured workflows instead of
             manual processes.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <Card className="bg-red-500/5 border-red-500/20">

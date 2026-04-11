@@ -83,7 +83,7 @@ export const ProductModules = () => {
             <StaggerItem key={mod.title}>
             <Card
               key={mod.title}
-              className="border-border bg-card hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1 group"
+              className="border-border bg-card dark:bg-slate-800 hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1 group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-2">

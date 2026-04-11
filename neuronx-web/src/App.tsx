@@ -8,7 +8,6 @@ import { HowItWorks } from "./components/HowItWorks";
 import { Differentiation } from "./components/Differentiation";
 import { BeforeAfter } from "./components/BeforeAfter";
 import { ProductModules } from "./components/ProductModules";
-import { Roadmap } from "./components/Roadmap";
 import { Pricing } from "./components/Pricing";
 import { Team } from "./components/Team";
 import { FAQ } from "./components/FAQ";
@@ -29,7 +28,6 @@ function App() {
       <Differentiation />
       <BeforeAfter />
       <ProductModules />
-      <Roadmap />
       <Pricing />
       <About />
       <Team />

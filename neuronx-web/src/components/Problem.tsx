@@ -47,7 +47,7 @@ export const Problem = () => {
           {painPoints.map((point) => (
             <StaggerItem key={point.stat}><Card
               key={point.stat}
-              className="border-border bg-card hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1"
+              className="border-border bg-card dark:bg-slate-800 hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1"
             >
               <CardContent className="pt-6 text-center space-y-3">
                 <div className="text-[#4F46E5] mx-auto">{point.icon}</div>

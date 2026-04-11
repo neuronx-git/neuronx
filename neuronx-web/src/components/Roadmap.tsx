@@ -47,7 +47,7 @@ export const Roadmap = () => {
           {roadmapItems.map((item) => (
             <Card
               key={item.title}
-              className="bg-white border-border hover:border-[#7C3AED]/30 hover:shadow-lg transition-all duration-300"
+              className="bg-white dark:bg-slate-800 border-border hover:border-[#7C3AED]/30 hover:shadow-lg transition-all duration-300"
             >
               <CardContent className="pt-6 space-y-3">
                 <div className="flex items-center justify-between">

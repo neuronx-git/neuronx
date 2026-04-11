@@ -1,3 +1,4 @@
+import { ScrollReveal } from "./ui/scroll-reveal";
 import { Statistics } from "./Statistics";
 
 export const About = () => {
@@ -20,7 +21,7 @@ export const About = () => {
             </div>
           </div>
           <div className="flex flex-col justify-between">
-            <div className="pb-6">
+            <ScrollReveal className="pb-6">
               <h2 className="text-3xl md:text-4xl font-bold">
                 <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
                   Built by an RCIC{" "}
@@ -35,7 +36,7 @@ export const About = () => {
                 with Big Five consulting expertise in product and sales operations
                 to build the platform that should have existed a decade ago.
               </p>
-            </div>
+            </ScrollReveal>
 
             <Statistics />
           </div>

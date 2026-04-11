@@ -1,3 +1,4 @@
+import { ScrollReveal } from "./ui/scroll-reveal";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
@@ -33,16 +34,16 @@ export const TwoPhase = () => {
   return (
     <section id="system" className="bg-muted/30 py-16 sm:py-20">
       <div className="container">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             From inquiry to case decision —{" "}
             <span className="gradient-text">structured, scored, and managed.</span>
           </h2>
-        </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Phase 1 */}
-          <Card className="bg-white border-border hover:border-[#4F46E5]/30 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300">
+          <Card className="bg-white dark:bg-slate-800 border-border hover:border-[#4F46E5]/30 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300">
             <CardHeader>
               <Badge className="w-fit bg-[#4F46E5]/10 text-[#4F46E5] border-0 mb-3">
                 Phase 1
@@ -62,7 +63,7 @@ export const TwoPhase = () => {
           </Card>
 
           {/* Phase 2 */}
-          <Card className="bg-white border-border hover:border-[#7C3AED]/30 hover:shadow-lg hover:shadow-[#7C3AED]/5 transition-all duration-300">
+          <Card className="bg-white dark:bg-slate-800 border-border hover:border-[#7C3AED]/30 hover:shadow-lg hover:shadow-[#7C3AED]/5 transition-all duration-300">
             <CardHeader>
               <Badge className="w-fit bg-[#7C3AED]/10 text-[#7C3AED] border-0 mb-3">
                 Phase 2
@@ -84,7 +85,7 @@ export const TwoPhase = () => {
 
         {/* Score Card Preview */}
         <div className="mt-12 max-w-5xl mx-auto">
-          <Card className="bg-white border-border p-6">
+          <Card className="bg-white dark:bg-slate-800 border-border p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-foreground font-semibold">Readiness Score</span>
               <span className="text-3xl font-bold text-[#4F46E5]">87<span className="text-lg text-muted-foreground">/100</span></span>

@@ -1,3 +1,4 @@
+import { ScrollReveal } from "./ui/scroll-reveal";
 import { Check, X } from "lucide-react";
 
 const rows = [
@@ -27,7 +28,7 @@ export const Differentiation = () => {
   return (
     <section id="compare" className="py-16 sm:py-20">
       <div className="container">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <ScrollReveal className="text-center mb-16 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             How NeuronX{" "}
             <span className="gradient-text">compares</span>
@@ -36,7 +37,7 @@ export const Differentiation = () => {
             NeuronX covers the revenue lifecycle that generic CRMs and
             case-management tools leave untouched.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="max-w-4xl mx-auto overflow-x-auto">
           <table className="w-full text-sm">
