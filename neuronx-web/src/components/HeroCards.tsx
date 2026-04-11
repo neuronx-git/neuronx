@@ -71,8 +71,8 @@ export const HeroCards = () => {
         </CardHeader>
 
         <CardContent>
-          <a href="https://api.leadconnectorhq.com/widget/booking/clvODWkfByOZnzeqyPPW" target="_blank" rel="noreferrer noopener">
-            <Button className="w-full">Calculate Your ROI</Button>
+          <a href="#pricing">
+            <Button className="w-full">See Pricing &amp; ROI</Button>
           </a>
         </CardContent>
 

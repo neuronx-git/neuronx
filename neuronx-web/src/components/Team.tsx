@@ -24,7 +24,7 @@ interface SociaNetworkslProps {
 
 const teamList: TeamProps[] = [
   {
-    imageUrl: "https://i.pravatar.cc/150?img=59",
+    imageUrl: "/team/ranjan.jpg",
     name: "Ranjan Singh",
     position: "Co-Founder & CEO",
     description:
@@ -34,7 +34,7 @@ const teamList: TeamProps[] = [
     ],
   },
   {
-    imageUrl: "https://i.pravatar.cc/150?img=53",
+    imageUrl: "/team/sanjay.jpg",
     name: "Sanjay Singh Kumar",
     position: "Co-Founder & Chief Immigration Officer",
     description:
