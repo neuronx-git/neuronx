@@ -10,7 +10,7 @@ export const Footer = () => {
             <img src="/logo-dark.png" alt="NeuronX" className="h-10 hidden dark:block" />
           </a>
           <p className="text-muted-foreground mt-2 text-sm">
-            AI-powered sales operating system for Canadian immigration consulting firms.
+            Immigration revenue and operations system for Canadian RCIC firms.
           </p>
         </div>
 

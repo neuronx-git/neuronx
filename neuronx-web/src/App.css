@@ -2,51 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* NeuronX Brand Theme — Coral #E8380D + Navy #0F172A */
+/* NeuronX Design System — Trust Blue #1E3A8A + Indigo #4F46E5 + Violet #7C3AED */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Spec: Base #F8FAFC, Surface #FFFFFF, Primary #1E3A8A, Accent #4F46E5 */
+    --background: 210 40% 98%;
+    --foreground: 222 84% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 84% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 10 90% 48%;
+    --popover-foreground: 222 84% 5%;
+    --primary: 224 76% 33%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 10 90% 48%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 25% 35%;
+    --accent: 243 75% 59%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 243 75% 59%;
     --radius: 0.75rem;
   }
 
   .dark {
+    /* Spec: Dark #0F172A */
     --background: 222 47% 8%;
     --foreground: 210 40% 98%;
     --card: 222 40% 11%;
     --card-foreground: 210 40% 98%;
     --popover: 222 40% 11%;
     --popover-foreground: 210 40% 98%;
-    --primary: 10 90% 48%;
+    --primary: 243 75% 59%;
     --primary-foreground: 0 0% 100%;
     --secondary: 222 30% 14%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 30% 14%;
     --muted-foreground: 220 15% 60%;
-    --accent: 222 30% 14%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --accent: 263 70% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 222 25% 18%;
     --input: 222 25% 18%;
-    --ring: 10 90% 48%;
+    --ring: 243 75% 59%;
   }
 }
 
@@ -56,5 +58,46 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
+
+/* Premium scroll reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Score counter animation */
+@keyframes countUp {
+  from { --num: 0; }
+  to { --num: 87; }
+}
+
+/* Pipeline pulse */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Dark section */
+.dark-section {
+  background: #0F172A;
+  color: #F8FAFC;
 }

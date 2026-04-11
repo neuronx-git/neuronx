@@ -23,13 +23,13 @@ const features: FeatureProps[] = [
   {
     title: "Pre-Consultation Briefings",
     description:
-      "AI-assembled prep documents delivered to your RCIC before every meeting. Full prospect context, immigration history, program interest, urgency, and recommended talking points.",
+      "Auto-generated prep documents delivered to your RCIC before every meeting. Full prospect context, program interest, urgency, and recommended talking points.",
     icon: <FileText className="w-10 h-10 text-primary" />,
   },
   {
     title: "Pipeline Intelligence",
     description:
-      "Real-time funnel analytics, stuck-lead detection, and conversion metrics purpose-built for immigration firms. Know exactly where your pipeline leaks and fix it before revenue is lost.",
+      "Pipeline visibility, stuck-lead detection, and conversion tracking purpose-built for immigration firms. Know where your pipeline leaks and fix it before revenue is lost.",
     icon: <BarChart3 className="w-10 h-10 text-primary" />,
   },
 ];

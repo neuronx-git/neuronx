@@ -11,13 +11,13 @@ const serviceList: ServiceProps[] = [
   {
     title: "Phase 1: Lead Conversion",
     description:
-      "AI-powered intake calling, structured readiness scoring, automated booking, and pre-consultation briefings. Convert more inquiries into paying clients with zero manual follow-up.",
+      "Structured readiness scoring, automated booking, and auto-generated pre-consultation briefings. Convert more inquiries into paying clients with structured follow-up workflows.",
     icon: <ChartIcon />,
   },
   {
     title: "Phase 2: Case Processing",
     description:
-      "9-stage case pipeline from onboarding to decision. Document collection workflows, IRCC form data sheets, and real-time case status tracking for your entire caseload.",
+      "10-stage case pipeline from onboarding to decision. Document collection workflows, IRCC form data sheets, and stage-based case tracking for your entire caseload.",
     icon: <WalletIcon />,
   },
   {
@@ -66,11 +66,12 @@ export const Services = () => {
         </div>
 
         <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-2xl p-12 w-full max-w-md aspect-square flex flex-col items-center justify-center text-center">
-          <div className="text-6xl font-extrabold text-[#E8380D] mb-4">24</div>
-          <div className="text-white text-xl font-semibold mb-2">Automated Workflows</div>
+          <div className="text-6xl font-extrabold text-[#4F46E5] mb-4">13</div>
+          <div className="text-white text-xl font-semibold mb-2">Published Workflows</div>
           <div className="text-slate-400 text-sm">
-            15 intake + 9 case processing workflows — all running 24/7 so your
-            team never has to chase a lead or miss a deadline.
+            Immigration-specific workflows covering intake, scoring, booking,
+            follow-up, nurture, and case transitions — running so your team
+            never has to chase a lead or miss a deadline.
           </div>
         </div>
       </div>

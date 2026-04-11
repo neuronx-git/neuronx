@@ -66,8 +66,8 @@ const pricingList: PricingProps[] = [
     benefitList: [
       "Everything in Professional",
       "Multi-RCIC calendar routing",
-      "E-signature integration",
-      "Custom client portal",
+      "E-signatures (Planned)",
+      "Client portal (Planned)",
       "Dedicated success manager",
       "Monthly performance review",
     ],

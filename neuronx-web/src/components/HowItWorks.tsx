@@ -47,13 +47,13 @@ const phase2Steps: StepProps[] = [
     icon: <FileSpreadsheet className="w-12 h-12 text-primary" />,
     title: "6. IRCC Form Preparation",
     description:
-      "AI-generated data sheets pre-fill IRCC forms. Your team reviews and finalizes — cutting form prep time by 60%.",
+      "Structured data sheets organized by IRCC form sections. Your team reviews and finalizes — reducing form prep effort significantly.",
   },
   {
     icon: <Send className="w-12 h-12 text-primary" />,
     title: "7. Submission & Tracking",
     description:
-      "Track every application from submission through biometrics and medical exams. Real-time status updates for your team and optional client notifications.",
+      "Track every application from submission through biometrics and medical exams. Stage-based status updates for your team with workflow-driven notifications.",
   },
   {
     icon: <CheckCircle className="w-12 h-12 text-primary" />,
