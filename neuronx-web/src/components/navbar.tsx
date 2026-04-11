@@ -36,11 +36,9 @@ export const Navbar = () => {
       <NavigationMenu className="mx-auto">
         <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between">
           <NavigationMenuItem className="font-bold flex">
-            <a href="/" className="ml-2 font-bold text-xl flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#0F172A] dark:bg-white flex items-center justify-center">
-                <span className="text-[#E8380D] font-extrabold text-xs">NX</span>
-              </div>
-              NeuronX
+            <a href="/" className="ml-2 font-bold text-xl flex items-center">
+              <img src="/logo-light.png" alt="NeuronX" className="h-10 dark:hidden" />
+              <img src="/logo-dark.png" alt="NeuronX" className="h-10 hidden dark:block" />
             </a>
           </NavigationMenuItem>
 

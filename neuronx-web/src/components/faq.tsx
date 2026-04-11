@@ -14,7 +14,7 @@ interface FAQProps {
 const FAQList: FAQProps[] = [
   {
     question: "Does NeuronX replace our CRM?",
-    answer: "No. NeuronX works on top of GoHighLevel (GHL), which serves as your CRM. NeuronX is the intelligence layer — it handles AI calling, scoring, briefings, and analytics. GHL handles contacts, pipelines, email/SMS, and workflows. Together they form a complete system.",
+    answer: "NeuronX includes a built-in CRM that handles contacts, pipelines, email/SMS, and workflows. On top of that, NeuronX adds an AI intelligence layer — AI calling, scoring, briefings, and analytics. It's a complete system out of the box. If you already use a CRM, we can discuss migration during onboarding.",
     value: "item-1",
   },
   {
@@ -24,7 +24,7 @@ const FAQList: FAQProps[] = [
   },
   {
     question: "How long does onboarding take?",
-    answer: "2-4 hours. We install a pre-configured snapshot into your GHL account, customize branding, configure your RCIC team, and run a live test. Your firm is operational the same day. No lengthy implementation or training required.",
+    answer: "2-4 hours. We configure your NeuronX account, customize branding, set up your RCIC team, and run a live test. Your firm is operational the same day. No lengthy implementation or training required.",
     value: "item-3",
   },
   {

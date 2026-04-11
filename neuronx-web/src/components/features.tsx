@@ -2,14 +2,15 @@ import { Badge } from "./ui/badge";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Phone, FileText, BarChart3 } from "lucide-react";
 
 interface FeatureProps {
   title: string;
   description: string;
+  icon: JSX.Element;
 }
 
 const features: FeatureProps[] = [
@@ -17,16 +18,19 @@ const features: FeatureProps[] = [
     title: "AI Voice Intake",
     description:
       "Every inquiry gets an AI follow-up call within 5 minutes. Structured R1-R5 readiness assessment with compliance guardrails. The AI never assesses eligibility — it collects, scores, and routes.",
+    icon: <Phone className="w-10 h-10 text-primary" />,
   },
   {
     title: "Pre-Consultation Briefings",
     description:
       "AI-assembled prep documents delivered to your RCIC before every meeting. Full prospect context, immigration history, program interest, urgency, and recommended talking points.",
+    icon: <FileText className="w-10 h-10 text-primary" />,
   },
   {
     title: "Pipeline Intelligence",
     description:
-      "Real-time funnel analytics, stuck-lead detection, and conversion metrics that GHL alone cannot provide. Know exactly where your pipeline leaks and fix it before revenue is lost.",
+      "Real-time funnel analytics, stuck-lead detection, and conversion metrics purpose-built for immigration firms. Know exactly where your pipeline leaks and fix it before revenue is lost.",
+    icon: <BarChart3 className="w-10 h-10 text-primary" />,
   },
 ];
 
@@ -63,19 +67,13 @@ export const Features = () => {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map(({ title, description }: FeatureProps) => (
+        {features.map(({ title, description, icon }: FeatureProps) => (
           <Card key={title}>
             <CardHeader>
+              <div className="mb-2">{icon}</div>
               <CardTitle>{title}</CardTitle>
             </CardHeader>
-
             <CardContent>{description}</CardContent>
-
-            <CardFooter>
-              <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
-                <span className="text-4xl font-bold text-primary/30">NX</span>
-              </div>
-            </CardFooter>
           </Card>
         ))}
       </div>

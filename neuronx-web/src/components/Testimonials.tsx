@@ -16,42 +16,42 @@ interface TestimonialProps {
 
 const testimonials: TestimonialProps[] = [
   {
-    image: "https://i.pravatar.cc/150?img=32",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?32",
     name: "Rajiv M.",
     userName: "RCIC, Express Entry Specialist",
     comment:
       "Before NeuronX, I was losing 40% of my leads to slow follow-up. Now every inquiry gets a call within 5 minutes and I walk into every consultation fully prepared. Three new retainers in the first month alone.",
   },
   {
-    image: "https://i.pravatar.cc/150?img=26",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?26",
     name: "Priya K.",
     userName: "Managing Partner, Immigration Law",
     comment:
       "The pre-consultation briefings are game-changing. My RCICs used to spend 30 minutes prepping for each meeting. NeuronX does it automatically. We handle 2x the consultations with the same team.",
   },
   {
-    image: "https://i.pravatar.cc/150?img=11",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?11",
     name: "David P.",
     userName: "Intake Coordinator",
     comment:
       "I used to manage leads in spreadsheets and hope I didn't forget anyone. NeuronX's pipeline shows me exactly who to follow up with, when, and why. No lead falls through the cracks.",
   },
   {
-    image: "https://i.pravatar.cc/150?img=5",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?5",
     name: "Nina S.",
     userName: "Firm Owner, 8-person Practice",
     comment:
       "We switched from CaseEasy for intake. CaseEasy is great for case management, but NeuronX owns the funnel that feeds us clients. Together they're unbeatable. ROI was clear in week two.",
   },
   {
-    image: "https://i.pravatar.cc/150?img=15",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?15",
     name: "Ahmed H.",
     userName: "RCIC, Spousal Sponsorship",
     comment:
       "The AI compliance guardrails give me peace of mind. It never promises outcomes or assesses eligibility. It just collects the right information and books the right people. That's exactly what I need.",
   },
   {
-    image: "https://i.pravatar.cc/150?img=20",
+    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?20",
     name: "Sarah L.",
     userName: "Business Development Lead",
     comment:

@@ -5,11 +5,9 @@ export const Footer = () => {
 
       <section className="container py-20 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
         <div className="col-span-full xl:col-span-2">
-          <a href="/" className="font-bold text-xl flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#0F172A] dark:bg-white flex items-center justify-center">
-              <span className="text-[#E8380D] font-extrabold text-xs">NX</span>
-            </div>
-            NeuronX
+          <a href="/" className="font-bold text-xl flex items-center">
+            <img src="/logo-light.png" alt="NeuronX" className="h-10 dark:hidden" />
+            <img src="/logo-dark.png" alt="NeuronX" className="h-10 hidden dark:block" />
           </a>
           <p className="text-muted-foreground mt-2 text-sm">
             AI-powered sales operating system for Canadian immigration consulting firms.

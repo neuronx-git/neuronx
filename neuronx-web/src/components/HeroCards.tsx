@@ -14,7 +14,7 @@ import { LightBulbIcon } from "./Icons";
 
 export const HeroCards = () => {
   return (
-    <div className="hidden lg:flex flex-row flex-wrap gap-8 relative w-[700px] h-[500px]">
+    <div className="hidden lg:flex flex-row flex-wrap gap-8 relative w-[700px] h-[550px]">
       {/* Live metric card */}
       <Card className="absolute w-[340px] -top-[15px] drop-shadow-xl shadow-black/10 dark:shadow-white/10">
         <CardHeader className="flex flex-row items-center gap-4 pb-2">
@@ -53,7 +53,7 @@ export const HeroCards = () => {
       </Card>
 
       {/* ROI card */}
-      <Card className="absolute top-[150px] left-[50px] w-72 drop-shadow-xl shadow-black/10 dark:shadow-white/10">
+      <Card className="absolute top-[220px] left-[30px] w-72 drop-shadow-xl shadow-black/10 dark:shadow-white/10">
         <CardHeader>
           <CardTitle className="flex item-center justify-between">
             ROI Calculator

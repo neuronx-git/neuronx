@@ -26,7 +26,7 @@ const teamList: TeamProps[] = [
   {
     imageUrl: "/team/ranjan.jpg",
     name: "Ranjan Singh",
-    position: "Co-Founder & CEO",
+    position: "Co-Founder & Chief Product Officer",
     description:
       "Former Big Five consulting leader with deep expertise in product management, sales operations, and technology transformation. Built and scaled enterprise software products used by Fortune 500 companies. Now applying that discipline to immigration consulting — because every firm deserves enterprise-grade tools without the enterprise price tag.",
     socialNetworks: [
@@ -36,7 +36,7 @@ const teamList: TeamProps[] = [
   {
     imageUrl: "/team/sanjay.jpg",
     name: "Sanjay Singh Kumar",
-    position: "Co-Founder & Chief Immigration Officer",
+    position: "Founder & CEO",
     description:
       "Licensed RCIC (R705959) and founder of Visa Master Canada — a 20-person immigration firm with 5,000+ clients served and a perfect 5.0 Google rating. Seven years of hands-on immigration consulting across Express Entry, LMIA, Spousal Sponsorship, and complex refusal cases. The domain expert who ensures every NeuronX feature solves a real problem that RCICs face daily.",
     socialNetworks: [
@@ -81,13 +81,13 @@ export const Team = () => {
           }: TeamProps) => (
             <Card
               key={name}
-              className="bg-muted/50 relative mt-8 flex flex-col justify-center items-center"
+              className="bg-muted/50 relative mt-10 flex flex-col justify-center items-center"
             >
-              <CardHeader className="mt-8 flex justify-center items-center pb-2">
+              <CardHeader className="mt-10 flex justify-center items-center pb-2">
                 <img
                   src={imageUrl}
                   alt={`${name} ${position}`}
-                  className="absolute -top-12 rounded-full w-24 h-24 aspect-square object-cover"
+                  className="absolute -top-14 rounded-full w-28 h-28 aspect-square object-cover object-top"
                 />
                 <CardTitle className="text-center">{name}</CardTitle>
                 <CardDescription className="font-normal text-primary">

@@ -20,7 +20,7 @@ export const Cta = () => {
 
         <div className="space-y-4 lg:col-start-2">
           <a href="https://api.leadconnectorhq.com/widget/booking/clvODWkfByOZnzeqyPPW" target="_blank" rel="noreferrer noopener">
-            <Button className="w-full md:mr-4 md:w-auto">Book a 30-Minute Demo</Button>
+            <Button className="w-full md:mr-4 md:w-auto">Book a Free Demo</Button>
           </a>
           <a href="#features">
             <Button variant="outline" className="w-full md:w-auto">Explore Features</Button>

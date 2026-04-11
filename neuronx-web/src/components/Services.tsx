@@ -21,9 +21,9 @@ const serviceList: ServiceProps[] = [
     icon: <WalletIcon />,
   },
   {
-    title: "GHL-Powered, Not GHL-Limited",
+    title: "Built-In CRM + AI Intelligence",
     description:
-      "NeuronX runs on GoHighLevel — the same CRM you might already use. But it adds what GHL can't do alone: AI calling, immigration-specific scoring, compliance enforcement, and RCIC briefings.",
+      "NeuronX includes a fully integrated CRM with contacts, pipelines, email, SMS, and workflows. On top of that, it adds what generic CRMs cannot: AI calling, immigration-specific scoring, compliance enforcement, and RCIC briefings.",
     icon: <MagnifierIcon />,
   },
 ];
