@@ -10,13 +10,13 @@ const credentials = [
 
 export const Credibility = () => {
   return (
-    <section className="py-10 border-b border-[#E2E8F0]">
+    <section className="py-10 border-b border-border">
       <div className="container">
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
           {credentials.map((c) => (
             <div
               key={c.label}
-              className="flex items-center gap-2 text-[#475569] text-sm font-medium"
+              className="flex items-center gap-2 text-muted-foreground text-sm font-medium"
             >
               <span className="text-[#4F46E5]">{c.icon}</span>
               {c.label}

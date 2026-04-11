@@ -28,11 +28,11 @@ export const Differentiation = () => {
     <section id="compare" className="py-24 sm:py-32">
       <div className="container">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             How NeuronX{" "}
             <span className="gradient-text">compares</span>
           </h2>
-          <p className="mt-4 text-lg text-[#475569]">
+          <p className="mt-4 text-lg text-muted-foreground">
             NeuronX covers the revenue lifecycle that generic CRMs and
             case-management tools leave untouched.
           </p>
@@ -41,17 +41,17 @@ export const Differentiation = () => {
         <div className="max-w-4xl mx-auto overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#E2E8F0]">
-                <th className="text-left px-4 py-3 font-medium text-[#475569]">Capability</th>
+              <tr className="border-b border-border">
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Capability</th>
                 <th className="px-4 py-3 font-bold text-[#4F46E5] text-center">NeuronX</th>
-                <th className="px-4 py-3 font-medium text-[#475569] text-center">Generic CRM</th>
-                <th className="px-4 py-3 font-medium text-[#475569] text-center">Case-First Tools</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground text-center">Generic CRM</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground text-center">Case-First Tools</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.feature} className="border-b border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors">
-                  <td className="px-4 py-3 text-[#0F172A] font-medium">{row.feature}</td>
+                <tr key={row.feature} className="border-b border-border hover:bg-muted transition-colors">
+                  <td className="px-4 py-3 text-foreground font-medium">{row.feature}</td>
                   <Cell value={row.nx} />
                   <Cell value={row.crm} />
                   <Cell value={row.case_} />

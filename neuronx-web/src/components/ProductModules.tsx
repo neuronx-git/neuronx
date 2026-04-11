@@ -67,11 +67,11 @@ export const ProductModules = () => {
     <section id="features" className="py-24 sm:py-32">
       <div className="container">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             Built for immigration.{" "}
             <span className="gradient-text">Every module.</span>
           </h2>
-          <p className="mt-4 text-lg text-[#475569]">
+          <p className="mt-4 text-lg text-muted-foreground">
             Purpose-built modules for the immigration consulting lifecycle —
             not generic CRM features with immigration labels.
           </p>
@@ -81,7 +81,7 @@ export const ProductModules = () => {
           {modules.map((mod) => (
             <Card
               key={mod.title}
-              className="border-[#E2E8F0] bg-white hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1 group"
+              className="border-border bg-card hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1 group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-2">
@@ -94,12 +94,12 @@ export const ProductModules = () => {
                     </Badge>
                   )}
                 </div>
-                <CardTitle className="text-base text-[#0F172A]">
+                <CardTitle className="text-base text-foreground">
                   {mod.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-[#475569] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {mod.description}
                 </p>
               </CardContent>

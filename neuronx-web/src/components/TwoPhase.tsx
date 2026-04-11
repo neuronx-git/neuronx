@@ -82,8 +82,8 @@ export const TwoPhase = () => {
           </Card>
         </div>
 
-        {/* Score Card Preview */}
-        <div className="mt-16 max-w-md mx-auto">
+        {/* Score Card Preview — spans full width under both phase cards */}
+        <div className="mt-12 max-w-5xl mx-auto">
           <Card className="bg-white/5 border-white/10 backdrop-blur-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-white font-semibold">Readiness Score</span>
