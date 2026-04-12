@@ -29,7 +29,7 @@ export const Problem = () => {
   return (
     <section id="problem" className="py-12 sm:py-14">
       <div className="container">
-        <ScrollReveal className="max-w-3xl mx-auto text-center mb-16">
+        <ScrollReveal className="max-w-3xl mx-auto text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             Most immigration firms don't lose leads — they lose{" "}
             <span className="gradient-text">
@@ -45,20 +45,19 @@ export const Problem = () => {
 
         <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {painPoints.map((point) => (
-            <StaggerItem key={point.stat}><Card
-              key={point.stat}
-              className="border-border bg-card dark:bg-slate-800 hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-1"
-            >
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="text-[#4F46E5] mx-auto">{point.icon}</div>
-                <h3 className="text-lg font-bold text-foreground">
-                  {point.stat}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {point.label}
-                </p>
-              </CardContent>
-            </Card></StaggerItem>
+            <StaggerItem key={point.stat}>
+              <Card className="border-border bg-card dark:bg-slate-800 hover:border-[#4F46E5]/20 hover:shadow-lg hover:shadow-[#4F46E5]/5 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] h-full">
+                <CardContent className="pt-6 text-center space-y-3">
+                  <div className="text-[#4F46E5] mx-auto">{point.icon}</div>
+                  <h3 className="text-lg font-bold text-foreground">
+                    {point.stat}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {point.label}
+                  </p>
+                </CardContent>
+              </Card>
+            </StaggerItem>
           ))}
         </StaggerContainer>
       </div>

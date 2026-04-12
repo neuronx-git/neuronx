@@ -5,13 +5,18 @@ export const Footer = () => {
 
       <section className="container py-20 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
         <div className="col-span-full xl:col-span-2">
-          <a href="/" className="font-bold text-xl flex items-center">
-            <img src="/logo-light.png" alt="NeuronX" className="h-10 dark:hidden" />
-            <img src="/logo-dark.png" alt="NeuronX" className="h-10 hidden dark:block" />
+          <a href="/" className="flex items-center gap-2">
+            <img src="/logo-light.png" alt="NeuronX" className="h-9 dark:hidden" style={{ background: 'transparent' }} />
+            <img src="/logo-dark.png" alt="NeuronX" className="h-9 hidden dark:block" style={{ background: 'transparent' }} />
+            <div className="flex flex-col">
+              <span className="text-lg font-bold tracking-tight leading-none">NeuronX</span>
+              <span className="text-[10px] text-muted-foreground font-normal leading-tight">
+                Revenue & Operations System
+                <br />
+                for Canadian Immigration Firms
+              </span>
+            </div>
           </a>
-          <p className="text-muted-foreground mt-2 text-sm">
-            Immigration revenue and operations system for Canadian RCIC firms.
-          </p>
         </div>
 
         <div className="flex flex-col gap-2">

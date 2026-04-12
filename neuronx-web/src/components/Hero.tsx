@@ -1,7 +1,9 @@
+import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -24,6 +26,55 @@ const pipelineStages = [
 ];
 
 export const Hero = () => {
+  const pipelineRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!pipelineRef.current) return;
+
+    const nodes = pipelineRef.current.querySelectorAll(".p-node");
+    const connectors = pipelineRef.current.querySelectorAll(".p-connector");
+    const labels = pipelineRef.current.querySelectorAll(".p-label");
+    const details = pipelineRef.current.querySelectorAll(".p-detail");
+
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 2, delay: 1.2 });
+
+    // Reset
+    tl.set(nodes, { scale: 0.7, opacity: 0.2, boxShadow: "0 0 0 0 rgba(79,70,229,0)" });
+    tl.set(connectors, { scaleX: 0, transformOrigin: "left center" });
+    tl.set(labels, { opacity: 0.3 });
+    tl.set(details, { opacity: 0 });
+
+    // Sequential activation
+    nodes.forEach((node, i) => {
+      const t = i * 0.6;
+      tl.to(node, {
+        scale: 1.2, opacity: 1,
+        boxShadow: "0 0 24px 8px rgba(79,70,229,0.5)",
+        duration: 0.35, ease: "power2.out",
+      }, t);
+      tl.to(node, {
+        scale: 1, boxShadow: "0 0 10px 3px rgba(79,70,229,0.25)",
+        duration: 0.25, ease: "power2.inOut",
+      }, t + 0.35);
+      if (labels[i]) tl.to(labels[i], { opacity: 1, duration: 0.3 }, t + 0.1);
+      if (details[i]) tl.to(details[i], { opacity: 1, duration: 0.3 }, t + 0.2);
+      if (i < connectors.length) {
+        tl.to(connectors[i], { scaleX: 1, duration: 0.35, ease: "power2.inOut" }, t + 0.25);
+      }
+    });
+
+    // Hold
+    tl.to({}, { duration: 3 });
+
+    // Fade out
+    tl.to(nodes, { scale: 0.7, opacity: 0.2, boxShadow: "0 0 0 0 rgba(79,70,229,0)", duration: 0.4, stagger: 0.03 });
+    tl.to(connectors, { scaleX: 0, duration: 0.25, stagger: 0.03 }, "<");
+    tl.to(labels, { opacity: 0.3, duration: 0.3 }, "<");
+    tl.to(details, { opacity: 0, duration: 0.3 }, "<");
+
+    return () => { tl.kill(); };
+  }, []);
+
   return (
     <section className="hero-gradient noise-overlay relative pt-24 pb-16 md:pt-28 md:pb-24 overflow-hidden">
       <div className="container relative">
@@ -110,40 +161,40 @@ export const Hero = () => {
           </motion.div>
         </div>
 
-        {/* Pipeline Rail — 8 stages with sequential GSAP-quality animation */}
+        {/* Pipeline Rail — GSAP-powered sequential animation */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease }}
           className="mt-12 max-w-6xl mx-auto"
         >
-          <div className="bg-white/[0.04] backdrop-blur-md rounded-2xl border border-white/[0.08] p-5 md:p-6">
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-y-6 gap-x-2">
+          <div ref={pipelineRef} className="bg-white/[0.04] backdrop-blur-md rounded-2xl border border-white/[0.08] p-5 md:p-6">
+            <div className="flex items-start justify-between">
               {pipelineStages.map((stage, i) => (
-                <motion.div
-                  key={stage.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.8 + i * 0.1, ease }}
-                  className="flex flex-col items-center gap-1.5 relative"
-                >
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold animate-glow ${
-                      stage.phase === 1
-                        ? "bg-[#7C3AED] text-white"
-                        : "bg-[#4F46E5] text-white"
-                    }`}
-                    style={{ animationDelay: `${i * 0.4}s` }}
-                  >
-                    {i + 1}
+                <div key={stage.label} className="flex items-start flex-1">
+                  <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                    <div
+                      className={`p-node w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold opacity-20 ${
+                        stage.phase === 1
+                          ? "bg-[#7C3AED] text-white"
+                          : "bg-[#4F46E5] text-white"
+                      }`}
+                    >
+                      {i + 1}
+                    </div>
+                    <span className="p-label text-xs font-semibold text-white whitespace-nowrap opacity-30">
+                      {stage.label}
+                    </span>
+                    <span className="p-detail text-[10px] text-slate-400 text-center leading-tight opacity-0 max-w-[90px]">
+                      {stage.detail}
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold text-white whitespace-nowrap">
-                    {stage.label}
-                  </span>
-                  <span className="text-[10px] text-slate-400 text-center leading-tight">
-                    {stage.detail}
-                  </span>
-                </motion.div>
+                  {i < pipelineStages.length - 1 && (
+                    <div className="flex-1 h-[2px] mt-[18px] mx-1 bg-white/10 rounded-full overflow-hidden min-w-[12px]">
+                      <div className="p-connector h-full bg-gradient-to-r from-[#7C3AED] to-[#4F46E5] rounded-full origin-left scale-x-0" />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
             <div className="flex justify-center gap-6 mt-4 pt-3 border-t border-white/5">

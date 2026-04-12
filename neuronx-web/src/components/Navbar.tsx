@@ -48,12 +48,17 @@ export const Navbar = () => {
       <NavigationMenu className="mx-auto">
         <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between">
           <NavigationMenuItem className="font-bold flex">
-            <a href="/" className="ml-2 flex items-center gap-3">
-              <img src="/logo-light.png" alt="NeuronX" className="h-10 dark:hidden" />
-              <img src="/logo-dark.png" alt="NeuronX" className="h-10 hidden dark:block" />
-              <span className="hidden lg:block text-[11px] text-muted-foreground font-normal leading-tight max-w-[160px]">
-                Revenue & operations system for Canadian immigration firms
-              </span>
+            <a href="/" className="ml-2 flex items-center gap-2">
+              <img src="/logo-light.png" alt="NeuronX" className="h-9 dark:hidden" style={{ background: 'transparent' }} />
+              <img src="/logo-dark.png" alt="NeuronX" className="h-9 hidden dark:block" style={{ background: 'transparent' }} />
+              <div className="flex flex-col">
+                <span className="text-lg font-bold tracking-tight leading-none">NeuronX</span>
+                <span className="text-[10px] text-muted-foreground font-normal leading-tight">
+                  Revenue & Operations System
+                  <br />
+                  for Canadian Immigration Firms
+                </span>
+              </div>
             </a>
           </NavigationMenuItem>
 

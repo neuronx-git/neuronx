@@ -106,11 +106,11 @@ export const Pricing = () => {
         {pricingList.map((pricing: PricingProps) => (
           <StaggerItem key={pricing.title}>
           <Card
-            className={
+            className={`h-full hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300 ${
               pricing.popular === PopularPlanType.YES
                 ? "drop-shadow-xl shadow-black/10 dark:shadow-white/10 border-primary/50"
                 : ""
-            }
+            }`}
           >
             <CardHeader>
               <CardTitle className="flex items-center justify-between">

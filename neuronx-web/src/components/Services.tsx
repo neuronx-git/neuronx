@@ -50,7 +50,7 @@ export const Services = () => {
 
           <StaggerContainer className="flex flex-col gap-8">
             {serviceList.map(({ icon, title, description }: ServiceProps) => (
-              <StaggerItem key={title}><Card className="card-premium">
+              <StaggerItem key={title}><Card className="card-premium hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300">
                 <CardHeader className="space-y-1 flex md:flex-row justify-start items-start gap-4">
                   <div className="mt-1 bg-primary/20 p-1 rounded-2xl">
                     {icon}

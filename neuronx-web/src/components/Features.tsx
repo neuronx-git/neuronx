@@ -71,13 +71,15 @@ export const Features = () => {
 
       <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map(({ title, description, icon }: FeatureProps) => (
-          <StaggerItem key={title}><Card className="card-premium">
-            <CardHeader>
-              <div className="mb-2">{icon}</div>
-              <CardTitle>{title}</CardTitle>
-            </CardHeader>
-            <CardContent>{description}</CardContent>
-          </Card></StaggerItem>
+          <StaggerItem key={title}>
+            <Card className="card-premium h-full hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300">
+              <CardHeader>
+                <div className="mb-2">{icon}</div>
+                <CardTitle>{title}</CardTitle>
+              </CardHeader>
+              <CardContent>{description}</CardContent>
+            </Card>
+          </StaggerItem>
         ))}
       </StaggerContainer>
     </section>
