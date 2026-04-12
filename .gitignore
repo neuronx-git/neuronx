@@ -86,3 +86,8 @@ logs/compliance.jsonl
 neuronx-api/logs/compliance.jsonl
 .private-integration-token
 .team-registry.json
+
+# Temp/research files
+.playwright-mcp/
+*.png
+NeuronX-Brand/
