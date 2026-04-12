@@ -1,10 +1,12 @@
-import { motion, useInView, useMotionValue, animate } from "framer-motion";
-import { type ReactNode, useRef, useEffect, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { type ReactNode, useRef, useState, useEffect } from "react";
 
-/* Premium easing — matches Stripe/Linear feel */
-const premiumEase = [0.22, 1, 0.36, 1] as const;
+/* Premium easing */
+const ease = [0.22, 1, 0.36, 1] as const;
 
-/* ─── Scroll Reveal ─── */
+/* ─── Scroll Reveal ───
+ * VISIBLE MOVEMENT: y:40px (was 20), duration 0.7s, triggers when 20% visible
+ */
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
@@ -18,16 +20,16 @@ export function ScrollReveal({
   children,
   className = "",
   delay = 0,
-  duration = 0.6,
-  y = 20,
+  duration = 0.7,
+  y = 40,
   once = true,
 }: ScrollRevealProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: "-60px" }}
-      transition={{ duration, delay, ease: premiumEase }}
+      viewport={{ once, amount: 0.2 }}
+      transition={{ duration, delay, ease }}
       className={className}
     >
       {children}
@@ -35,7 +37,9 @@ export function ScrollReveal({
   );
 }
 
-/* ─── Stagger Container ─── */
+/* ─── Stagger Container ───
+ * VISIBLE STAGGER: 0.15s between children (was 0.08)
+ */
 interface StaggerProps {
   children: ReactNode;
   className?: string;
@@ -46,14 +50,14 @@ interface StaggerProps {
 export function StaggerContainer({
   children,
   className = "",
-  staggerDelay = 0.08,
+  staggerDelay = 0.15,
   once = true,
 }: StaggerProps) {
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, margin: "-60px" }}
+      viewport={{ once, amount: 0.15 }}
       variants={{
         hidden: {},
         visible: { transition: { staggerChildren: staggerDelay } },
@@ -75,11 +79,12 @@ export function StaggerItem({
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 16 },
+        hidden: { opacity: 0, y: 30, scale: 0.95 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.5, ease: premiumEase },
+          scale: 1,
+          transition: { duration: 0.6, ease },
         },
       }}
       className={className}
@@ -101,18 +106,26 @@ export function AnimatedCounter({
   value,
   className = "",
   suffix = "",
-  duration = 1.5,
+  duration = 2,
 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
     if (!isInView) return;
-    const motionVal = useMotionValue(0);
-    const unsubscribe = motionVal.on("change", (v) => setDisplayValue(Math.round(v)));
-    animate(motionVal, value, { duration, ease: premiumEase });
-    return unsubscribe;
+    let start = 0;
+    const step = value / (duration * 60); // 60fps
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= value) {
+        setDisplayValue(value);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(start));
+      }
+    }, 1000 / 60);
+    return () => clearInterval(timer);
   }, [isInView, value, duration]);
 
   return (
@@ -134,8 +147,8 @@ export function AnimatedBar({ value, delay = 0, className = "" }: BarProps) {
     <motion.div
       initial={{ width: "0%" }}
       whileInView={{ width: `${value}%` }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1.2, delay, ease: premiumEase }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 1.2, delay, ease }}
       className={className}
     />
   );
@@ -152,8 +165,9 @@ export function HoverCard({
   return (
     <motion.div
       whileHover={{
-        y: -4,
-        transition: { duration: 0.3, ease: premiumEase },
+        y: -6,
+        scale: 1.02,
+        transition: { duration: 0.3, ease },
       }}
       className={className}
     >
@@ -162,7 +176,7 @@ export function HoverCard({
   );
 }
 
-/* ─── Slide In (for briefing panel) ─── */
+/* ─── Slide In ─── */
 export function SlideIn({
   children,
   className = "",
@@ -175,18 +189,18 @@ export function SlideIn({
   delay?: number;
 }) {
   const offsets = {
-    left: { x: -30, y: 0 },
-    right: { x: 30, y: 0 },
-    up: { x: 0, y: -20 },
-    down: { x: 0, y: 20 },
+    left: { x: -40, y: 0 },
+    right: { x: 40, y: 0 },
+    up: { x: 0, y: -30 },
+    down: { x: 0, y: 30 },
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, ...offsets[direction] }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay, ease: premiumEase }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, delay, ease }}
       className={className}
     >
       {children}

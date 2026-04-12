@@ -189,3 +189,39 @@
   background: rgba(15, 23, 42, 0.85) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+/* ═══════════════════════════════════════
+   PIPELINE ANIMATION (CSS-driven, no React state)
+   ═══════════════════════════════════════ */
+
+/* Node pulse — each node pulses in sequence */
+@keyframes pipeline-activate {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+    transform: scale(1);
+  }
+  14% {
+    box-shadow: 0 0 20px 6px rgba(79, 70, 229, 0.5);
+    transform: scale(1.15);
+  }
+  28% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+    transform: scale(1);
+  }
+}
+
+.pipeline-node {
+  animation: pipeline-activate 7.2s var(--ease-premium) infinite;
+}
+
+/* Connector fill */
+@keyframes connector-fill {
+  0%, 100% { width: 0%; }
+  14% { width: 100%; }
+  85% { width: 100%; }
+  86% { width: 0%; }
+}
+
+.pipeline-connector {
+  animation: connector-fill 7.2s var(--ease-premium) infinite;
+}
