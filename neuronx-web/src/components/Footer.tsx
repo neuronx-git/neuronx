@@ -3,23 +3,23 @@ export const Footer = () => {
     <footer id="footer">
       <hr className="w-11/12 mx-auto" />
 
-      <section className="container py-20 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
+      <section className="container py-16 md:py-20 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-8 md:gap-x-12 gap-y-8">
         <div className="col-span-full xl:col-span-2">
           <a href="/" className="flex items-center gap-2.5">
             <img src="/logo-transparent.svg" alt="NeuronX" className="h-8 dark:hidden" />
             <img src="/logo-dark.svg" alt="NeuronX" className="h-8 hidden dark:block" />
           </a>
-          <p className="text-muted-foreground mt-3 text-xs leading-relaxed">
-            Revenue & operations system<br />for Canadian immigration firms.
+          <p className="mt-3 text-[11px] font-semibold leading-tight text-foreground/70 dark:text-slate-300 tracking-wide">
+            Revenue & Operations System<br />for Canadian Immigration Firms
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Product</h3>
-          <a href="#features" className="opacity-60 hover:opacity-100">Features</a>
-          <a href="#pricing" className="opacity-60 hover:opacity-100">Pricing</a>
-          <a href="#howItWorks" className="opacity-60 hover:opacity-100">How It Works</a>
-          <a href="#faq" className="opacity-60 hover:opacity-100">FAQ</a>
+          <a href="#features" className="opacity-60 hover:opacity-100 transition-opacity">Features</a>
+          <a href="#pricing" className="opacity-60 hover:opacity-100 transition-opacity">Pricing</a>
+          <a href="#howItWorks" className="opacity-60 hover:opacity-100 transition-opacity">How It Works</a>
+          <a href="#faq" className="opacity-60 hover:opacity-100 transition-opacity">FAQ</a>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -32,26 +32,26 @@ export const Footer = () => {
 
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Company</h3>
-          <a href="#team" className="opacity-60 hover:opacity-100">About</a>
-          <a href="mailto:hello@neuronx.co" className="opacity-60 hover:opacity-100">Contact</a>
-          <span className="opacity-60">Privacy Policy</span>
-          <span className="opacity-60">Terms of Service</span>
+          <a href="#team" className="opacity-60 hover:opacity-100 transition-opacity">About</a>
+          <a href="mailto:hello@neuronx.co" className="opacity-60 hover:opacity-100 transition-opacity">Contact</a>
+          <a href="/privacy" className="opacity-60 hover:opacity-100 transition-opacity">Privacy Policy</a>
+          <a href="/terms" className="opacity-60 hover:opacity-100 transition-opacity">Terms of Service</a>
         </div>
 
         <div className="flex flex-col gap-2">
           <h3 className="font-bold text-lg">Connect</h3>
-          <a href="https://www.linkedin.com/company/neuronx" target="_blank" rel="noreferrer noopener" className="opacity-60 hover:opacity-100">LinkedIn</a>
-          <a href="mailto:hello@neuronx.co" className="opacity-60 hover:opacity-100">Email</a>
+          <a href="https://www.linkedin.com/company/neuronx" target="_blank" rel="noreferrer noopener" className="opacity-60 hover:opacity-100 transition-opacity">LinkedIn</a>
+          <a href="mailto:hello@neuronx.co" className="opacity-60 hover:opacity-100 transition-opacity">Email</a>
         </div>
       </section>
 
       <section className="container pb-14 text-center">
-        <h3>
+        <p className="text-sm text-muted-foreground">
           &copy; 2026 NeuronX. All rights reserved.
-          <span className="text-muted-foreground text-sm ml-2">
+          <span className="ml-2 text-xs">
             NeuronX is not a law firm and does not provide immigration advice.
           </span>
-        </h3>
+        </p>
       </section>
     </footer>
   );

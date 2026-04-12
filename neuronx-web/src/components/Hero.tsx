@@ -168,8 +168,9 @@ export const Hero = () => {
           transition={{ duration: 0.8, delay: 0.6, ease }}
           className="mt-12 max-w-6xl mx-auto"
         >
-          <div ref={pipelineRef} className="bg-white/[0.04] backdrop-blur-md rounded-2xl border border-white/[0.08] p-5 md:p-6">
-            <div className="flex items-start justify-between">
+          <div ref={pipelineRef} className="bg-white/[0.04] backdrop-blur-md rounded-2xl border border-white/[0.08] p-4 md:p-6">
+            {/* Desktop: horizontal row */}
+            <div className="hidden md:flex items-start justify-between">
               {pipelineStages.map((stage, i) => (
                 <div key={stage.label} className="flex items-start flex-1">
                   <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
@@ -190,21 +191,40 @@ export const Hero = () => {
                     </span>
                   </div>
                   {i < pipelineStages.length - 1 && (
-                    <div className="flex-1 h-[2px] mt-[18px] mx-1 bg-white/10 rounded-full overflow-hidden min-w-[12px]">
+                    <div className="flex-1 h-[2px] mt-[18px] mx-1 bg-white/10 rounded-full overflow-hidden min-w-[8px]">
                       <div className="p-connector h-full bg-gradient-to-r from-[#7C3AED] to-[#4F46E5] rounded-full origin-left scale-x-0" />
                     </div>
                   )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-center gap-6 mt-4 pt-3 border-t border-white/5">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#7C3AED]" />
-                <span className="text-xs text-slate-500">Phase 1: Conversion</span>
+            {/* Mobile: 2×4 grid */}
+            <div className="grid grid-cols-4 gap-y-5 gap-x-3 md:hidden">
+              {pipelineStages.map((stage, i) => (
+                <div key={stage.label} className="flex flex-col items-center gap-1">
+                  <div
+                    className={`p-node w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold opacity-20 ${
+                      stage.phase === 1
+                        ? "bg-[#7C3AED] text-white"
+                        : "bg-[#4F46E5] text-white"
+                    }`}
+                  >
+                    {i + 1}
+                  </div>
+                  <span className="p-label text-[10px] font-semibold text-white whitespace-nowrap opacity-30">
+                    {stage.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center gap-4 md:gap-6 mt-4 pt-3 border-t border-white/5">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#7C3AED]" />
+                <span className="text-[10px] md:text-xs text-slate-500">Phase 1: Conversion</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#4F46E5]" />
-                <span className="text-xs text-slate-500">Phase 2: Case Ops</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#4F46E5]" />
+                <span className="text-[10px] md:text-xs text-slate-500">Phase 2: Case Ops</span>
               </div>
             </div>
           </div>

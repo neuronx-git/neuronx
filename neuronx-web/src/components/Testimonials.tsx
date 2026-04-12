@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import {
   Card,
   CardContent,
@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 
 interface TestimonialProps {
-  image: string;
   name: string;
   userName: string;
   comment: string;
@@ -16,42 +16,36 @@ interface TestimonialProps {
 
 const testimonials: TestimonialProps[] = [
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?32",
     name: "Rajiv M.",
     userName: "RCIC, Express Entry Specialist",
     comment:
       "Before NeuronX, I was losing 40% of my leads to slow follow-up. Now every inquiry gets a call within 5 minutes and I walk into every consultation fully prepared. Three new retainers in the first month alone.",
   },
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?26",
     name: "Priya K.",
     userName: "Managing Partner, Immigration Law",
     comment:
       "The pre-consultation briefings are game-changing. My RCICs used to spend 30 minutes prepping for each meeting. NeuronX does it automatically. We handle 2x the consultations with the same team.",
   },
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?11",
     name: "David P.",
     userName: "Intake Coordinator",
     comment:
       "I used to manage leads in spreadsheets and hope I didn't forget anyone. NeuronX's pipeline shows me exactly who to follow up with, when, and why. No lead falls through the cracks.",
   },
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?5",
     name: "Nina S.",
     userName: "Firm Owner, 8-person Practice",
     comment:
       "We switched from CaseEasy for intake. CaseEasy is great for case management, but NeuronX owns the funnel that feeds us clients. Together they're unbeatable. ROI was clear in week two.",
   },
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?15",
     name: "Ahmed H.",
     userName: "RCIC, Spousal Sponsorship",
     comment:
       "The AI compliance guardrails give me peace of mind. It never promises outcomes or assesses eligibility. It just collects the right information and books the right people. That's exactly what I need.",
   },
   {
-    image: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?20",
     name: "Sarah L.",
     userName: "Business Development Lead",
     comment:
@@ -59,47 +53,54 @@ const testimonials: TestimonialProps[] = [
   },
 ];
 
+const avatarColors = [
+  "bg-[#4F46E5]", "bg-[#7C3AED]", "bg-[#2563EB]",
+  "bg-[#7C3AED]", "bg-[#4F46E5]", "bg-[#2563EB]",
+];
+
 export const Testimonials = () => {
   return (
     <section id="testimonials" className="container py-14 sm:py-16">
-      <h2 className="text-3xl md:text-4xl font-bold text-center">
-        Why Immigration Firms{" "}
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          Choose NeuronX
-        </span>
-      </h2>
+      <ScrollReveal>
+        <h2 className="text-3xl md:text-4xl font-bold text-center">
+          Why Immigration Firms{" "}
+          <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+            Choose NeuronX
+          </span>
+        </h2>
 
-      <p className="text-xl text-muted-foreground pt-4 pb-8 text-center">
-        From solo practitioners to multi-RCIC firms — NeuronX transforms how
-        Canadian immigration consultancies convert and retain clients.
-      </p>
+        <p className="text-xl text-muted-foreground pt-4 pb-8 text-center max-w-2xl mx-auto">
+          From solo practitioners to multi-RCIC firms — NeuronX transforms how
+          Canadian immigration consultancies convert and retain clients.
+        </p>
+      </ScrollReveal>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 sm:block columns-2 lg:columns-3 lg:gap-6 mx-auto space-y-4 lg:space-y-6">
+      <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {testimonials.map(
-          ({ image, name, userName, comment }: TestimonialProps) => (
-            <Card
-              key={userName}
-              className="max-w-md md:break-inside-avoid overflow-hidden"
-            >
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <Avatar>
-                  <AvatarImage alt="" src={image} />
-                  <AvatarFallback>
-                    {name.split(" ").map((n) => n[0]).join("")}
-                  </AvatarFallback>
-                </Avatar>
+          ({ name, userName, comment }: TestimonialProps, idx) => (
+            <StaggerItem key={userName}>
+              <Card className="h-full hover:-translate-y-2 hover:scale-[1.01] transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <Avatar className="w-11 h-11">
+                    <AvatarFallback className={`${avatarColors[idx]} text-white font-bold text-sm`}>
+                      {name.split(" ").map((n) => n[0]).join("")}
+                    </AvatarFallback>
+                  </Avatar>
 
-                <div className="flex flex-col">
-                  <CardTitle className="text-lg">{name}</CardTitle>
-                  <CardDescription>{userName}</CardDescription>
-                </div>
-              </CardHeader>
+                  <div className="flex flex-col">
+                    <CardTitle className="text-lg">{name}</CardTitle>
+                    <CardDescription>{userName}</CardDescription>
+                  </div>
+                </CardHeader>
 
-              <CardContent>{comment}</CardContent>
-            </Card>
+                <CardContent className="text-sm leading-relaxed text-muted-foreground">
+                  {comment}
+                </CardContent>
+              </Card>
+            </StaggerItem>
           )
         )}
-      </div>
+      </StaggerContainer>
     </section>
   );
 };
