@@ -27,7 +27,7 @@ const painPoints = [
 
 export const Problem = () => {
   return (
-    <section id="problem" className="py-16 sm:py-24">
+    <section id="problem" className="py-12 sm:py-14">
       <div className="container">
         <ScrollReveal className="max-w-3xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">

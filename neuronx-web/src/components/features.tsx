@@ -1,4 +1,5 @@
 import { Badge } from "./ui/badge";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import {
   Card,
   CardContent,
@@ -48,7 +49,8 @@ const featureList: string[] = [
 
 export const Features = () => {
   return (
-    <section id="features" className="container py-24 sm:py-32 space-y-8">
+    <section id="features" className="container py-14 sm:py-16 space-y-8">
+      <ScrollReveal>
       <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
         Everything Your Firm Needs to{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
@@ -65,18 +67,19 @@ export const Features = () => {
           </div>
         ))}
       </div>
+      </ScrollReveal>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map(({ title, description, icon }: FeatureProps) => (
-          <Card key={title}>
+          <StaggerItem key={title}><Card className="card-premium">
             <CardHeader>
               <div className="mb-2">{icon}</div>
               <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardContent>{description}</CardContent>
-          </Card>
+          </Card></StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
     </section>
   );
 };

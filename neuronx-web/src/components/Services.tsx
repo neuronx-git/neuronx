@@ -1,5 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { MagnifierIcon, WalletIcon, ChartIcon } from "./Icons";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 
 interface ServiceProps {
   title: string;
@@ -30,8 +31,9 @@ const serviceList: ServiceProps[] = [
 
 export const Services = () => {
   return (
-    <section className="container py-24 sm:py-32">
+    <section className="container py-14 sm:py-16">
       <div className="grid lg:grid-cols-[1fr,1fr] gap-8 place-items-center">
+        <ScrollReveal>
         <div>
           <h2 className="text-3xl md:text-4xl font-bold">
             <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
@@ -46,9 +48,9 @@ export const Services = () => {
             signed retainer — then seamlessly transitions to case processing.
           </p>
 
-          <div className="flex flex-col gap-8">
+          <StaggerContainer className="flex flex-col gap-8">
             {serviceList.map(({ icon, title, description }: ServiceProps) => (
-              <Card key={title}>
+              <StaggerItem key={title}><Card className="card-premium">
                 <CardHeader className="space-y-1 flex md:flex-row justify-start items-start gap-4">
                   <div className="mt-1 bg-primary/20 p-1 rounded-2xl">
                     {icon}
@@ -60,10 +62,11 @@ export const Services = () => {
                     </CardDescription>
                   </div>
                 </CardHeader>
-              </Card>
+              </Card></StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
+        </ScrollReveal>
 
         <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-2xl p-12 w-full max-w-md aspect-square flex flex-col items-center justify-center text-center">
           <div className="text-6xl font-extrabold text-[#4F46E5] mb-4">13</div>
