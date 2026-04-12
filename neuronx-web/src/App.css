@@ -5,7 +5,6 @@
 /* NeuronX Design System — Trust Blue #1E3A8A + Indigo #4F46E5 + Violet #7C3AED */
 @layer base {
   :root {
-    /* Spec: Base #F8FAFC, Surface #FFFFFF, Primary #1E3A8A, Accent #4F46E5 */
     --background: 210 40% 98%;
     --foreground: 222 84% 5%;
     --card: 0 0% 100%;
@@ -29,7 +28,6 @@
   }
 
   .dark {
-    /* Spec: Dark #0F172A */
     --background: 222 47% 8%;
     --foreground: 210 40% 98%;
     --card: 222 40% 11%;
@@ -59,36 +57,32 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Premium scroll reveal animation */
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+/* ═══════════════════════════════════════
+   GRADIENT SYSTEM (Stripe-inspired)
+   ═══════════════════════════════════════ */
+
+/* Hero background — multi-layered radial gradients */
+.hero-gradient {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(79,70,229,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.15) 0%, transparent 60%),
+    #0F172A;
 }
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+.dark .hero-gradient {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(79,70,229,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.1) 0%, transparent 60%),
+    hsl(222, 47%, 8%);
 }
 
-/* Score counter animation */
-@keyframes countUp {
-  from { --num: 0; }
-  to { --num: 87; }
-}
-
-/* Pipeline pulse */
-@keyframes pulse-dot {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-.animate-pulse-dot {
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-/* Gradient text utility */
+/* Gradient text */
 .gradient-text {
   background: linear-gradient(135deg, #4F46E5, #7C3AED);
   -webkit-background-clip: text;
@@ -96,12 +90,102 @@
   background-clip: text;
 }
 
-/* Dark section */
-/* Hero dark section — dark in light mode, blends with page in dark mode */
-.dark-section {
-  background: #1E293B;
-  color: #F8FAFC;
+/* CTA button gradient */
+.cta-gradient {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.dark .dark-section {
-  background: hsl(222, 47%, 8%);
+.cta-gradient:hover {
+  background: linear-gradient(135deg, #4338CA, #6D28D9);
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Section divider — soft gradient fade */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(79,70,229,0.15), transparent);
+}
+
+/* Card premium border */
+.card-premium {
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark .card-premium {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.card-premium:hover {
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Noise texture overlay (ultra subtle) */
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   MOTION TOKENS
+   ═══════════════════════════════════════ */
+
+/* Premium easing */
+:root {
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 0.3s;
+  --duration-normal: 0.5s;
+  --duration-slow: 0.8s;
+}
+
+/* Pipeline pulse */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 2.5s var(--ease-premium) infinite;
+}
+
+/* Soft glow for active pipeline nodes */
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(79, 70, 229, 0.3); }
+}
+.animate-glow {
+  animation: soft-glow 3s var(--ease-premium) infinite;
+}
+
+/* Badge subtle pulse */
+@keyframes badge-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+.animate-badge {
+  animation: badge-pulse 3s ease-in-out infinite;
+}
+
+/* Bar fill animation */
+@keyframes fill-bar {
+  from { width: 0%; }
+}
+.animate-fill {
+  animation: fill-bar 1.2s var(--ease-premium) forwards;
+}
+
+/* Navbar scroll state */
+.nav-scrolled {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.dark .nav-scrolled {
+  background: rgba(15, 23, 42, 0.85) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }

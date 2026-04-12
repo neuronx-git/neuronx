@@ -1,4 +1,4 @@
-import { ScrollReveal } from "./ui/scroll-reveal";
+import { ScrollReveal, AnimatedBar } from "./ui/scroll-reveal";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import {
@@ -97,16 +97,17 @@ export const TwoPhase = () => {
                 { label: "R3 — Timeline Urgency", value: 80 },
                 { label: "R4 — Prior Applications", value: 85 },
                 { label: "R5 — Budget Awareness", value: 88 },
-              ].map((dim) => (
+              ].map((dim, i) => (
                 <div key={dim.label} className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">{dim.label}</span>
                     <span className="text-foreground">{dim.value}%</span>
                   </div>
-                  <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-full transition-all duration-1000"
-                      style={{ width: `${dim.value}%` }}
+                  <div className="h-1.5 bg-border dark:bg-white/10 rounded-full overflow-hidden">
+                    <AnimatedBar
+                      value={dim.value}
+                      delay={i * 0.15}
+                      className="h-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-full"
                     />
                   </div>
                 </div>

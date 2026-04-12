@@ -31,8 +31,18 @@ const routeList: RouteProps[] = [
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("scroll", () => setScrolled(window.scrollY > 50), { passive: true });
+  }
+
   return (
-    <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
+    <header className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+      scrolled
+        ? "nav-scrolled border-b border-border/50"
+        : "bg-transparent border-b border-transparent"
+    }`}>
       <NavigationMenu className="mx-auto">
         <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between">
           <NavigationMenuItem className="font-bold flex">

@@ -1,3 +1,4 @@
+import { StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import { Shield, Award, Star, Users, Lock } from "lucide-react";
 
 const credentials = [
@@ -12,17 +13,16 @@ export const Credibility = () => {
   return (
     <section className="py-10 border-b border-border">
       <div className="container">
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+        <StaggerContainer className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
           {credentials.map((c) => (
-            <div
-              key={c.label}
+            <StaggerItem key={c.label}><div
               className="flex items-center gap-2 text-muted-foreground text-sm font-medium"
             >
               <span className="text-[#4F46E5]">{c.icon}</span>
               {c.label}
-            </div>
+            </div></StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );
