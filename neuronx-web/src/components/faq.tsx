@@ -1,3 +1,4 @@
+import { ScrollReveal } from "./ui/scroll-reveal";
 import {
   Accordion,
   AccordionContent,
@@ -57,13 +58,16 @@ const FAQList: FAQProps[] = [
 export const FAQ = () => {
   return (
     <section id="faq" className="container py-16 sm:py-20">
+      <ScrollReveal>
       <h2 className="text-3xl md:text-4xl font-bold mb-4">
         Questions we hear from{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
           every firm
         </span>
       </h2>
+      </ScrollReveal>
 
+      <ScrollReveal delay={0.15}>
       <Accordion type="single" collapsible className="w-full AccordionRoot">
         {FAQList.map(({ question, answer, value }: FAQProps) => (
           <AccordionItem key={value} value={value}>
@@ -72,6 +76,7 @@ export const FAQ = () => {
           </AccordionItem>
         ))}
       </Accordion>
+      </ScrollReveal>
 
       <h3 className="font-medium mt-4">
         Still have questions?{" "}

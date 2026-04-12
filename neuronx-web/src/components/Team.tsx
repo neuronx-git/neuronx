@@ -1,4 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import {
   Card,
   CardContent,
@@ -54,7 +55,8 @@ export const Team = () => {
   };
 
   return (
-    <section id="team" className="container py-24 sm:py-32">
+    <section id="team" className="container py-16 sm:py-20">
+      <ScrollReveal>
       <h2 className="text-3xl md:text-4xl font-bold text-center">
         Built by{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
@@ -69,8 +71,9 @@ export const Team = () => {
         they built the system that every immigration firm needs but nobody had
         created — an AI sales OS designed by practitioners, for practitioners.
       </p>
+      </ScrollReveal>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 gap-y-10 max-w-4xl mx-auto">
+      <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 gap-y-10 max-w-4xl mx-auto">
         {teamList.map(
           ({
             imageUrl,
@@ -79,9 +82,9 @@ export const Team = () => {
             description,
             socialNetworks,
           }: TeamProps) => (
+            <StaggerItem key={name}>
             <Card
-              key={name}
-              className="bg-muted/50 relative mt-10 flex flex-col justify-center items-center"
+              className="bg-muted/50 relative mt-10 flex flex-col justify-center items-center card-premium"
             >
               <CardHeader className="mt-10 flex justify-center items-center pb-2">
                 <img
@@ -118,9 +121,10 @@ export const Team = () => {
                 ))}
               </CardFooter>
             </Card>
+            </StaggerItem>
           )
         )}
-      </div>
+      </StaggerContainer>
     </section>
   );
 };

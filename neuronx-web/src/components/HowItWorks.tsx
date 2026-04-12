@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { MedalIcon, MapIcon, PlaneIcon, GiftIcon } from "../components/Icons";
 import { FileCheck, FileSpreadsheet, Send, CheckCircle } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 
 interface StepProps {
   icon: JSX.Element;
@@ -66,49 +67,59 @@ const phase2Steps: StepProps[] = [
 export const HowItWorks = () => {
   return (
     <section id="howItWorks" className="container text-center py-16 sm:py-20">
-      <h2 className="text-3xl md:text-4xl font-bold">
-        How{" "}
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          NeuronX{" "}
-        </span>
-        Works
-      </h2>
-      <p className="md:w-3/4 mx-auto mt-4 mb-12 text-xl text-muted-foreground">
-        Two phases. Eight steps. One platform that manages everything from the
-        first inquiry to the final immigration decision.
-      </p>
+      <ScrollReveal>
+        <h2 className="text-3xl md:text-4xl font-bold">
+          How{" "}
+          <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+            NeuronX{" "}
+          </span>
+          Works
+        </h2>
+        <p className="md:w-3/4 mx-auto mt-4 mb-12 text-xl text-muted-foreground">
+          Two phases. Eight steps. One platform that manages everything from the
+          first inquiry to the final immigration decision.
+        </p>
+      </ScrollReveal>
 
       {/* Phase 1 */}
-      <Badge className="mb-6 text-sm px-4 py-1">Phase 1: Inquiry to Retainer</Badge>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      <ScrollReveal delay={0.1}>
+        <Badge className="mb-6 text-sm px-4 py-1">Phase 1: Inquiry to Retainer</Badge>
+      </ScrollReveal>
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         {phase1Steps.map(({ icon, title, description }: StepProps) => (
-          <Card key={title} className="bg-muted/50">
-            <CardHeader>
-              <CardTitle className="grid gap-4 place-items-center">
-                {icon}
-                {title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>{description}</CardContent>
-          </Card>
+          <StaggerItem key={title}>
+            <Card className="bg-muted/50 card-premium h-full">
+              <CardHeader>
+                <CardTitle className="grid gap-4 place-items-center">
+                  {icon}
+                  {title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>{description}</CardContent>
+            </Card>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       {/* Phase 2 */}
-      <Badge variant="outline" className="mb-6 text-sm px-4 py-1">Phase 2: Retainer to Decision</Badge>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <ScrollReveal delay={0.1}>
+        <Badge variant="outline" className="mb-6 text-sm px-4 py-1">Phase 2: Retainer to Decision</Badge>
+      </ScrollReveal>
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {phase2Steps.map(({ icon, title, description }: StepProps) => (
-          <Card key={title} className="bg-muted/50">
-            <CardHeader>
-              <CardTitle className="grid gap-4 place-items-center">
-                {icon}
-                {title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>{description}</CardContent>
-          </Card>
+          <StaggerItem key={title}>
+            <Card className="bg-muted/50 card-premium h-full">
+              <CardHeader>
+                <CardTitle className="grid gap-4 place-items-center">
+                  {icon}
+                  {title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>{description}</CardContent>
+            </Card>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
     </section>
   );
 };

@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import {
   Card,
   CardContent,
@@ -77,6 +78,7 @@ const pricingList: PricingProps[] = [
 export const Pricing = () => {
   return (
     <section id="pricing" className="container py-16 sm:py-20">
+      <ScrollReveal>
       <h2 className="text-3xl md:text-4xl font-bold text-center">
         Pricing that pays for itself
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
@@ -98,9 +100,11 @@ export const Pricing = () => {
           on your Starter plan.
         </p>
       </div>
+      </ScrollReveal>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {pricingList.map((pricing: PricingProps) => (
+          <StaggerItem key={pricing.title}>
           <Card
             key={pricing.title}
             className={
@@ -152,8 +156,9 @@ export const Pricing = () => {
               </div>
             </CardFooter>
           </Card>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       {/* Trust strip below pricing */}
       <div className="mt-12 text-center space-y-2">

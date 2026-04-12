@@ -1,10 +1,11 @@
 import { Button } from "./ui/button";
+import { ScrollReveal } from "./ui/scroll-reveal";
 
 export const Cta = () => {
   return (
     <section id="cta" className="bg-muted/50 py-16 mt-8 mb-16">
       <div className="container lg:grid lg:grid-cols-2 place-items-center">
-        <div className="lg:col-start-1">
+        <ScrollReveal className="lg:col-start-1">
           <h2 className="text-3xl md:text-4xl font-bold">
             Your competitors are still
             <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
@@ -16,7 +17,7 @@ export const Cta = () => {
             test, and show you exactly how many consultations you're currently
             missing.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="space-y-4 lg:col-start-2">
           <a
