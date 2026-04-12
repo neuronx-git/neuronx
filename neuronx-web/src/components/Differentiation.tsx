@@ -39,7 +39,7 @@ export const Differentiation = () => {
           </p>
         </ScrollReveal>
 
-        <div className="max-w-4xl mx-auto overflow-x-auto">
+        <ScrollReveal delay={0.15} className="max-w-4xl mx-auto overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
@@ -51,7 +51,7 @@ export const Differentiation = () => {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.feature} className="border-b border-border hover:bg-muted transition-colors">
+                <tr key={row.feature} className="border-b border-border hover:bg-muted/50 transition-colors">
                   <td className="px-4 py-3 text-foreground font-medium">{row.feature}</td>
                   <Cell value={row.nx} />
                   <Cell value={row.crm} />
@@ -60,7 +60,7 @@ export const Differentiation = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

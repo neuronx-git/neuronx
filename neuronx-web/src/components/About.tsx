@@ -1,4 +1,4 @@
-import { ScrollReveal } from "./ui/scroll-reveal";
+import { ScrollReveal, SlideIn } from "./ui/scroll-reveal";
 import { Statistics } from "./Statistics";
 
 export const About = () => {
@@ -6,7 +6,7 @@ export const About = () => {
     <section id="about" className="container py-12 sm:py-16">
       <div className="bg-muted/50 border rounded-lg py-12">
         <div className="px-6 flex flex-col-reverse md:flex-row gap-8 md:gap-12">
-          <div className="flex flex-col md:flex-row gap-6 flex-shrink-0">
+          <SlideIn direction="left" className="flex flex-col md:flex-row gap-6 flex-shrink-0">
             <img
               src="/team/sanjay.jpg"
               alt="Sanjay Singh Kumar, RCIC"
@@ -19,7 +19,7 @@ export const About = () => {
               <div className="text-sm text-muted-foreground">5,000+ cases processed</div>
               <div className="text-sm text-muted-foreground">5.0 Google Rating</div>
             </div>
-          </div>
+          </SlideIn>
           <div className="flex flex-col justify-between">
             <ScrollReveal className="pb-6">
               <h2 className="text-3xl md:text-4xl font-bold">

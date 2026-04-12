@@ -9,7 +9,7 @@ export const Footer = () => {
             <img src="/logo-transparent.svg" alt="NeuronX" className="h-8 dark:hidden" />
             <img src="/logo-dark.svg" alt="NeuronX" className="h-8 hidden dark:block" />
           </a>
-          <p className="mt-3 text-[11px] font-semibold leading-tight text-foreground/70 dark:text-slate-300 tracking-wide">
+          <p className="mt-3 text-[11px] font-bold leading-tight tracking-wide bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent inline-block">
             Revenue & Operations System<br />for Canadian Immigration Firms
           </p>
         </div>

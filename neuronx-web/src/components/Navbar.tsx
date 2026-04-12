@@ -51,7 +51,7 @@ export const Navbar = () => {
             <a href="/" className="ml-2 flex items-center gap-2.5">
               <img src="/logo-transparent.svg" alt="NeuronX" className="h-8 dark:hidden" />
               <img src="/logo-dark.svg" alt="NeuronX" className="h-8 hidden dark:block" />
-              <span className="hidden sm:block text-[11px] font-semibold leading-tight border-l border-border/60 pl-2.5 text-foreground/70 dark:text-slate-300 tracking-wide">
+              <span className="hidden sm:block text-[11px] font-bold leading-tight border-l border-border/60 pl-2.5 tracking-wide bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
                 Revenue & Operations System<br />for Canadian Immigration Firms
               </span>
             </a>

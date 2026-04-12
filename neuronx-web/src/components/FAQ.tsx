@@ -1,4 +1,4 @@
-import { ScrollReveal } from "./ui/scroll-reveal";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "./ui/scroll-reveal";
 import {
   Accordion,
   AccordionContent,
@@ -67,16 +67,18 @@ export const FAQ = () => {
       </h2>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.15}>
+      <StaggerContainer staggerDelay={0.1}>
       <Accordion type="single" collapsible className="w-full AccordionRoot">
         {FAQList.map(({ question, answer, value }: FAQProps) => (
-          <AccordionItem key={value} value={value}>
+          <StaggerItem key={value}>
+          <AccordionItem value={value}>
             <AccordionTrigger className="text-left">{question}</AccordionTrigger>
             <AccordionContent>{answer}</AccordionContent>
           </AccordionItem>
+          </StaggerItem>
         ))}
       </Accordion>
-      </ScrollReveal>
+      </StaggerContainer>
 
       <h3 className="font-medium mt-4">
         Still have questions?{" "}

@@ -88,7 +88,7 @@ export const HowItWorks = () => {
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         {phase1Steps.map(({ icon, title, description }: StepProps) => (
           <StaggerItem key={title}>
-            <Card className="bg-muted/50 card-premium h-full">
+            <Card className="bg-muted/50 card-premium h-full hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300">
               <CardHeader>
                 <CardTitle className="grid gap-4 place-items-center">
                   {icon}
@@ -108,7 +108,7 @@ export const HowItWorks = () => {
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {phase2Steps.map(({ icon, title, description }: StepProps) => (
           <StaggerItem key={title}>
-            <Card className="bg-muted/50 card-premium h-full">
+            <Card className="bg-muted/50 card-premium h-full hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300">
               <CardHeader>
                 <CardTitle className="grid gap-4 place-items-center">
                   {icon}

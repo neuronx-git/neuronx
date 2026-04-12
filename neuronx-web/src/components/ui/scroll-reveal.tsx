@@ -5,7 +5,7 @@ import { type ReactNode, useRef, useState, useEffect } from "react";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 /* ─── Scroll Reveal ───
- * VISIBLE MOVEMENT: y:40px (was 20), duration 0.7s, triggers when 20% visible
+ * Fades + slides up on scroll. Triggers when 5% visible with -50px margin.
  */
 interface ScrollRevealProps {
   children: ReactNode;
@@ -28,7 +28,7 @@ export function ScrollReveal({
     <motion.div
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, amount: 0.15 }}
+      viewport={{ once, amount: 0.05, margin: "0px 0px -50px 0px" }}
       transition={{ duration, delay, ease }}
       className={className}
     >
@@ -37,9 +37,7 @@ export function ScrollReveal({
   );
 }
 
-/* ─── Stagger Container ───
- * VISIBLE STAGGER: 0.15s between children (was 0.08)
- */
+/* ─── Stagger Container ─── */
 interface StaggerProps {
   children: ReactNode;
   className?: string;
@@ -57,7 +55,7 @@ export function StaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: 0.15 }}
+      viewport={{ once, amount: 0.05, margin: "0px 0px -50px 0px" }}
       variants={{
         hidden: {},
         visible: { transition: { staggerChildren: staggerDelay } },
@@ -115,7 +113,7 @@ export function AnimatedCounter({
   useEffect(() => {
     if (!isInView) return;
     let start = 0;
-    const step = value / (duration * 60); // 60fps
+    const step = value / (duration * 60);
     const timer = setInterval(() => {
       start += step;
       if (start >= value) {
@@ -147,7 +145,7 @@ export function AnimatedBar({ value, delay = 0, className = "" }: BarProps) {
     <motion.div
       initial={{ width: "0%" }}
       whileInView={{ width: `${value}%` }}
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 1.2, delay, ease }}
       className={className}
     />
@@ -199,7 +197,7 @@ export function SlideIn({
     <motion.div
       initial={{ opacity: 0, ...offsets[direction] }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.05, margin: "0px 0px -50px 0px" }}
       transition={{ duration: 0.7, delay, ease }}
       className={className}
     >

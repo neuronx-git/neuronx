@@ -84,7 +84,7 @@ export const Team = () => {
           }: TeamProps) => (
             <StaggerItem key={name}>
             <Card
-              className="bg-muted/50 relative mt-10 flex flex-col justify-center items-center card-premium"
+              className="bg-muted/50 relative mt-10 flex flex-col justify-center items-center card-premium h-full hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300"
             >
               <CardHeader className="mt-10 flex justify-center items-center pb-2">
                 <img

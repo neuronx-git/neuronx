@@ -66,13 +66,19 @@
    GRADIENT SYSTEM (Stripe-inspired)
    ═══════════════════════════════════════ */
 
-/* Hero background — multi-layered radial gradients */
+/* Hero background — animated multi-layered radial gradients */
 .hero-gradient {
   background:
     radial-gradient(ellipse at 20% 30%, rgba(79,70,229,0.25) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.15) 0%, transparent 60%),
     #0F172A;
+  background-size: 200% 200%;
+  animation: gradient-drift 20s ease infinite;
+}
+@keyframes gradient-drift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 .dark .hero-gradient {
   background:
