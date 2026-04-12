@@ -1,5 +1,16 @@
 import { Button } from "./ui/button";
 import { ScrollReveal } from "./ui/scroll-reveal";
+import confetti from "canvas-confetti";
+
+const fireConfetti = () => {
+  confetti({
+    particleCount: 80,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ["#4F46E5", "#7C3AED", "#3B82F6", "#818CF8"],
+    disableForReducedMotion: true,
+  });
+};
 
 export const Cta = () => {
   return (
@@ -19,13 +30,14 @@ export const Cta = () => {
           </p>
         </ScrollReveal>
 
-        <div className="space-y-4 lg:col-start-2">
+        <ScrollReveal delay={0.2} className="space-y-4 lg:col-start-2">
           <a
             href="https://api.leadconnectorhq.com/widget/booking/clvODWkfByOZnzeqyPPW"
             target="_blank"
             rel="noreferrer noopener"
+            onClick={fireConfetti}
           >
-            <Button className="w-full md:mr-4 md:w-auto">
+            <Button className="cta-gradient text-white border-0 w-full md:mr-4 md:w-auto">
               Start Your Pilot
             </Button>
           </a>
@@ -38,7 +50,7 @@ export const Cta = () => {
               Book a 15-Min Demo
             </Button>
           </a>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
