@@ -15,10 +15,10 @@ interface TeamProps {
   name: string;
   position: string;
   description: string;
-  socialNetworks: SociaNetworkslProps[];
+  socialNetworks: SocialNetworksProps[];
 }
 
-interface SociaNetworkslProps {
+interface SocialNetworksProps {
   name: string;
   url: string;
 }
@@ -103,7 +103,7 @@ export const Team = () => {
               </CardContent>
 
               <CardFooter>
-                {socialNetworks.map(({ name, url }: SociaNetworkslProps) => (
+                {socialNetworks.map(({ name, url }: SocialNetworksProps) => (
                   <div key={name}>
                     <a
                       rel="noreferrer noopener"

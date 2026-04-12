@@ -106,7 +106,6 @@ export const Pricing = () => {
         {pricingList.map((pricing: PricingProps) => (
           <StaggerItem key={pricing.title}>
           <Card
-            key={pricing.title}
             className={
               pricing.popular === PopularPlanType.YES
                 ? "drop-shadow-xl shadow-black/10 dark:shadow-white/10 border-primary/50"
@@ -114,7 +113,7 @@ export const Pricing = () => {
             }
           >
             <CardHeader>
-              <CardTitle className="flex item-center justify-between">
+              <CardTitle className="flex items-center justify-between">
                 {pricing.title}
                 {pricing.popular === PopularPlanType.YES ? (
                   <Badge variant="secondary" className="text-sm text-primary">
@@ -135,9 +134,8 @@ export const Pricing = () => {
                 rel="noreferrer noopener"
               >
                 <Button
-                  className={`w-full ${
-                    pricing.popular === PopularPlanType.YES ? "" : "variant-outline"
-                  }`}
+                  variant={pricing.popular === PopularPlanType.YES ? "default" : "outline"}
+                  className="w-full"
                 >
                   {pricing.buttonText}
                   <ArrowRight className="ml-2 w-4 h-4" />
