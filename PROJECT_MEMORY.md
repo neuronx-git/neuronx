@@ -62,23 +62,48 @@
 
 See: `docs/05_governance/open_decisions.md`.
 
-## FastAPI Thin Brain (2026-04-01)
+## NeuronX API (FastAPI on Railway) — v0.4.0
 
-**Status**: Built, tested (27/27), deployment-ready.
+**Status**: Deployed on Railway, 78/78 tests passing.
 **Location**: `neuronx-api/`
-**Deploy to**: Railway ($5-20/mo)
+**Live**: `neuronx-production-62f9.up.railway.app`
+**Version**: 0.4.0
 
-### Endpoints
+### Sprint 1 Security Upgrade (2026-04-13)
+- ✅ Webhook signature verification (Ed25519 for GHL, HMAC for VAPI)
+- ✅ GHL client retry with exponential backoff (tenacity, 3 attempts)
+- ✅ 429 rate limit handling with Retry-After header
+- ✅ Connection pooling (shared httpx client)
+- ✅ Idempotency tracking (processed_webhooks table)
+- ✅ Dead letter queue (failed_webhooks table for retry)
+- ✅ Dependent management table (case → dependents)
+- ✅ Admin endpoint secured (X-Admin-Key header required)
+- ✅ CORS restricted to specific headers
+- ✅ Dependencies pinned for reproducibility
+
+### Core Endpoints
 | Endpoint | What | Status |
 |----------|------|--------|
-| `POST /webhooks/ghl` | GHL events (form, appointment, tags) | ✅ |
-| `POST /webhooks/voice` | VAPI events (function-call, end-of-call, status) | ✅ |
-| `POST /score/lead` | Full R1-R5 scoring (0-100, WF-04B aligned) | ✅ |
-| `POST /score/form` | Preliminary form-based scoring (R1-R3 fallback) | ✅ |
-| `POST /briefing/generate` | Pre-consultation briefing (HTML + plain text) | ✅ |
-| `POST /trust/check` | Transcript compliance scan | ✅ |
-| `GET /analytics/pipeline` | Funnel metrics (stubbed, Week 4) | ⚪ |
-| `GET /analytics/stuck` | Stuck lead detection (stubbed, Week 4) | ⚪ |
+| `POST /webhooks/ghl` | GHL events — signature verified + idempotent | ✅ |
+| `POST /webhooks/voice` | VAPI events — signature verified + idempotent + DLQ | ✅ |
+| `POST /score/lead` | Full R1-R5 scoring (0-100) | ✅ |
+| `POST /cases/initiate` | Case lifecycle start | ✅ |
+| `POST /cases/stage` | Case stage transitions | ✅ |
+| `POST /documents/checklist` | Program-specific doc checklists | ✅ |
+| `POST /signatures/send` | Retainer e-signature via Documenso | ✅ |
+| `POST /typebot/webhook` | Smart form submissions | ✅ |
+| `GET /clients/search` | Chrome extension search | ✅ |
+| `POST /sync/full` | GHL → PostgreSQL sync | ✅ |
+
+### Database Tables (PostgreSQL on Railway)
+contacts, opportunities, cases, activities, signatures, sync_log,
+dependents (NEW), processed_webhooks (NEW), dead_letter_queue (NEW)
+
+### Architecture Decision (2026-04-13)
+- **GHL authoritative for**: contacts, pipeline, messages, calendar, tags
+- **PostgreSQL authoritative for**: cases, dependents, document metadata, scoring history, audit trail
+- **Wrapper role**: Smart relay — stateless for most ops, stateful for case lifecycle + audit
+- **No n8n/Temporal/document platforms needed** — 800 LOC Python handles all integrations
 
 ### Open-Source Stack Decision (2026-04-01)
 - **Odoo**: REJECTED (overlap with GHL, maintenance burden)
