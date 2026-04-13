@@ -40,11 +40,33 @@
 - New Case (pre-built) — ≤3 days old
 - Unassigned (pre-built) — no owner
 
-## NeuronX API — LIVE (Railway)
+## NeuronX API — v0.4.0 LIVE (Railway)
 
 **URL**: `https://neuronx-production-62f9.up.railway.app`
-**Tests**: 39/39 passing | **Endpoints**: 17
+**Tests**: 78/78 passing | **Endpoints**: 18 (+ dependents CRUD)
 **Config-driven**: scoring.yaml, programs.yaml, trust.yaml (edit YAML → push → auto-deploy)
+
+### Sprint 1 Security Upgrade (2026-04-13)
+- ✅ Webhook signature verification (Ed25519 GHL, HMAC VAPI)
+- ✅ GHL client retry with exponential backoff (tenacity, 3 attempts)
+- ✅ 429 rate limit handling with Retry-After header
+- ✅ Connection pooling (shared httpx client)
+- ✅ Idempotency tracking (processed_webhooks table)
+- ✅ Dead letter queue (failed webhooks for retry)
+- ✅ Admin endpoint secured (X-Admin-Key header)
+- ✅ CORS restricted, dependencies pinned
+
+### Sprint 2 Data Integrity (2026-04-13)
+- ✅ Case ID: UUID-based collision-safe (NX-YYYYMMDD-{uuid[:8]})
+- ✅ Config consolidation: PROCESSING_TIMES, IRCC_FORMS, ESCALATION_PATTERNS,
+  COMPLEXITY_KEYWORDS all loaded from YAML (removed hardcoded dicts)
+- ✅ Dependents CRUD API (/dependents/ — PostgreSQL authoritative)
+- ✅ Structured audit trail with request correlation IDs
+
+### Architecture Boundary (2026-04-13)
+- **GHL authoritative**: contacts, pipeline, messages, calendar, tags
+- **PostgreSQL authoritative**: cases, dependents, document metadata, scoring history, audit
+- **No n8n/Temporal/document platforms** — 2,400 LOC Python covers all integrations
 
 ### VAPI Structured Data Extraction — CONFIGURED (2026-04-04)
 - R1-R5 extracted as structured JSON after every call
