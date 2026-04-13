@@ -18,6 +18,8 @@ asyncpg==0.30.0
 alembic==1.14.1
 # IRCC form auto-fill
 pypdf==4.3.1
+# Document OCR (passport MRZ extraction)
+fastmrz==2.1.2
 # Testing
 pytest==8.3.4
 pytest-asyncio==0.24.0

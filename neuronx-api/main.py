@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 import logging
 import os
 
-from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents
+from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -67,6 +67,7 @@ app.include_router(typebot.router, prefix="/typebot", tags=["Smart Forms (Typebo
 app.include_router(clients.router, prefix="/clients", tags=["Client Data (Chrome Extension)"])
 app.include_router(forms.router, prefix="/form", tags=["Multi-Tenant Forms"])  # forms.neuronx.co/form/vmc/onboarding
 app.include_router(dependents.router, prefix="/dependents", tags=["Case Dependents"])
+app.include_router(doc_extract.router, prefix="/extract", tags=["Document OCR Extraction"])
 
 
 @app.get("/health")
