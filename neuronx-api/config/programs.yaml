@@ -10,8 +10,8 @@
 #
 # SOURCES: All data sourced from official IRCC (canada.ca).
 # See docs/09_domain_knowledge/GOVERNMENT_SOURCES.md for full citations.
-# LAST VERIFIED: 2026-04-04 against canada.ca
-# NEXT REVIEW: 2026-05-04 (monthly)
+# LAST VERIFIED: 2026-04-13 against canada.ca + CIC News + IRCC processing tracker
+# NEXT REVIEW: 2026-05-13 (monthly)
 #
 # WARNING: Processing times are ESTIMATES from IRCC and change frequently.
 # Always include disclaimer in client-facing content.
@@ -29,9 +29,10 @@ programs:
 
   Express Entry:
     tier: P0  # Top 3 — full automation
+    # Updated April 2026: FSWP dropped to 6 months (from 7) — first improvement since early 2025
     processing_months:
       min: 5
-      max: 8
+      max: 7
       avg: 6
     ircc_forms:
       - {code: "IMM 0008", name: "Generic Application Form for Canada", required: true}
@@ -58,10 +59,11 @@ programs:
 
   Spousal Sponsorship:
     tier: P0
+    # Updated April 2026: 15 months outland, 24 months inland, 31-36 months Quebec
     processing_months:
-      min: 12
-      max: 18
-      avg: 15
+      min: 15
+      max: 24
+      avg: 18
     ircc_forms:
       - {code: "IMM 0008", name: "Generic Application Form for Canada", required: true}
       - {code: "IMM 1344", name: "Application to Sponsor, Sponsorship Agreement", required: true}

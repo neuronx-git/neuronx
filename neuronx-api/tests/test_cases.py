@@ -50,7 +50,7 @@ def test_processing_timeline(client):
 def test_processing_timeline_spousal(client):
     r = client.get("/cases/timeline/Spousal Sponsorship")
     assert r.status_code == 200
-    assert r.json()["estimated_months"]["avg"] == 15
+    assert r.json()["estimated_months"]["avg"] == 18  # Updated April 2026: 15mo outland, 24mo inland, avg 18
 
 
 def test_invalid_decision(client):
