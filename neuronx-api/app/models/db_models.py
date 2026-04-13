@@ -173,6 +173,70 @@ class Signature(Base):
     )
 
 
+class Dependent(Base):
+    """Dependent/family member linked to a case — wrapper-authoritative."""
+    __tablename__ = "dependents"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    case_id: Mapped[str] = mapped_column(String(50), ForeignKey("cases.case_id"))
+    contact_id: Mapped[str] = mapped_column(String(50), ForeignKey("contacts.id"))
+    full_name: Mapped[str] = mapped_column(String(200))
+    relationship: Mapped[str] = mapped_column(String(50))  # spouse, child, parent
+    date_of_birth: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    passport_number: Mapped[str] = mapped_column(String(50), default="")
+    passport_expiry: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    docs_status: Mapped[str] = mapped_column(String(20), default="pending")  # pending, partial, complete
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
+    __table_args__ = (
+        Index("ix_dep_case", "case_id"),
+        Index("ix_dep_contact", "contact_id"),
+    )
+
+
+class ProcessedWebhook(Base):
+    """Idempotency tracking — prevents duplicate webhook processing."""
+    __tablename__ = "processed_webhooks"
+
+    webhook_id: Mapped[str] = mapped_column(String(200), primary_key=True)
+    source: Mapped[str] = mapped_column(String(20))  # ghl, vapi, typebot, documenso
+    processed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    response_status: Mapped[int] = mapped_column(Integer, default=200)
+
+    __table_args__ = (
+        Index("ix_pw_source", "source", "processed_at"),
+    )
+
+
+class DeadLetterQueue(Base):
+    """Failed webhook retry queue — for manual review and retry."""
+    __tablename__ = "dead_letter_queue"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    source: Mapped[str] = mapped_column(String(20))  # ghl, vapi, typebot, documenso
+    webhook_id: Mapped[str] = mapped_column(String(200), default="")
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    error_message: Mapped[str] = mapped_column(Text, default="")
+    attempt_count: Mapped[int] = mapped_column(Integer, default=1)
+    first_failed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    last_attempted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    status: Mapped[str] = mapped_column(String(20), default="pending")  # pending, retrying, resolved, abandoned
+
+    __table_args__ = (
+        Index("ix_dlq_status", "status"),
+        Index("ix_dlq_source", "source"),
+    )
+
+
 class SyncLog(Base):
     """Tracks sync state for GHL → PostgreSQL data sync."""
     __tablename__ = "sync_log"

@@ -2,12 +2,12 @@
 Webhook Receiver
 Handles inbound events from GHL and VAPI.
 
-GHL Webhook: Form submissions, appointment events, tag changes.
-VAPI Webhook: End-of-call reports with transcript + structured data.
+Security: All webhooks verified via signature (Ed25519 for GHL, HMAC for VAPI).
+Idempotency: Duplicate webhooks detected via processed_webhooks table.
 
 Data flow:
-  VAPI call ends → POST /webhooks/voice → extract R1-R5 → score → update GHL → trigger WF-04B
-  GHL event      → POST /webhooks/ghl   → log + analytics
+  VAPI call ends → POST /webhooks/voice → verify → dedup → extract R1-R5 → score → update GHL → trigger WF-04B
+  GHL event      → POST /webhooks/ghl   → verify → dedup → log + analytics
 """
 
 from fastapi import APIRouter, Request, HTTPException, Header
@@ -15,17 +15,74 @@ from typing import Optional
 from datetime import datetime
 import logging
 import json
-import hmac
-import hashlib
 
 from app.services.ghl_client import GHLClient
 from app.services.scoring_service import ScoringService
 from app.services.trust_service import TrustService
+from app.services.webhook_security import verify_ghl_signature, verify_vapi_signature
 from app.utils.compliance_log import log_event
 from app.config import settings
+from app.database import is_db_configured, get_session
 
 router = APIRouter()
 logger = logging.getLogger("neuronx.webhooks")
+
+
+# ── Idempotency helper ──
+
+async def _is_duplicate_webhook(webhook_id: str, source: str) -> bool:
+    """Check if this webhook was already processed. Returns True if duplicate."""
+    if not webhook_id or not is_db_configured():
+        return False
+    try:
+        from sqlalchemy import text
+        async for session in get_session():
+            result = await session.execute(
+                text("SELECT 1 FROM processed_webhooks WHERE webhook_id = :wid AND source = :src"),
+                {"wid": webhook_id, "src": source},
+            )
+            return result.scalar() is not None
+    except Exception as e:
+        logger.warning("Idempotency check failed: %s — processing anyway", e)
+        return False
+
+
+async def _mark_webhook_processed(webhook_id: str, source: str, status_code: int = 200):
+    """Record that this webhook was processed."""
+    if not webhook_id or not is_db_configured():
+        return
+    try:
+        from sqlalchemy import text
+        async for session in get_session():
+            await session.execute(
+                text(
+                    "INSERT INTO processed_webhooks (webhook_id, source, response_status) "
+                    "VALUES (:wid, :src, :status) ON CONFLICT (webhook_id) DO NOTHING"
+                ),
+                {"wid": webhook_id, "src": source, "status": status_code},
+            )
+            await session.commit()
+    except Exception as e:
+        logger.warning("Failed to mark webhook processed: %s", e)
+
+
+async def _save_to_dlq(source: str, webhook_id: str, payload: dict, error_message: str):
+    """Save failed webhook to dead letter queue for retry."""
+    if not is_db_configured():
+        return
+    try:
+        from sqlalchemy import text
+        async for session in get_session():
+            await session.execute(
+                text(
+                    "INSERT INTO dead_letter_queue (source, webhook_id, payload, error_message) "
+                    "VALUES (:src, :wid, :payload, :err)"
+                ),
+                {"src": source, "wid": webhook_id, "payload": json.dumps(payload), "err": error_message},
+            )
+            await session.commit()
+    except Exception as e:
+        logger.error("Failed to save to DLQ: %s", e)
 
 
 # ── GHL Webhook ──
@@ -34,27 +91,39 @@ logger = logging.getLogger("neuronx.webhooks")
 async def receive_ghl_webhook(
     request: Request,
     x_ghl_signature: Optional[str] = Header(None),
+    x_ghl_timestamp: Optional[str] = Header(None),
 ):
     """
     Receive GHL events: form submissions, appointment updates, tag changes.
     NeuronX logs events and triggers briefings — GHL workflows handle the rest.
     """
     body = await request.body()
-    payload = json.loads(body)
 
+    # 1. Verify signature
+    verify_ghl_signature(body, x_ghl_signature, x_ghl_timestamp)
+
+    payload = json.loads(body)
     event_type = payload.get("type", "unknown")
     contact_id = payload.get("contactId") or payload.get("contact_id")
+    webhook_id = payload.get("webhookId") or payload.get("id") or f"ghl-{contact_id}-{event_type}"
+
+    # 2. Idempotency check
+    if await _is_duplicate_webhook(webhook_id, "ghl"):
+        logger.info("Duplicate GHL webhook: %s — skipping", webhook_id)
+        return {"status": "ok", "action": "already_processed"}
 
     logger.info("GHL webhook: type=%s contact=%s", event_type, contact_id)
-    log_event("ghl_webhook", {"type": event_type, "contact_id": contact_id})
+    log_event("ghl_webhook", {"type": event_type, "contact_id": contact_id, "webhook_id": webhook_id})
 
     # Route by event type
     if event_type in ("ContactCreate", "ContactCreated"):
+        await _mark_webhook_processed(webhook_id, "ghl")
         return {"status": "ok", "action": "contact_logged"}
 
     if event_type in ("AppointmentCreate", "AppointmentBooked", "appointment.booked"):
         appointment_id = payload.get("appointmentId") or payload.get("id")
         logger.info("Appointment booked: %s — briefing will be triggered by scheduler", appointment_id)
+        await _mark_webhook_processed(webhook_id, "ghl")
         return {"status": "ok", "action": "appointment_logged", "appointment_id": appointment_id}
 
     if event_type in ("TagAdded", "tag.added", "ContactTagUpdate"):
@@ -62,41 +131,42 @@ async def receive_ghl_webhook(
         if isinstance(tag_name, dict):
             tag_name = tag_name.get("name", "")
         logger.info("Tag event: contact=%s tag=%s", contact_id, tag_name)
+        await _mark_webhook_processed(webhook_id, "ghl")
         return {"status": "ok", "action": "tag_logged", "tag": tag_name}
 
+    await _mark_webhook_processed(webhook_id, "ghl")
     return {"status": "ok", "action": "no_handler", "type": event_type}
 
 
 # ── VAPI Webhook ──
 
 @router.post("/voice")
-async def receive_voice_webhook(request: Request):
+async def receive_voice_webhook(
+    request: Request,
+    x_vapi_signature: Optional[str] = Header(None),
+):
     """
     Receive VAPI webhook events.
 
     VAPI sends different event types during a call lifecycle:
-    - assistant-request: VAPI asks for assistant config (for dynamic assistants)
     - function-call: VAPI invokes a server-side function (collect_readiness_data)
-    - status-update: Call status changes (queued, ringing, in-progress, ended)
     - end-of-call-report: Final report with transcript, analysis, structured data
-    - hang: Notification that call hung up
+    - status-update: Call status changes
     - transcript: Real-time transcript updates
-
-    The critical event is end-of-call-report — it contains:
-    - message.transcript: Full conversation text
-    - message.analysis.summary: LLM-generated call summary
-    - message.analysis.structuredData: R1-R5 extracted data (via analysisPlan)
-    - message.call.id: VAPI call ID
-    - message.call.metadata.ghl_contact_id: GHL contact reference
     """
     body = await request.body()
+
+    # 1. Verify signature
+    verify_vapi_signature(body, x_vapi_signature)
+
     payload = json.loads(body)
 
     # VAPI wraps everything in a "message" object
     message = payload.get("message", payload)
     event_type = message.get("type", payload.get("type", "unknown"))
+    call_id = message.get("call", {}).get("id", payload.get("call", {}).get("id", "unknown"))
 
-    logger.info("VAPI webhook: type=%s", event_type)
+    logger.info("VAPI webhook: type=%s call_id=%s", event_type, call_id)
 
     # ── Function call (VAPI asks NeuronX to execute a function) ──
     if event_type == "function-call":
@@ -104,12 +174,25 @@ async def receive_voice_webhook(request: Request):
 
     # ── End of call report (the big one) ──
     if event_type == "end-of-call-report":
-        return await _handle_end_of_call(message)
+        webhook_id = f"vapi-eoc-{call_id}"
+
+        # Idempotency check
+        if await _is_duplicate_webhook(webhook_id, "vapi"):
+            logger.info("Duplicate VAPI end-of-call: %s — skipping", webhook_id)
+            return {"status": "ok", "action": "already_processed"}
+
+        try:
+            result = await _handle_end_of_call(message)
+            await _mark_webhook_processed(webhook_id, "vapi")
+            return result
+        except Exception as e:
+            logger.error("Failed to process VAPI end-of-call: %s", e, exc_info=True)
+            await _save_to_dlq("vapi", webhook_id, payload, str(e))
+            return {"status": "error", "message": "Processing failed — saved to retry queue"}
 
     # ── Status updates (log only) ──
     if event_type == "status-update":
         status = message.get("status", "unknown")
-        call_id = message.get("call", {}).get("id", "unknown")
         logger.info("VAPI status: call=%s status=%s", call_id, status)
         log_event("vapi_status", {"call_id": call_id, "status": status})
         return {"status": "ok", "action": "status_logged"}
@@ -120,7 +203,6 @@ async def receive_voice_webhook(request: Request):
 
     # ── Assistant request (return assistant config if using dynamic) ──
     if event_type == "assistant-request":
-        # For now, we use static assistant config in VAPI dashboard
         return {"status": "ok", "action": "not_using_dynamic_assistant"}
 
     log_event("vapi_unhandled", {"type": event_type})
@@ -140,15 +222,13 @@ async def _handle_function_call(message: dict) -> dict:
     logger.info("VAPI function call: %s params=%s", fn_name, list(fn_params.keys()))
 
     if fn_name == "collect_readiness_data":
-        # VAPI collected R1-R5 from the caller — acknowledge receipt
         log_event("vapi_readiness_collected", fn_params)
         return {
             "result": "Readiness data received. Thank you for providing that information. Let me check if we can schedule a consultation for you."
         }
 
     if fn_name == "book_consultation":
-        # Return booking link for the caller
-        booking_url = f"https://api.leadconnectorhq.com/widget/booking/{settings.ghl_calendar_id or 'To1U2KbcvJ0EAX0RGKHS'}"
+        booking_url = f"https://api.leadconnectorhq.com/widget/booking/{settings.ghl_calendar_id}"
         return {
             "result": f"I can help you book a consultation. You'll receive a text message with a link to choose a time that works for you. The booking link is: {booking_url}"
         }
@@ -171,7 +251,7 @@ async def _handle_end_of_call(message: dict) -> dict:
     1. Extract structured data (R1-R5) from the call analysis
     2. Run trust boundary check on transcript
     3. Score the lead's readiness
-    4. Update GHL contact with fields + tags
+    4. Update GHL contact with fields + tags (with retry)
     5. Add call summary as GHL note
     """
     call_data = message.get("call", {})
@@ -182,7 +262,6 @@ async def _handle_end_of_call(message: dict) -> dict:
     # Transcript
     transcript = message.get("transcript", "")
     if not transcript:
-        # Some VAPI versions nest transcript differently
         artifact = message.get("artifact", {})
         transcript = artifact.get("transcript", "")
 
@@ -214,9 +293,10 @@ async def _handle_end_of_call(message: dict) -> dict:
     trust_service = TrustService()
     trust_result = trust_service.check_transcript(transcript, contact_id, call_id)
 
+    ghl = GHLClient()
+
     if trust_result.requires_escalation:
         logger.warning("Trust escalation: contact=%s flags=%s", contact_id, trust_result.flags)
-        ghl = GHLClient()
         await ghl.add_tag(contact_id, "nx:human_escalation")
         await ghl.add_note(
             contact_id,
@@ -224,12 +304,10 @@ async def _handle_end_of_call(message: dict) -> dict:
             f"Triggers: {', '.join(trust_result.flags)}\n"
             f"Requires RCIC review before proceeding."
         )
-        # Still score the lead but mark as complex
-        # Fall through to scoring below
 
     if trust_result.violations:
         logger.error("TRUST VIOLATION in call %s: %s", call_id, trust_result.violations)
-        await GHLClient().add_note(
+        await ghl.add_note(
             contact_id,
             f"[TRUST VIOLATION] Call {call_id}\n"
             f"Violations: {', '.join(trust_result.violations)}\n"
@@ -253,8 +331,7 @@ async def _handle_end_of_call(message: dict) -> dict:
         if "nx:human_escalation" not in score.ghl_tags_to_add:
             score.ghl_tags_to_add.append("nx:human_escalation")
 
-    # 4. Update GHL
-    ghl = GHLClient()
+    # 4. Update GHL (GHL client has built-in retry)
     await ghl.update_custom_fields(contact_id, score.ghl_fields_to_update)
     await ghl.add_tags(contact_id, score.ghl_tags_to_add + ["nx:contacted"])
 

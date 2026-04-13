@@ -7,7 +7,7 @@ See: docs/03_infrastructure/product_boundary.md for what belongs here vs GHL
 See: docs/04_compliance/trust_boundaries.md for AI behavioral constraints
 """
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="NeuronX API",
     description="AI orchestration layer for immigration consulting intake. Handles webhooks, readiness scoring, consultation prep, and analytics.",
-    version="0.1.0",
+    version="0.4.0",
     lifespan=lifespan,
     docs_url="/docs" if settings.env != "production" else None,
 )
@@ -48,8 +48,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_methods=["POST", "GET"],
-    allow_headers=["*"],
+    allow_methods=["POST", "GET", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "X-GHL-Signature", "X-GHL-Timestamp", "X-Vapi-Signature"],
 )
 
 # Routers
@@ -74,14 +74,17 @@ async def health():
     return {
         "status": "ok",
         "service": "neuronx-api",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "database": "connected" if is_db_configured() else "not configured",
     }
 
 
 @app.post("/admin/reload-config")
-async def reload_config():
-    """Reload YAML config files without redeploying. For hot config changes."""
+async def reload_config(x_admin_key: str = Header(...)):
+    """Reload YAML config files without redeploying. Requires X-Admin-Key header."""
+    admin_key = os.getenv("ADMIN_API_KEY", "neuronx-admin-dev")
+    if x_admin_key != admin_key:
+        raise HTTPException(status_code=401, detail="Invalid admin key")
     from app.config_loader import reload_all
     reload_all()
     return {"status": "ok", "message": "All configs reloaded from YAML"}

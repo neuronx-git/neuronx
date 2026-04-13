@@ -5,6 +5,12 @@ Thin wrapper around GoHighLevel V2 API.
 Token management: Reads OAuth token from tools/ghl-lab/.tokens.json.
 Falls back to GHL_ACCESS_TOKEN env var if token file not found.
 
+Reliability:
+- Retry with exponential backoff (3 attempts via tenacity)
+- 429 rate limit handling with Retry-After header
+- Shared httpx client for connection pooling
+- Token cache with 20h TTL
+
 Rate limits (sandbox): 25 req/10s, 10K req/day
 Rate limits (production): 100 req/10s, 200K req/day
 Docs: https://highlevel.stoplight.io/docs/integrations/
@@ -14,14 +20,38 @@ import httpx
 import json
 import logging
 import time
+import asyncio
 from pathlib import Path
 from typing import Optional
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, before_sleep_log
+
 from app.config import settings
 
 logger = logging.getLogger("neuronx.ghl")
 
 # Token file path (relative to project root)
 TOKEN_FILE = Path(__file__).parent.parent.parent.parent / "tools" / "ghl-lab" / ".tokens.json"
+
+# Shared httpx client (connection pooling)
+_http_client: Optional[httpx.AsyncClient] = None
+
+
+def _get_http_client() -> httpx.AsyncClient:
+    """Get or create shared httpx client for connection reuse."""
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        _http_client = httpx.AsyncClient(
+            timeout=30.0,
+            limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
+        )
+    return _http_client
+
+
+class RateLimitError(Exception):
+    """Raised when GHL returns 429 — triggers retry with backoff."""
+    def __init__(self, retry_after: int = 10):
+        self.retry_after = retry_after
+        super().__init__(f"Rate limited. Retry after {retry_after}s")
 
 
 class GHLClient:
@@ -62,17 +92,40 @@ class GHLClient:
 
         raise RuntimeError("No GHL access token available. Set GHL_ACCESS_TOKEN or ensure .tokens.json exists.")
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=2, max=30),
+        retry=retry_if_exception_type((httpx.ConnectError, httpx.ReadTimeout, RateLimitError)),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True,
+    )
     async def _request(self, method: str, path: str, **kwargs) -> httpx.Response:
-        """Make an authenticated GHL API request with error handling."""
+        """Make an authenticated GHL API request with retry + rate limit handling."""
         url = f"{self.base_url}{path}"
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            r = await client.request(method, url, headers=self.headers, **kwargs)
-            if r.status_code == 401:
-                logger.error("GHL 401 — token may be expired. Refresh via: cd tools/ghl-lab && npx tsx src/ghlProvisioner.ts refresh-token")
-                GHLClient._cached_token = None
-                GHLClient._token_expires_at = 0
+        client = _get_http_client()
+
+        r = await client.request(method, url, headers=self.headers, **kwargs)
+
+        # Handle rate limiting
+        if r.status_code == 429:
+            retry_after = int(r.headers.get("Retry-After", "10"))
+            logger.warning("GHL 429 rate limited — waiting %ds before retry", retry_after)
+            await asyncio.sleep(retry_after)
+            raise RateLimitError(retry_after)
+
+        # Handle auth failures
+        if r.status_code == 401:
+            logger.error("GHL 401 — token may be expired. Refresh via: cd tools/ghl-lab && npx tsx src/ghlProvisioner.ts refresh-token")
+            GHLClient._cached_token = None
+            GHLClient._token_expires_at = 0
+
+        # Handle server errors (trigger retry)
+        if r.status_code >= 500:
+            logger.warning("GHL %d on %s %s — will retry", r.status_code, method, path)
             r.raise_for_status()
-            return r
+
+        r.raise_for_status()
+        return r
 
     # ── Contact Operations ──
 
@@ -187,7 +240,7 @@ class GHLClient:
 
     async def get_pipeline_opportunities(
         self,
-        pipeline_id: str = "Dtj9nQVd3QjL7bAb3Aiw",
+        pipeline_id: Optional[str] = None,
         limit: int = 50,
     ) -> list:
         """Get all opportunities in a pipeline."""
@@ -196,7 +249,7 @@ class GHLClient:
             "/opportunities/search",
             params={
                 "location_id": self.location_id,
-                "pipeline_id": pipeline_id,
+                "pipeline_id": pipeline_id or settings.ghl_pipeline_id,
                 "limit": limit,
             },
         )
