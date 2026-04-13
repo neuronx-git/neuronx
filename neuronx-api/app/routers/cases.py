@@ -8,13 +8,16 @@ GET  /cases/forms          — Get IRCC forms for a program
 GET  /cases/timeline       — Get estimated processing time
 GET  /cases/questionnaire  — Smart onboarding questionnaire (program-specific)
 GET  /cases/status         — Client-facing case status
+GET  /cases/onboarding-url — Generate pre-filled onboarding URL from Phase 1 data
 """
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
+from urllib.parse import urlencode, quote_plus
 import logging
 
+from app.services.ghl_client import GHLClient
 from app.services.case_service import CaseService
 from app.config_loader import load_yaml_config
 
@@ -219,4 +222,90 @@ async def get_case_status(contact_id: str):
         "program_type": next((f.get("value") for f in contact.get("customFields", []) if "case_program_type" in str(f.get("id", ""))), "Unknown"),
         "safe_for_client_display": True,
         "disclaimer": "For detailed case updates, please contact your assigned consultant.",
+    }
+
+
+@router.get("/onboarding-url/{contact_id}")
+async def generate_onboarding_url(contact_id: str, base_url: str = "https://www.neuronx.co/intake/vmc/onboarding"):
+    """
+    Generate a pre-filled onboarding URL using Phase 1 data.
+
+    Fetches all known data from GHL (inquiry form + VAPI call + scoring)
+    and encodes it as Typebot URL parameters. The client clicks the link
+    and the form is already pre-filled with their name, email, phone,
+    program interest, and other known fields.
+
+    Used in: WF-CP-01 (retainer signed → send onboarding link)
+    """
+    ghl = GHLClient()
+    try:
+        contact = await ghl.get_contact(contact_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Contact not found")
+
+    # Extract custom fields into a flat dict
+    custom = {}
+    for field in contact.get("customFields", []):
+        field_key = field.get("id", "")
+        field_val = field.get("value", "")
+        if field_val:
+            custom[field_key] = field_val
+
+    # Map GHL data → Typebot form variables
+    prefill = {}
+
+    # From GHL contact record (Phase 1 inquiry form)
+    first = contact.get("firstName", "")
+    last = contact.get("lastName", "")
+    if first or last:
+        prefill["full_name"] = f"{first} {last}".strip()
+    if contact.get("email"):
+        prefill["email"] = contact["email"]
+    if contact.get("phone"):
+        prefill["phone"] = contact["phone"]
+    if contact.get("country"):
+        prefill["country_of_citizenship"] = contact["country"]
+
+    # From VAPI call (R1-R5 structured data, stored in GHL custom fields)
+    ghl_to_form = {
+        "ai_program_interest": "program_interest",
+        "ai_current_location": "current_country",
+    }
+    for ghl_key, form_key in ghl_to_form.items():
+        val = custom.get(ghl_key, "")
+        if val:
+            # Normalize values
+            if ghl_key == "ai_current_location":
+                val = "Canada" if "canada" in val.lower() else val.replace("_", " ").title()
+            prefill[form_key] = val
+
+    # From scoring (useful context, prefill if applicable)
+    if custom.get("ai_prior_applications"):
+        val = custom["ai_prior_applications"]
+        if "refusal" in val.lower() or "complex" in val.lower():
+            prefill["previous_refusal"] = "Yes"
+        elif val.lower() in ("none", "no"):
+            prefill["previous_refusal"] = "No"
+
+    # Build the URL with query parameters
+    if prefill:
+        url = f"{base_url}?{urlencode(prefill, quote_via=quote_plus)}"
+    else:
+        url = base_url
+
+    logger.info("Generated onboarding URL for %s with %d prefilled fields", contact_id, len(prefill))
+
+    return {
+        "contact_id": contact_id,
+        "onboarding_url": url,
+        "prefilled_fields": list(prefill.keys()),
+        "prefill_count": len(prefill),
+        "total_form_fields": 68,
+        "fields_client_still_needs": 68 - len(prefill),
+        "ghl_workflow_template": (
+            f"Hi {{{{contact.firstName}}}}, your retainer is confirmed! 🎉\n\n"
+            f"Complete your onboarding assessment here:\n{url}\n\n"
+            f"This takes ~10 minutes. Your consultant will review everything within 2 business days.\n\n"
+            f"— Visa Master Canada"
+        ),
     }
