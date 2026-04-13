@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="260" viewBox="0 0 480 260">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A5F"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="260" rx="16" fill="url(#sky)"/>
+
+  <!-- Maple leaf pattern (subtle background) -->
+  <text x="40" y="60" font-size="40" opacity="0.06">🍁</text>
+  <text x="140" y="100" font-size="30" opacity="0.04">🍁</text>
+  <text x="350" y="50" font-size="35" opacity="0.05">🍁</text>
+  <text x="420" y="130" font-size="25" opacity="0.04">🍁</text>
+  <text x="80" y="200" font-size="20" opacity="0.03">🍁</text>
+  <text x="380" y="220" font-size="30" opacity="0.04">🍁</text>
+
+  <!-- Canadian flag stripe -->
+  <rect x="0" y="0" width="480" height="4" rx="2" fill="url(#gold)" opacity="0.8"/>
+
+  <!-- Globe icon -->
+  <circle cx="240" cy="85" r="35" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <ellipse cx="240" cy="85" rx="20" ry="35" fill="none" stroke="white" stroke-width="1" opacity="0.2"/>
+  <line x1="205" y1="85" x2="275" y2="85" stroke="white" stroke-width="1" opacity="0.2"/>
+  <line x1="240" y1="50" x2="240" y2="120" stroke="white" stroke-width="1" opacity="0.2"/>
+
+  <!-- Airplane path -->
+  <path d="M100,100 Q200,40 350,90" fill="none" stroke="white" stroke-width="1" stroke-dasharray="4,4" opacity="0.15"/>
+  <text x="360" y="85" font-size="16" opacity="0.4">✈️</text>
+
+  <!-- Main heading -->
+  <text x="240" y="160" font-family="Inter, Helvetica, Arial" font-weight="800" font-size="26" fill="white" text-anchor="middle" letter-spacing="-0.5">
+    Your Immigration Journey
+  </text>
+  <text x="240" y="185" font-family="Inter, Helvetica, Arial" font-weight="800" font-size="26" fill="#F59E0B" text-anchor="middle" letter-spacing="-0.5">
+    Starts Here
+  </text>
+
+  <!-- Subtitle -->
+  <text x="240" y="215" font-family="Inter, Arial" font-weight="400" font-size="12" fill="#94A3B8" text-anchor="middle">
+    Confidential Assessment · RCIC Licensed · Takes ~10 minutes
+  </text>
+
+  <!-- Trust badges -->
+  <g transform="translate(110, 235)">
+    <rect x="0" y="0" width="80" height="20" rx="10" fill="white" opacity="0.1"/>
+    <text x="40" y="14" font-family="Inter, Arial" font-size="9" fill="#94A3B8" text-anchor="middle">🔒 Secure</text>
+  </g>
+  <g transform="translate(200, 235)">
+    <rect x="0" y="0" width="80" height="20" rx="10" fill="white" opacity="0.1"/>
+    <text x="40" y="14" font-family="Inter, Arial" font-size="9" fill="#94A3B8" text-anchor="middle">🇨🇦 RCIC</text>
+  </g>
+  <g transform="translate(290, 235)">
+    <rect x="0" y="0" width="80" height="20" rx="10" fill="white" opacity="0.1"/>
+    <text x="40" y="14" font-family="Inter, Arial" font-size="9" fill="#94A3B8" text-anchor="middle">⚡ Fast</text>
+  </g>
+</svg>

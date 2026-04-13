@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="260" viewBox="0 0 480 260">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="60%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#1E3A5F"/>
+    </linearGradient>
+    <linearGradient id="redbar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="260" rx="16" fill="url(#bg3)"/>
+
+  <!-- Top red accent bar (Canadian theme) -->
+  <rect x="0" y="0" width="480" height="3" rx="1" fill="url(#redbar)"/>
+
+  <!-- City skyline silhouette (Toronto/Vancouver inspired) -->
+  <g opacity="0.08" fill="white">
+    <rect x="30" y="170" width="20" height="90"/>
+    <rect x="55" y="140" width="25" height="120"/>
+    <rect x="85" y="160" width="18" height="100"/>
+    <rect x="108" y="130" width="22" height="130"/>
+    <rect x="135" y="150" width="15" height="110"/>
+    <rect x="155" y="110" width="28" height="150"/>
+    <rect x="188" y="145" width="20" height="115"/>
+    <rect x="213" y="125" width="24" height="135"/>
+    <rect x="242" y="100" width="16" height="160"/>
+    <rect x="263" y="135" width="22" height="125"/>
+    <rect x="290" y="155" width="18" height="105"/>
+    <rect x="313" y="120" width="30" height="140"/>
+    <rect x="348" y="145" width="20" height="115"/>
+    <rect x="373" y="130" width="25" height="130"/>
+    <rect x="403" y="160" width="18" height="100"/>
+    <rect x="426" y="140" width="24" height="120"/>
+  </g>
+
+  <!-- CN Tower hint -->
+  <rect x="238" y="60" width="8" height="100" fill="white" opacity="0.06" rx="2"/>
+  <circle cx="242" cy="95" r="12" fill="white" opacity="0.04"/>
+
+  <!-- Large maple leaf watermark -->
+  <text x="400" y="120" font-size="100" opacity="0.04">🍁</text>
+
+  <!-- Main content -->
+  <text x="240" y="75" font-family="Inter, Helvetica, Arial" font-weight="300" font-size="13" fill="#94A3B8" text-anchor="middle" letter-spacing="3">
+    VISA MASTER CANADA
+  </text>
+
+  <text x="240" y="115" font-family="Inter, Helvetica, Arial" font-weight="800" font-size="30" fill="white" text-anchor="middle" letter-spacing="-1">
+    Welcome to Canada
+  </text>
+
+  <text x="240" y="148" font-family="Inter, Arial" font-weight="400" font-size="14" fill="#CBD5E1" text-anchor="middle">
+    Let's find the right pathway for you
+  </text>
+
+  <!-- Progress steps preview -->
+  <g transform="translate(100, 175)">
+    <!-- Step 1 -->
+    <circle cx="0" cy="10" r="12" fill="#4F46E5"/>
+    <text x="0" y="14" font-family="Inter" font-size="10" fill="white" text-anchor="middle" font-weight="700">1</text>
+    <text x="0" y="35" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Tell Us</text>
+    <text x="0" y="45" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">About You</text>
+    <line x1="12" y1="10" x2="58" y2="10" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Step 2 -->
+    <circle cx="70" cy="10" r="12" fill="#4F46E5" opacity="0.7"/>
+    <text x="70" y="14" font-family="Inter" font-size="10" fill="white" text-anchor="middle" font-weight="700">2</text>
+    <text x="70" y="35" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Choose</text>
+    <text x="70" y="45" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Program</text>
+    <line x1="82" y1="10" x2="128" y2="10" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Step 3 -->
+    <circle cx="140" cy="10" r="12" fill="#7C3AED" opacity="0.7"/>
+    <text x="140" y="14" font-family="Inter" font-size="10" fill="white" text-anchor="middle" font-weight="700">3</text>
+    <text x="140" y="35" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Upload</text>
+    <text x="140" y="45" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Documents</text>
+    <line x1="152" y1="10" x2="198" y2="10" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Step 4 -->
+    <circle cx="210" cy="10" r="12" fill="#7C3AED" opacity="0.5"/>
+    <text x="210" y="14" font-family="Inter" font-size="10" fill="white" text-anchor="middle" font-weight="700">4</text>
+    <text x="210" y="35" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Get</text>
+    <text x="210" y="45" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Assessed</text>
+    <line x1="222" y1="10" x2="268" y2="10" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Step 5 (checkmark) -->
+    <circle cx="280" cy="10" r="12" fill="#10B981" opacity="0.6"/>
+    <text x="280" y="15" font-family="Inter" font-size="14" fill="white" text-anchor="middle">✓</text>
+    <text x="280" y="35" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">Meet Your</text>
+    <text x="280" y="45" font-family="Inter" font-size="8" fill="#64748B" text-anchor="middle">RCIC</text>
+  </g>
+
+  <!-- Bottom text -->
+  <text x="240" y="248" font-family="Inter, Arial" font-weight="500" font-size="10" fill="#475569" text-anchor="middle">
+    RCIC Licensed (R705959) · PIPEDA Compliant · ~10 min
+  </text>
+</svg>

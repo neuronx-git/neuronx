@@ -65,7 +65,8 @@ app.include_router(signatures.router, prefix="/signatures", tags=["E-Signatures"
 app.include_router(demo.router, prefix="/demo", tags=["Demo Data"])
 app.include_router(typebot.router, prefix="/typebot", tags=["Smart Forms (Typebot)"])
 app.include_router(clients.router, prefix="/clients", tags=["Client Data (Chrome Extension)"])
-app.include_router(forms.router, prefix="/form", tags=["Multi-Tenant Forms"])
+app.include_router(forms.router, prefix="/form", tags=["Multi-Tenant Forms"])  # neuronx-api/form/vmc/onboarding
+app.include_router(forms.router, prefix="", tags=["Multi-Tenant Forms (Root)"])  # forms.neuronx.co/vmc/onboarding
 app.include_router(dependents.router, prefix="/dependents", tags=["Case Dependents"])
 
 
