@@ -6,191 +6,20 @@
   <title>{{ title }} | {{ tenant_name }}</title>
   <meta name="description" content="{{ description }}">
   <meta name="robots" content="noindex">
-  <link rel="icon" type="image/png" href="{{ favicon_url }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; font-family: {{ font }}; background: {{ background }}; }
-    #container { max-width: 720px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: #fff; box-shadow: 0 0 40px rgba(0,0,0,0.08); }
-    @media (max-width: 768px) { #container { max-width: 100%; box-shadow: none; } }
-    #header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: {{ primary }}; color: {{ text_on_primary }}; }
-    #avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); object-fit: cover; }
-    #bot-name { font-weight: 600; font-size: 15px; }
-    #bot-status { font-size: 12px; opacity: 0.7; display: flex; align-items: center; gap: 4px; }
-    #bot-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
-    #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-    .msg { max-width: 88%; padding: 14px 18px; border-radius: 18px; font-size: 15px; line-height: 1.6; animation: fadeIn 0.4s ease; word-wrap: break-word; }
-    .msg.bot { background: {{ primary }}; color: {{ text_on_primary }}; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .msg.user { background: {{ accent }}; color: {{ text_on_accent }}; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg-img { max-width: 90%; border-radius: 12px; align-self: flex-start; animation: fadeIn 0.4s ease; }
-    .typing { align-self: flex-start; padding: 14px 18px; background: {{ primary }}; border-radius: 18px; border-bottom-left-radius: 4px; display: flex; gap: 4px; animation: fadeIn 0.3s ease; }
-    .typing span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.5); animation: bounce 1.4s infinite; }
-    .typing span:nth-child(2) { animation-delay: 0.2s; }
-    .typing span:nth-child(3) { animation-delay: 0.4s; }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; animation: fadeIn 0.4s ease; }
-    .choice-btn { padding: 10px 20px; border: 2px solid {{ primary }}; border-radius: 24px; background: #fff; color: {{ primary }}; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-    .choice-btn:hover { background: {{ primary }}; color: {{ text_on_primary }}; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .input-row { display: flex; gap: 8px; animation: fadeIn 0.4s ease; }
-    .text-input { flex: 1; padding: 12px 16px; border: 2px solid {{ input_border }}; border-radius: 24px; font-size: 14px; outline: none; font-family: inherit; transition: border-color 0.2s; }
-    .text-input:focus { border-color: {{ input_focus }}; }
-    .send-btn { padding: 10px 20px; background: {{ primary }}; color: {{ text_on_primary }}; border: none; border-radius: 24px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-    .send-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    #footer { padding: 8px; text-align: center; font-size: 11px; color: #94A3B8; border-top: 1px solid #F1F5F9; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
-    @media (max-width: 520px) { #container { max-width: 100%; box-shadow: none; border-radius: 0; } }
+    html, body { height: 100%; width: 100%; overflow: hidden; }
+    typebot-standard { width: 100%; height: 100vh; display: block; }
   </style>
-  <script>
-    const API = "{{ typebot_viewer_url }}/api/v1";
-    const TYPEBOT_ID = "{{ typebot_id }}";
-    let sessionId = null;
-    let sending = false;
-
-    async function sendMessage(message) {
-      const body = sessionId
-        ? { sessionId, message }
-        : { startParams: { typebot: TYPEBOT_ID } };
-      const r = await fetch(`${API}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      return r.json();
-    }
-
-    function showTyping() {
-      const chat = document.getElementById("chat");
-      const t = document.createElement("div");
-      t.className = "typing";
-      t.id = "typing-indicator";
-      t.innerHTML = "<span></span><span></span><span></span>";
-      chat.appendChild(t);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function hideTyping() {
-      const t = document.getElementById("typing-indicator");
-      if (t) t.remove();
-    }
-
-    async function renderMessages(data) {
-      hideTyping();
-      const chat = document.getElementById("chat");
-
-      for (const msg of data.messages || []) {
-        if (msg.type === "text") {
-          const rt = msg.content?.richText || [];
-          const text = rt.map(p => p.children?.map(c => c.text || "").join("")).join("\n");
-          if (text.trim()) {
-            const div = document.createElement("div");
-            div.className = "msg bot";
-            div.textContent = text;
-            chat.appendChild(div);
-            await delay(300);
-          }
-        } else if (msg.type === "image") {
-          const img = document.createElement("img");
-          img.className = "msg-img";
-          img.src = msg.content?.url || "";
-          img.alt = "";
-          img.loading = "lazy";
-          chat.appendChild(img);
-          await delay(200);
-        }
-      }
-
-      if (data.input) {
-        sessionId = data.sessionId || sessionId;
-        if (data.input.type === "choice input") {
-          const btnRow = document.createElement("div");
-          btnRow.className = "btn-row";
-          for (const item of data.input.items || []) {
-            const btn = document.createElement("button");
-            btn.className = "choice-btn";
-            btn.textContent = item.content;
-            btn.onclick = () => handleChoice(item.content, btnRow);
-            btnRow.appendChild(btn);
-          }
-          chat.appendChild(btnRow);
-        } else if (["text input", "email input", "number input", "phone input"].includes(data.input.type)) {
-          const row = document.createElement("div");
-          row.className = "input-row";
-          const inp = document.createElement("input");
-          const inputType = { "email input": "email", "number input": "number", "phone input": "tel" }[data.input.type] || "text";
-          inp.type = inputType;
-          inp.placeholder = data.input.options?.labels?.placeholder || "Type your answer...";
-          inp.className = "text-input";
-          const send = document.createElement("button");
-          send.className = "send-btn";
-          send.textContent = "Send";
-          send.onclick = () => handleText(inp.value, row);
-          inp.onkeydown = (e) => { if (e.key === "Enter" && !sending) send.click(); };
-          row.appendChild(inp);
-          row.appendChild(send);
-          chat.appendChild(row);
-          inp.focus();
-        }
-      }
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    async function handleChoice(value, container) {
-      if (sending) return;
-      sending = true;
-      container.remove();
-      addUserMsg(value);
-      showTyping();
-      await delay(600);
-      const data = await sendMessage(value);
-      await renderMessages(data);
-      sending = false;
-    }
-
-    async function handleText(value, container) {
-      if (!value.trim() || sending) return;
-      sending = true;
-      container.remove();
-      addUserMsg(value);
-      showTyping();
-      await delay(400);
-      const data = await sendMessage(value);
-      await renderMessages(data);
-      sending = false;
-    }
-
-    function addUserMsg(text) {
-      const chat = document.getElementById("chat");
-      const div = document.createElement("div");
-      div.className = "msg user";
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-    window.addEventListener("DOMContentLoaded", async () => {
-      showTyping();
-      await delay(800);
-      const data = await sendMessage(null);
-      await renderMessages(data);
-    });
-  </script>
 </head>
 <body>
-  <div id="container">
-    <div id="header">
-      <img src="{{ avatar_url }}" alt="{{ tenant_name }}" id="avatar">
-      <div>
-        <div id="bot-name">{{ bot_name }}</div>
-        <div id="bot-status">{{ bot_status }}</div>
-      </div>
-    </div>
-    <div id="chat"></div>
-    <div id="footer">Powered by NeuronX</div>
-  </div>
+  <typebot-standard
+    typebot="{{ typebot_id }}"
+    api-host="{{ typebot_viewer_url }}"
+  ></typebot-standard>
 </body>
 </html>
