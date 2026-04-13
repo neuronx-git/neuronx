@@ -170,7 +170,7 @@ npx vercel --prod
 | VMC Form | neuronx-api-url/form/vmc/onboarding | Client form |
 | Metabase | metabase-production-1846.up.railway.app | Analytics |
 | GHL Dashboard | app.gohighlevel.com | CRM |
-| GitHub | github.com/ranjan-expatready/neuronx | Code |
+| GitHub | github.com/neuronx-git/neuronx | Code |
 
 ---
 

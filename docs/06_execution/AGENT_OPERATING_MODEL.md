@@ -131,7 +131,7 @@ When discovering a platform limitation, API quirk, or workaround:
 - **Custom domain**: Add via vercel.com/goldenphoenix1216-1965s-projects/neuronx-web/settings/domains
 
 ### GitHub
-- **Repo**: ranjan-expatready/neuronx
+- **Repo**: neuronx-git/neuronx
 - **Typebot Fork**: ranjan-expatready/typebot.io (has Prisma fix PRs)
 
 ---
