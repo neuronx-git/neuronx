@@ -18,6 +18,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!assets|favicon|logo|icon|team|robots|sitemap|vite).*)", "destination": "/index.html" }
+    { "source": "/intake/:path*", "destination": "https://neuronx-production-62f9.up.railway.app/form/:path*" },
+    { "source": "/((?!assets|favicon|logo|icon|team|robots|sitemap|vite|intake).*)", "destination": "/index.html" }
   ]
 }
