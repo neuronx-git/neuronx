@@ -5,62 +5,69 @@ Handles post-retainer case lifecycle:
   Onboarding → Doc Collection → Form Prep → Review → Submit → Processing → Decision → Closed
 
 Integrates with GHL Pipeline #2 (Case Processing) via tags + custom fields.
-Program-aware: content (checklists, timelines, forms) varies by program type.
+Program-aware: content (checklists, timelines, forms) loaded from config/programs.yaml.
+
+Architecture: PostgreSQL is authoritative for case lifecycle data.
+GHL gets a sync of case status for workflow triggers + operator visibility.
 """
 
 import logging
+import uuid
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 from app.services.ghl_client import GHLClient
 from app.utils.compliance_log import log_event
+from app.config_loader import load_yaml_config
 
 logger = logging.getLogger("neuronx.cases")
 
-# Expected processing times by program (months) — used for client expectations
-PROCESSING_TIMES = {
-    "Express Entry": {"min": 5, "max": 8, "avg": 6},
-    "Spousal Sponsorship": {"min": 12, "max": 18, "avg": 15},
-    "Work Permit": {"min": 2, "max": 6, "avg": 4},
-    "Study Permit": {"min": 2, "max": 4, "avg": 3},
-    "LMIA": {"min": 2, "max": 5, "avg": 3},
-    "PR Renewal": {"min": 2, "max": 6, "avg": 4},
-    "Citizenship": {"min": 8, "max": 14, "avg": 12},
-    "Visitor Visa": {"min": 0.5, "max": 3, "avg": 1.5},
-}
 
-# Core IRCC forms by top 3 programs (80% of revenue)
-IRCC_FORMS = {
-    "Express Entry": [
-        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": True},
-        {"code": "IMM 5669", "name": "Schedule A – Background/Declaration", "required": True},
-        {"code": "IMM 5406", "name": "Additional Family Information", "required": True},
-        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
-        {"code": "Schedule 1", "name": "Application for PR – Federal Skilled Worker", "required": True},
-        {"code": "IMM 5562", "name": "Supplementary Information – Your Travels", "required": False},
-    ],
-    "Spousal Sponsorship": [
-        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": True},
-        {"code": "IMM 1344", "name": "Application to Sponsor, Sponsorship Agreement", "required": True},
-        {"code": "IMM 5532", "name": "Relationship Information and Sponsorship Evaluation", "required": True},
-        {"code": "IMM 5406", "name": "Additional Family Information", "required": True},
-        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
-        {"code": "IMM 5669", "name": "Schedule A – Background/Declaration", "required": True},
-        {"code": "IMM 5540", "name": "Sponsor Questionnaire", "required": True},
-        {"code": "IMM 5481", "name": "Sponsorship Evaluation (if common-law)", "required": False},
-    ],
-    "Work Permit": [
-        {"code": "IMM 1295", "name": "Application for Work Permit", "required": True},
-        {"code": "IMM 5710", "name": "Application for a Work Permit – Worker", "required": True},
-        {"code": "IMM 0008", "name": "Generic Application Form for Canada", "required": False},
-        {"code": "IMM 5476", "name": "Use of a Representative", "required": True},
-        {"code": "IMM 5645", "name": "Family Information Form", "required": True},
-    ],
-}
+def _load_programs_config() -> dict:
+    """Load program definitions from YAML — single source of truth."""
+    try:
+        cfg = load_yaml_config("programs")
+        return cfg.get("programs", {})
+    except Exception as e:
+        logger.warning("Failed to load programs config: %s — using empty defaults", e)
+        return {}
+
+
+def _get_processing_times(program_type: str) -> dict:
+    """Get processing time estimate from config."""
+    programs = _load_programs_config()
+    for name, prog in programs.items():
+        if name.lower() == program_type.lower():
+            return prog.get("processing_months", {"min": 3, "max": 12, "avg": 6})
+    return {"min": 3, "max": 12, "avg": 6}
+
+
+def _get_ircc_forms(program_type: str) -> list:
+    """Get required IRCC forms from config."""
+    programs = _load_programs_config()
+    for name, prog in programs.items():
+        if name.lower() == program_type.lower():
+            return prog.get("ircc_forms", [])
+    return []
+
+
+def _generate_case_id() -> str:
+    """Generate collision-safe case ID: NX-YYYYMMDD-XXXXXXXX (UUID-based)."""
+    now = datetime.now(tz=timezone.utc)
+    unique = uuid.uuid4().hex[:8].upper()
+    return f"NX-{now.strftime('%Y%m%d')}-{unique}"
 
 
 class CaseService:
     """Manages case processing lifecycle and program-specific content."""
+
+    def get_ircc_forms(self, program_type: str) -> list:
+        """Get required IRCC forms for a program type from config."""
+        return _get_ircc_forms(program_type)
+
+    def get_processing_estimate(self, program_type: str) -> dict:
+        """Get processing time estimate for a program type from config."""
+        return _get_processing_times(program_type)
 
     async def initiate_case(self, contact_id: str, program_type: str, assigned_rcic: str) -> dict:
         """
@@ -70,14 +77,14 @@ class CaseService:
         ghl = GHLClient()
         now = datetime.now(tz=timezone.utc)
 
-        # Generate case ID
-        case_id = f"NX-{now.strftime('%Y%m%d')}-{contact_id[:6].upper()}"
+        # Generate collision-safe case ID
+        case_id = _generate_case_id()
 
         # Set doc collection deadline (14 days)
         deadline = now + timedelta(days=14)
 
-        # Get processing time estimate
-        proc_time = PROCESSING_TIMES.get(program_type, {"min": 3, "max": 12, "avg": 6})
+        # Get processing time estimate from config
+        proc_time = _get_processing_times(program_type)
 
         # Update GHL custom fields
         await ghl.update_custom_fields(contact_id, {
@@ -123,7 +130,7 @@ class CaseService:
             "assigned_rcic": assigned_rcic,
             "doc_deadline": deadline.isoformat(),
             "estimated_processing_months": proc_time,
-            "ircc_forms": IRCC_FORMS.get(program_type, []),
+            "ircc_forms": _get_ircc_forms(program_type),
             "status": "onboarding",
         }
 
@@ -177,12 +184,12 @@ class CaseService:
             "case_deadline_type": "IRCC Response",
         })
 
-        await ghl.add_tags(contact_id, ["nx:case:submitted"])
+        await ghl.add_tag(contact_id, "nx:case:submitted")
         await ghl.add_note(contact_id, (
-            f"APPLICATION SUBMITTED TO IRCC\n"
-            f"Receipt: {receipt_number}\n"
+            f"[IRCC SUBMITTED]\n"
+            f"Receipt #: {receipt_number}\n"
             f"Date: {sub_date}\n"
-            f"Next check-in: {(now + timedelta(days=30)).strftime('%Y-%m-%d')}"
+            f"Next milestone: IRCC response (est. 30 days)"
         ))
 
         log_event("ircc_submission", {
@@ -191,36 +198,29 @@ class CaseService:
             "submission_date": sub_date,
         })
 
-        return {
-            "contact_id": contact_id,
-            "receipt_number": receipt_number,
-            "submission_date": sub_date,
-            "next_checkin": (now + timedelta(days=30)).strftime("%Y-%m-%d"),
-        }
+        return {"contact_id": contact_id, "receipt_number": receipt_number, "status": "submitted"}
 
     async def record_decision(self, contact_id: str, decision: str, decision_date: Optional[str] = None, notes: Optional[str] = None) -> dict:
-        """Record IRCC decision (Approved, Refused, Withdrawn, Returned)."""
+        """Record IRCC decision (approved/refused/withdrawn/returned)."""
+        valid_decisions = ["Approved", "Refused", "Withdrawn", "Returned", "Pending"]
+        if decision not in valid_decisions:
+            return {"error": f"Invalid decision: {decision}. Must be one of: {valid_decisions}"}
+
         ghl = GHLClient()
         now = datetime.now(tz=timezone.utc)
-
         dec_date = decision_date or now.strftime("%Y-%m-%d")
 
-        fields = {
+        await ghl.update_custom_fields(contact_id, {
             "ircc_decision": decision,
             "ircc_decision_date": dec_date,
-        }
-        if notes:
-            fields["case_status_notes"] = notes
+            "case_status_notes": notes or f"IRCC decision: {decision}",
+        })
 
-        await ghl.update_custom_fields(contact_id, fields)
-
-        tag = f"nx:case:{'approved' if decision == 'Approved' else 'refused' if decision == 'Refused' else 'decision'}"
-        await ghl.add_tags(contact_id, ["nx:case:decision", tag])
-
+        await ghl.add_tag(contact_id, "nx:case:decision")
         await ghl.add_note(contact_id, (
-            f"IRCC DECISION: {decision.upper()}\n"
+            f"[IRCC DECISION] {decision}\n"
             f"Date: {dec_date}\n"
-            f"{f'Notes: {notes}' if notes else ''}"
+            f"{notes or ''}"
         ))
 
         log_event("ircc_decision", {
@@ -229,21 +229,4 @@ class CaseService:
             "decision_date": dec_date,
         })
 
-        return {
-            "contact_id": contact_id,
-            "decision": decision,
-            "decision_date": dec_date,
-            "tag_added": tag,
-        }
-
-    def get_ircc_forms(self, program_type: str) -> list:
-        """Get required IRCC forms for a program."""
-        return IRCC_FORMS.get(program_type, [])
-
-    def get_processing_estimate(self, program_type: str) -> dict:
-        """Get estimated processing time for a program."""
-        return PROCESSING_TIMES.get(program_type, {"min": 3, "max": 12, "avg": 6})
-
-    def _get_ghl_client(self):
-        """Return a GHL client instance."""
-        return GHLClient()
+        return {"contact_id": contact_id, "decision": decision, "status": "decision_recorded"}

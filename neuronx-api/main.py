@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 import logging
 import os
 
-from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms
+from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -66,6 +66,7 @@ app.include_router(demo.router, prefix="/demo", tags=["Demo Data"])
 app.include_router(typebot.router, prefix="/typebot", tags=["Smart Forms (Typebot)"])
 app.include_router(clients.router, prefix="/clients", tags=["Client Data (Chrome Extension)"])
 app.include_router(forms.router, prefix="/form", tags=["Multi-Tenant Forms"])
+app.include_router(dependents.router, prefix="/dependents", tags=["Case Dependents"])
 
 
 @app.get("/health")

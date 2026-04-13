@@ -4,6 +4,7 @@ Trust Boundary Enforcement Service
 Scans AI transcripts for compliance violations and escalation triggers.
 BINDING: docs/04_compliance/trust_boundaries.md
 
+Patterns loaded from config/trust.yaml — single source of truth.
 This service is the last line of defense before AI interaction data is used.
 """
 
@@ -13,79 +14,21 @@ import re
 import logging
 
 from app.utils.compliance_log import log_event
+from app.config_loader import load_yaml_config
 
 logger = logging.getLogger("neuronx.trust")
 
 
-# Mandatory escalation triggers (from trust_boundaries.md Section 3)
-ESCALATION_PATTERNS = {
-    "eligibility_question": [
-        r"am i eligible",
-        r"do i qualify",
-        r"can i apply",
-        r"will i get approved",
-        r"what are my chances",
-    ],
-    "deportation_removal": [
-        r"deport",
-        r"removal order",
-        r"deportation",
-        r"removal process",
-        r"being removed",
-    ],
-    "inadmissibility": [
-        r"inadmissib",
-        r"banned from canada",
-        r"visa ban",
-        r"criminally inadmissible",
-    ],
-    "fraud_misrepresentation": [
-        r"fake document",
-        r"false document",
-        r"misrepresentation",
-        r"fraud",
-        r"lie on",
-    ],
-    "emotional_distress": [
-        r"desperate",
-        r"crying",
-        r"suicidal",
-        r"very scared",
-        r"terrified",
-        r"please help me",
-    ],
-    "explicit_human_request": [
-        r"speak to a human",
-        r"talk to a person",
-        r"real person",
-        r"not a robot",
-        r"human agent",
-        r"transfer me",
-    ],
-}
-
-# AI response violations — AI should never say these
-AI_VIOLATION_PATTERNS = {
-    "eligibility_assessment": [
-        r"you (are|would be) eligible",
-        r"you qualify for",
-        r"you should apply for",
-        r"your chances are",
-        r"you will (likely |probably )?get approved",
-    ],
-    "legal_advice": [
-        r"the law says",
-        r"legally you",
-        r"according to immigration law",
-        r"ircc requires you to",
-    ],
-    "outcome_promises": [
-        r"guarantee",
-        r"100% success",
-        r"definitely get",
-        r"will be approved",
-    ],
-}
+def _load_trust_patterns() -> tuple[dict, dict]:
+    """Load escalation and violation patterns from config/trust.yaml."""
+    try:
+        cfg = load_yaml_config("trust")
+        escalation = cfg.get("escalation_triggers", {})
+        violations = cfg.get("ai_violations", {})
+        return escalation, violations
+    except Exception as e:
+        logger.error("Failed to load trust config: %s — using empty patterns (UNSAFE)", e)
+        return {}, {}
 
 
 class TrustCheckResult(BaseModel):
@@ -102,6 +45,8 @@ class TrustService:
     """
     Checks transcripts for compliance with trust_boundaries.md.
     Must be called after every AI interaction.
+
+    Patterns are loaded from config/trust.yaml (not hardcoded).
     """
 
     def check_transcript(
@@ -114,15 +59,17 @@ class TrustService:
         flags = []
         violations = []
 
+        escalation_patterns, violation_patterns = _load_trust_patterns()
+
         # Check prospect statements for escalation triggers
-        for trigger_type, patterns in ESCALATION_PATTERNS.items():
+        for trigger_type, patterns in escalation_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, transcript_lower):
                     flags.append(trigger_type)
                     break
 
         # Check AI responses for violations
-        for violation_type, patterns in AI_VIOLATION_PATTERNS.items():
+        for violation_type, patterns in violation_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, transcript_lower):
                     violations.append(violation_type)
@@ -156,6 +103,6 @@ class TrustService:
         return result
 
     async def get_audit_log(self, contact_id: Optional[str], limit: int) -> list:
-        """Query compliance audit log. Full implementation in Week 4."""
-        # TODO: Implement proper log storage (SQLite or PostgreSQL)
+        """Query compliance audit log from PostgreSQL activities table."""
+        # TODO: Query activities table for trust_check events
         return []

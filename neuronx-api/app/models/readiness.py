@@ -88,11 +88,24 @@ GHL_FIELD_MAP = {
     "consultation_outcome": "ai_consultation_outcome",
 }
 
-# Complexity keywords that trigger human escalation
+# Complexity keywords — loaded from config/scoring.yaml (single source of truth)
+# Fallback list used only if YAML config unavailable.
 # See: docs/04_compliance/trust_boundaries.md
-COMPLEXITY_KEYWORDS = [
+def get_complexity_keywords() -> list[str]:
+    """Load complexity keywords from config/scoring.yaml."""
+    try:
+        from app.config_loader import load_yaml_config
+        cfg = load_yaml_config("scoring")
+        return cfg.get("complexity_keywords", _FALLBACK_KEYWORDS)
+    except Exception:
+        return _FALLBACK_KEYWORDS
+
+_FALLBACK_KEYWORDS = [
     "deport", "removal order", "inadmissib",
     "criminal", "misrepresent", "fraud", "fake", "refused",
     "refusal", "detained", "detention", "banned", "visa ban",
     "overstay", "illegal", "undocumented",
 ]
+
+# For backwards compatibility — other code imports COMPLEXITY_KEYWORDS directly
+COMPLEXITY_KEYWORDS = get_complexity_keywords()
