@@ -18,6 +18,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/intake/vmc/onboarding", "destination": "https://viewer-production-366c.up.railway.app/vmc-onboarding" },
     { "source": "/intake/:path*", "destination": "https://neuronx-production-62f9.up.railway.app/form/:path*" },
     { "source": "/((?!assets|favicon|logo|icon|team|robots|sitemap|vite|intake).*)", "destination": "/index.html" }
   ]
