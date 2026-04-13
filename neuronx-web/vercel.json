@@ -4,7 +4,6 @@
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
@@ -18,8 +17,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/intake/vmc/onboarding", "destination": "https://viewer-production-366c.up.railway.app/vmc-onboarding" },
-    { "source": "/intake/:path*", "destination": "https://neuronx-production-62f9.up.railway.app/form/:path*" },
+    { "source": "/intake/vmc/onboarding", "destination": "/intake.html" },
     { "source": "/((?!assets|favicon|logo|icon|team|robots|sitemap|vite|intake).*)", "destination": "/index.html" }
   ]
 }
