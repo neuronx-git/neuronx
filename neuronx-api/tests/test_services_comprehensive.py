@@ -497,8 +497,9 @@ class TestDocOCRService:
     async def test_extract_with_claude_no_key(self, service):
         with patch("app.services.doc_ocr_service.settings") as mock_s:
             mock_s.anthropic_api_key = ""
+            mock_s.ollama_cloud_api_key = ""
             result = await service._extract_with_claude(b"fake", "doc.pdf", {"prompt": "test"})
-            assert result["error"] == "Anthropic API key not configured"
+            assert "not configured" in result.get("error", "").lower() or "no llm" in result.get("error", "").lower()
 
     @pytest.mark.asyncio
     async def test_extract_with_claude_success(self, service):
@@ -516,9 +517,10 @@ class TestDocOCRService:
         with patch("app.services.doc_ocr_service.settings") as mock_s, \
              patch("app.services.doc_ocr_service.httpx.AsyncClient", return_value=mock_client):
             mock_s.anthropic_api_key = "test-key"
+            mock_s.ollama_cloud_api_key = ""
             mock_s.briefing_model = "claude-sonnet-4-6"
             result = await service._extract_with_claude(b"fake", "ielts.pdf", {"prompt": "Extract"})
-            assert result["method"] == "claude"
+            assert "anthropic" in result["method"]
             assert result["extracted_fields"]["candidate_name"] == "John Doe"
 
     @pytest.mark.asyncio

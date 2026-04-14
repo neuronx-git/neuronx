@@ -30,6 +30,7 @@ os.environ["GHL_PIPELINE_ID"] = "test-pipeline-id"
 os.environ["VAPI_API_KEY"] = "test-vapi-key"
 os.environ["VAPI_WEBHOOK_SECRET"] = "test-vapi-secret"
 os.environ["ANTHROPIC_API_KEY"] = "test-anthropic-key"
+os.environ["OLLAMA_CLOUD_API_KEY"] = ""  # Empty so tests use Anthropic mock path
 os.environ["TYPEBOT_URL"] = "https://test-typebot.example.com"
 os.environ["TYPEBOT_API_TOKEN"] = "test-typebot-token"
 os.environ["TYPEBOT_VIEWER_URL"] = "https://test-viewer.example.com"

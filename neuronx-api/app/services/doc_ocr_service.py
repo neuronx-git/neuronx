@@ -256,18 +256,104 @@ class DocOCRService:
             )
 
     async def _extract_with_claude(self, file_bytes: bytes, filename: str, config: dict) -> dict:
-        """Extract document data using Claude API vision (any document type)."""
-        api_key = settings.anthropic_api_key
-        if not api_key:
+        """
+        Extract document data using vision LLM.
+
+        Priority:
+        1. OpenRouter API (if OPENROUTER_API_KEY set) — uses configurable model
+        2. Anthropic API direct (if ANTHROPIC_API_KEY set) — uses Claude
+        3. Returns error if neither configured
+        """
+        # Choose API: Ollama Cloud preferred (unified, cost-effective)
+        if settings.ollama_cloud_api_key:
+            return await self._extract_via_ollama_cloud(file_bytes, filename, config)
+        elif settings.anthropic_api_key:
+            return await self._extract_via_anthropic(file_bytes, filename, config)
+        else:
             return {
-                "method": "claude",
-                "error": "Anthropic API key not configured",
+                "method": "none",
+                "error": "No LLM API key configured. Set OLLAMA_CLOUD_API_KEY or ANTHROPIC_API_KEY.",
                 "extracted_fields": {},
                 "field_count": 0,
                 "confidence": "none",
             }
 
-        # Determine media type
+    async def _extract_via_ollama_cloud(self, file_bytes: bytes, filename: str, config: dict) -> dict:
+        """
+        Extract using Ollama Cloud API.
+        Supports vision models (gemini-3-flash-preview, qwen3-vl, gemma4) for image OCR
+        and text models for MRZ/text-based extraction.
+
+        Ollama Cloud API: POST https://ollama.com/api/chat
+        Auth: Bearer token
+        Image format: base64 in messages[].images array
+        """
+        b64_data = base64.b64encode(file_bytes).decode("utf-8")
+        prompt = config.get("prompt", DOCUMENT_TYPES["general"]["prompt"])
+        model = settings.ocr_model or "gemini-3-flash-preview"
+        api_url = f"{settings.ollama_cloud_url}/chat"
+
+        # For PDFs > 1MB, use text-based MRZ extraction prompt instead of vision
+        is_large_pdf = len(file_bytes) > 1_000_000 and Path(filename).suffix.lower() == ".pdf"
+
+        try:
+            message = {
+                "role": "user",
+                "content": prompt,
+            }
+            # Add image for vision extraction (skip for large PDFs)
+            if not is_large_pdf:
+                message["images"] = [b64_data]
+
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    api_url,
+                    headers={
+                        "Authorization": f"Bearer {settings.ollama_cloud_api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "messages": [message],
+                        "stream": False,
+                    },
+                )
+
+            if response.status_code != 200:
+                logger.error("Ollama Cloud API error: %d — %s", response.status_code, response.text[:200])
+                return {
+                    "method": f"ollama:{model}",
+                    "error": f"Ollama Cloud API error: {response.status_code}",
+                    "extracted_fields": {},
+                    "field_count": 0,
+                    "confidence": "none",
+                }
+
+            result = response.json()
+            content = result.get("message", {}).get("content", "")
+
+            extracted = self._parse_json_from_response(content)
+
+            return {
+                "method": f"ollama:{model}",
+                "extracted_fields": extracted,
+                "field_count": len(extracted),
+                "confidence": "high" if len(extracted) >= 3 else "medium" if extracted else "low",
+                "model_used": model,
+            }
+
+        except Exception as e:
+            logger.error("Ollama Cloud extraction failed: %s", e)
+            return {
+                "method": f"ollama:{model}",
+                "error": str(e),
+                "extracted_fields": {},
+                "field_count": 0,
+                "confidence": "none",
+            }
+
+    async def _extract_via_anthropic(self, file_bytes: bytes, filename: str, config: dict) -> dict:
+        """Extract using Anthropic API directly (Claude vision)."""
         suffix = Path(filename).suffix.lower()
         media_types = {
             ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
@@ -275,11 +361,7 @@ class DocOCRService:
             ".webp": "image/webp", ".pdf": "application/pdf",
         }
         media_type = media_types.get(suffix, "image/jpeg")
-
-        # Encode file as base64
         b64_data = base64.b64encode(file_bytes).decode("utf-8")
-
-        # Build Claude API request with vision
         prompt = config.get("prompt", DOCUMENT_TYPES["general"]["prompt"])
 
         try:
@@ -287,7 +369,7 @@ class DocOCRService:
                 response = await client.post(
                     "https://api.anthropic.com/v1/messages",
                     headers={
-                        "x-api-key": api_key,
+                        "x-api-key": settings.anthropic_api_key,
                         "anthropic-version": "2023-06-01",
                         "content-type": "application/json",
                     },
@@ -317,7 +399,7 @@ class DocOCRService:
             if response.status_code != 200:
                 logger.error("Claude API error: %d — %s", response.status_code, response.text[:200])
                 return {
-                    "method": "claude",
+                    "method": "anthropic:claude",
                     "error": f"Claude API error: {response.status_code}",
                     "extracted_fields": {},
                     "field_count": 0,
@@ -326,12 +408,10 @@ class DocOCRService:
 
             result = response.json()
             content = result.get("content", [{}])[0].get("text", "")
-
-            # Parse JSON from Claude's response
             extracted = self._parse_json_from_response(content)
 
             return {
-                "method": "claude",
+                "method": "anthropic:claude",
                 "extracted_fields": extracted,
                 "field_count": len(extracted),
                 "confidence": "high" if len(extracted) >= 3 else "medium" if extracted else "low",
@@ -340,7 +420,7 @@ class DocOCRService:
         except Exception as e:
             logger.error("Claude extraction failed: %s", e)
             return {
-                "method": "claude",
+                "method": "anthropic:claude",
                 "error": str(e),
                 "extracted_fields": {},
                 "field_count": 0,

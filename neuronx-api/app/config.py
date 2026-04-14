@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     briefing_model: str = "claude-sonnet-4-6"
 
+    # Ollama Cloud (unified LLM API — used for OCR vision extraction)
+    ollama_cloud_api_key: str = ""
+    ollama_cloud_url: str = "https://ollama.com/api"
+    ocr_model: str = "gemini-3-flash-preview"  # Best balance of speed + accuracy for document OCR on Ollama Cloud
+
     # Database
     database_url: str = ""  # postgresql+asyncpg://user:pass@host:5432/dbname (Railway provides this)
 
