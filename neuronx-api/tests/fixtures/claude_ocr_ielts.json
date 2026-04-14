@@ -1,0 +1,13 @@
+{
+  "id": "msg_test_ielts_001",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"listening_score\": \"8.0\",\n  \"reading_score\": \"7.5\",\n  \"writing_score\": \"7.0\",\n  \"speaking_score\": \"7.5\",\n  \"overall_score\": \"7.5\",\n  \"test_type\": \"IELTS Academic\",\n  \"test_date\": \"2025-11-20\",\n  \"trf_number\": \"25IN123456SANTM\"\n}"
+    }
+  ],
+  "model": "claude-sonnet-4-6",
+  "stop_reason": "end_turn"
+}

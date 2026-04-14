@@ -1,0 +1,20 @@
+# Shiplight AI Test — API Health Endpoints
+# Verifies both health and deep health are accessible
+
+goal: Verify NeuronX API health endpoints return valid status
+url: https://neuronx-production-62f9.up.railway.app/health
+
+statements:
+  - VERIFY: Page shows JSON with 'status' field set to 'ok'
+  - VERIFY: Page shows version '0.4.0'
+  - VERIFY: Page shows 'neuronx-api' as the service name
+
+---
+goal: Verify deep health endpoint shows dependency checks
+url: https://neuronx-production-62f9.up.railway.app/health/deep
+
+statements:
+  - VERIFY: Page shows JSON with 'checks' object
+  - VERIFY: Database check result is visible
+  - VERIFY: GHL API check result is visible
+  - VERIFY: Config loading check shows 'ok'

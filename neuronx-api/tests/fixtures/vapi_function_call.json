@@ -1,0 +1,19 @@
+{
+  "message": {
+    "type": "function-call",
+    "functionCall": {
+      "name": "collect_readiness_data",
+      "parameters": {
+        "program_interest": "Spousal Sponsorship",
+        "current_location": "In Canada",
+        "timeline_urgency": "Urgent (30 days)"
+      }
+    },
+    "call": {
+      "id": "call-vapi-002",
+      "type": "outboundPhoneCall",
+      "status": "in-progress",
+      "assistantId": "asst-001"
+    }
+  }
+}

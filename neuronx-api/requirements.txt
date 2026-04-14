@@ -23,3 +23,8 @@ fastmrz==2.1.2
 # Testing
 pytest==8.3.4
 pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+pytest-xdist==3.5.0
+time-machine==2.16.0
+aiosqlite==0.20.0
+schemathesis==3.39.3

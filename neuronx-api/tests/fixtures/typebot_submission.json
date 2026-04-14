@@ -1,0 +1,27 @@
+{
+  "resultId": "result-typebot-001",
+  "typebot": {
+    "id": "cmnrfu934000334qxnlmsvw2u",
+    "publicId": "vmc-onboarding"
+  },
+  "answers": [
+    {"blockId": "b1", "variableId": "v1", "content": "Express Entry"},
+    {"blockId": "b2", "variableId": "v2", "content": "maria.santos@example.com"},
+    {"blockId": "b3", "variableId": "v3", "content": "+14165559999"},
+    {"blockId": "b4", "variableId": "v4", "content": "Maria Santos"},
+    {"blockId": "b5", "variableId": "v5", "content": "India"},
+    {"blockId": "b6", "variableId": "v6", "content": "1-3 months"},
+    {"blockId": "b7", "variableId": "v7", "content": "No previous applications"},
+    {"blockId": "b8", "variableId": "v8", "content": "Yes, I'm aware of the costs"}
+  ],
+  "variables": [
+    {"id": "v1", "name": "program_interest", "value": "Express Entry"},
+    {"id": "v2", "name": "email", "value": "maria.santos@example.com"},
+    {"id": "v3", "name": "phone", "value": "+14165559999"},
+    {"id": "v4", "name": "full_name", "value": "Maria Santos"},
+    {"id": "v5", "name": "current_country", "value": "India"},
+    {"id": "v6", "name": "timeline", "value": "1-3 months"},
+    {"id": "v7", "name": "prior_applications", "value": "No previous applications"},
+    {"id": "v8", "name": "budget_awareness", "value": "Yes, I'm aware of the costs"}
+  ]
+}

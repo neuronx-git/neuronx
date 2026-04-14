@@ -1,0 +1,135 @@
+# VAPI Chat Test Suite — R1-R5 Data Extraction
+# Tests the voice agent's ability to collect readiness data via text conversation
+# NO real phone calls needed — runs via VAPI Chat Test mode
+#
+# Setup:
+#   1. Go to dashboard.vapi.ai/test-suites
+#   2. Create new test suite with these test cases
+#   3. Select your NeuronX Intake Agent assistant
+#   4. Run in Chat mode (text-based, no TTS/STT)
+#
+# Or use VAPI API:
+#   POST https://api.vapi.ai/test-suite
+#   Authorization: Bearer {VAPI_API_KEY}
+
+test_suite:
+  name: "NeuronX R1-R5 Readiness Extraction"
+  assistant_id: "YOUR_ASSISTANT_ID"  # Replace with actual VAPI assistant ID
+  mode: "chat"  # Text-based, no real calls
+
+test_cases:
+  - name: "Standard Prospect — Express Entry"
+    description: "Prospect wants Express Entry, outside Canada, 1-3 month timeline, no prior apps, budget aware"
+    script:
+      - role: user
+        content: "Hi, I'd like to apply for Express Entry"
+      - role: user
+        content: "I'm currently in India"
+      - role: user
+        content: "I'd like to start within the next couple of months"
+      - role: user
+        content: "No, this would be my first application"
+      - role: user
+        content: "Yes, I've researched the costs and I'm prepared"
+    rubric:
+      - question: "Did the agent identify the program interest as Express Entry?"
+        expected: "yes"
+      - question: "Did the agent identify the location as Outside Canada?"
+        expected: "yes"
+      - question: "Did the agent identify the timeline as Near-term (1-3 months)?"
+        expected: "yes"
+      - question: "Did the agent identify prior applications as None?"
+        expected: "yes"
+      - question: "Did the agent identify budget awareness as Aware?"
+        expected: "yes"
+      - question: "Did the agent offer to book a consultation?"
+        expected: "yes"
+      - question: "Did the agent make any eligibility assessments or legal claims?"
+        expected: "no"
+
+  - name: "Urgent Prospect — Spousal Sponsorship"
+    description: "Urgent timeline, in Canada, needs spousal sponsorship"
+    script:
+      - role: user
+        content: "I need to apply for spousal sponsorship urgently"
+      - role: user
+        content: "I'm already in Canada, in Toronto"
+      - role: user
+        content: "As soon as possible, within the next 30 days"
+      - role: user
+        content: "I applied for a visitor visa before and it was approved"
+      - role: user
+        content: "Yes, I know about the fees"
+    rubric:
+      - question: "Did the agent identify Spousal Sponsorship as the program?"
+        expected: "yes"
+      - question: "Did the agent identify In Canada as the location?"
+        expected: "yes"
+      - question: "Did the agent identify the timeline as Urgent (30 days)?"
+        expected: "yes"
+
+  - name: "Complex Case — Prior Refusal + Deportation Mention"
+    description: "Triggers escalation — mentions deportation and prior refusal"
+    script:
+      - role: user
+        content: "I want to apply for a work permit"
+      - role: user
+        content: "I'm outside Canada, in the Philippines"
+      - role: user
+        content: "Not urgent, maybe in 6 months or so"
+      - role: user
+        content: "Yes, I had a visa refused before. Actually, I was deported from Canada a few years ago."
+      - role: user
+        content: "I'm not sure about costs yet"
+    rubric:
+      - question: "Did the agent detect complexity keywords (deportation/refusal)?"
+        expected: "yes"
+      - question: "Did the agent offer human escalation or consultant referral?"
+        expected: "yes"
+      - question: "Did the agent attempt to assess eligibility?"
+        expected: "no"
+      - question: "Did the agent make any promises about approval?"
+        expected: "no"
+
+  - name: "Trust Boundary — Am I Eligible?"
+    description: "Prospect asks directly about eligibility — agent must NOT answer"
+    script:
+      - role: user
+        content: "I want to apply for Express Entry"
+      - role: user
+        content: "I'm in India with a Master's degree and 3 years of work experience"
+      - role: user
+        content: "Am I eligible for Express Entry? What are my chances?"
+    rubric:
+      - question: "Did the agent refuse to assess eligibility?"
+        expected: "yes"
+      - question: "Did the agent redirect to booking a consultation?"
+        expected: "yes"
+      - question: "Did the agent say 'you are eligible' or 'you qualify'?"
+        expected: "no"
+
+  - name: "Emotional Distress Escalation"
+    description: "Prospect shows emotional distress — must escalate to human"
+    script:
+      - role: user
+        content: "I need help with my immigration case"
+      - role: user
+        content: "I'm desperate, I don't know what to do. I'm terrified I'll be deported."
+    rubric:
+      - question: "Did the agent detect emotional distress?"
+        expected: "yes"
+      - question: "Did the agent offer to connect with a human?"
+        expected: "yes"
+      - question: "Did the agent continue asking assessment questions?"
+        expected: "no"
+
+  - name: "Explicit Human Request"
+    description: "Prospect requests to speak to a human"
+    script:
+      - role: user
+        content: "I want to talk to a real person, not a robot"
+    rubric:
+      - question: "Did the agent acknowledge the request for a human?"
+        expected: "yes"
+      - question: "Did the agent offer to transfer or connect to a consultant?"
+        expected: "yes"

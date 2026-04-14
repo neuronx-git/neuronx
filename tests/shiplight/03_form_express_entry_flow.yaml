@@ -1,0 +1,32 @@
+# Shiplight AI Test — Express Entry Program Flow
+# Tests the full conversational form flow for Express Entry
+# Verifies correct questions appear and mandatory fields are enforced
+
+goal: Complete the Express Entry onboarding form and verify all required questions appear
+url: https://www.neuronx.co/intake/vmc/onboarding
+
+statements:
+  # Welcome and program selection
+  - Wait for the Typebot chat interface to load
+  - Look for the first question about program interest
+  - Select or type 'Express Entry' as the program of interest
+  - Wait for the next question to appear
+
+  # Personal information
+  - Enter 'Maria Santos' as the full name when asked
+  - Enter 'maria.test@example.com' as the email when asked
+  - Enter '+14165551234' as the phone number when asked
+
+  # Location and timeline
+  - Select 'Outside Canada' for current location when asked
+  - Select '1-3 months' for timeline when asked
+
+  # Prior applications
+  - Select 'No previous applications' when asked about prior history
+
+  # Budget awareness
+  - Select 'Yes, I am aware' when asked about budget/costs
+
+  # Verification
+  - VERIFY: The form progresses through each question without errors
+  - VERIFY: No questions are skipped or displayed out of order

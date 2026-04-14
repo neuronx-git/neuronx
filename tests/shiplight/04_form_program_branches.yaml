@@ -1,0 +1,35 @@
+# Shiplight AI Test — All 8 Program Branches
+# Verifies that selecting different programs shows different questions
+# Critical: Each program must show program-specific questions, not generic ones
+
+goal: Verify each immigration program shows correct program-specific questions
+url: https://www.neuronx.co/intake/vmc/onboarding
+
+# Test Express Entry branch
+statements:
+  - Wait for the chat interface to load
+  - Select 'Express Entry' as the program
+  - VERIFY: Questions about CRS score or Express Entry eligibility appear
+  - VERIFY: No spousal sponsorship or study permit questions appear
+
+---
+# Separate test for Spousal Sponsorship
+goal: Verify Spousal Sponsorship shows relationship questions
+url: https://www.neuronx.co/intake/vmc/onboarding
+
+statements:
+  - Wait for the chat interface to load
+  - Select 'Spousal Sponsorship' as the program
+  - VERIFY: Questions about relationship or spouse information appear
+  - VERIFY: No Express Entry or CRS score questions appear
+
+---
+# Separate test for Study Permit
+goal: Verify Study Permit shows education questions
+url: https://www.neuronx.co/intake/vmc/onboarding
+
+statements:
+  - Wait for the chat interface to load
+  - Select 'Study Permit' as the program
+  - VERIFY: Questions about school or educational institution appear
+  - VERIFY: No employment or LMIA questions appear

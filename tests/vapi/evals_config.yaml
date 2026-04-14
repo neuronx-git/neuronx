@@ -1,0 +1,56 @@
+# VAPI Evals Configuration — Tool Call Validation
+# Tests that the voice agent calls correct functions with correct arguments
+#
+# Run via VAPI CLI:
+#   vapi evals run --config tests/vapi/evals_config.yaml
+#
+# Or via VAPI Dashboard: dashboard.vapi.ai/evals
+
+evals:
+  - name: "collect_readiness_data — correct arguments"
+    description: "Agent calls collect_readiness_data with all R1-R5 fields"
+    conversation:
+      - role: user
+        content: "I want Express Entry, I'm in India, timeline is 1-3 months, no prior apps, I'm budget aware"
+    assertions:
+      - type: tool_called
+        tool_name: "collect_readiness_data"
+      - type: tool_argument
+        tool_name: "collect_readiness_data"
+        argument: "program_interest"
+        match: regex
+        pattern: "[Ee]xpress [Ee]ntry"
+      - type: tool_argument
+        tool_name: "collect_readiness_data"
+        argument: "current_location"
+        match: regex
+        pattern: "[Oo]utside [Cc]anada|India"
+
+  - name: "book_consultation — triggers after qualifying"
+    description: "Agent offers booking after collecting R1-R5 data"
+    conversation:
+      - role: user
+        content: "Express Entry, in Canada, need to start soon, no prior apps, yes I know the costs"
+      - role: user
+        content: "Yes, I'd like to book a consultation"
+    assertions:
+      - type: tool_called
+        tool_name: "book_consultation"
+
+  - name: "transfer_to_human — triggered by emotional distress"
+    description: "Agent transfers when prospect shows distress"
+    conversation:
+      - role: user
+        content: "I'm desperate, please help me. I'm terrified about my situation."
+    assertions:
+      - type: tool_called
+        tool_name: "transfer_to_human"
+
+  - name: "no_eligibility_assessment"
+    description: "Agent must NOT assess eligibility when asked"
+    conversation:
+      - role: user
+        content: "Am I eligible for Express Entry? I have a Master's and 5 years experience."
+    assertions:
+      - type: response_not_contains
+        pattern: "you are eligible|you qualify|your chances are"

@@ -6,23 +6,20 @@
   <title>{{ title }} | {{ tenant_name }}</title>
   <meta name="description" content="{{ description }}">
   <meta name="robots" content="noindex">
-
-  <!-- Favicon — NX brand icon (parent page controls favicon for embedded bots) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2300C6FF'/><stop offset='100%25' stop-color='%237B2FFF'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><text x='16' y='22' font-family='Arial' font-weight='900' font-size='14' fill='white' text-anchor='middle'>NX</text></svg>">
-
   <meta property="og:title" content="{{ title }}">
   <meta property="og:description" content="{{ description }}">
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; width: 100%; overflow: hidden; background: #F8FAFC; }
-    typebot-standard { width: 100%; height: 100vh; display: block; }
+    html, body { height: 100%; width: 100%; overflow: hidden; }
+    iframe { width: 100%; height: 100vh; border: none; }
   </style>
 </head>
 <body>
-  <typebot-standard
-    typebot="{{ typebot_id }}"
-    api-host="{{ typebot_viewer_url }}"
-  ></typebot-standard>
+  <iframe
+    src="{{ typebot_viewer_url }}/{{ typebot_id }}"
+    allow="microphone; camera; clipboard-write"
+    loading="eager"
+  ></iframe>
 </body>
 </html>

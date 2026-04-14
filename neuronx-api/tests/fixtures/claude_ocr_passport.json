@@ -1,0 +1,13 @@
+{
+  "id": "msg_test_passport_001",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "```json\n{\n  \"full_name\": \"SANTOS MARIA ELENA\",\n  \"date_of_birth\": \"1990-03-15\",\n  \"passport_number\": \"AB1234567\",\n  \"passport_expiry\": \"2031-03-14\",\n  \"country_of_citizenship\": \"India\",\n  \"sex\": \"F\",\n  \"nationality\": \"IND\"\n}\n```"
+    }
+  ],
+  "model": "claude-sonnet-4-6",
+  "stop_reason": "end_turn"
+}

@@ -1,0 +1,38 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Pure logic tests, no I/O or mocking needed",
+    "integration: Router-level tests with mocked external services",
+    "database: Tests using async SQLite for DB operations",
+    "contract: Payload shape validation against fixtures",
+    "e2e: End-to-end business flow tests",
+    "perf: Performance and load tests (slow)",
+    "slow: Tests that take >5s",
+    "live: Tests calling real external APIs (GHL, VAPI) — need credentials",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+addopts = "-v --tb=short --strict-markers"
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "app/__pycache__/*",
+    "tests/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__",
+    "raise NotImplementedError",
+    "pass",
+    "\\.\\.\\.",
+]

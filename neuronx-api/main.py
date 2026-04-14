@@ -81,6 +81,79 @@ async def health():
     }
 
 
+@app.get("/health/deep")
+async def health_deep():
+    """
+    Deep health check — probes all external dependencies.
+    Use for production monitoring and pre-deploy validation.
+    """
+    import httpx
+    from app.database import is_db_configured, get_session
+    from app.config_loader import load_scoring_config, load_programs_config, load_trust_config
+
+    checks = {}
+
+    # Database connectivity
+    if is_db_configured():
+        try:
+            async with get_session() as session:
+                from sqlalchemy import text
+                await session.execute(text("SELECT 1"))
+            checks["database"] = "ok"
+        except Exception as e:
+            checks["database"] = f"error: {str(e)[:100]}"
+    else:
+        checks["database"] = "not configured"
+
+    # GHL API reachability
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            r = await client.get(
+                f"{settings.ghl_api_base_url}/locations/{settings.ghl_location_id}",
+                headers={"Authorization": f"Bearer {settings.ghl_access_token}"},
+            )
+            checks["ghl_api"] = "ok" if r.status_code in (200, 401) else f"status: {r.status_code}"
+    except Exception as e:
+        checks["ghl_api"] = f"unreachable: {str(e)[:80]}"
+
+    # Anthropic API key validity
+    if settings.anthropic_api_key:
+        checks["anthropic"] = "configured"
+    else:
+        checks["anthropic"] = "not configured"
+
+    # YAML config parsing
+    try:
+        load_scoring_config()
+        load_programs_config()
+        load_trust_config()
+        checks["configs"] = "ok (3/3 loaded)"
+    except Exception as e:
+        checks["configs"] = f"error: {str(e)[:100]}"
+
+    # Typebot reachability
+    if settings.typebot_url:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.get(f"{settings.typebot_url}/api/v1/typebots", headers={
+                    "Authorization": f"Bearer {settings.typebot_api_token}"
+                })
+                checks["typebot"] = "ok" if r.status_code in (200, 401, 403) else f"status: {r.status_code}"
+        except Exception as e:
+            checks["typebot"] = f"unreachable: {str(e)[:80]}"
+    else:
+        checks["typebot"] = "not configured"
+
+    all_ok = all(v in ("ok", "configured", "not configured") or v.startswith("ok") for v in checks.values())
+
+    return {
+        "status": "ok" if all_ok else "degraded",
+        "service": "neuronx-api",
+        "version": "0.4.0",
+        "checks": checks,
+    }
+
+
 @app.post("/admin/reload-config")
 async def reload_config(x_admin_key: str = Header(...)):
     """Reload YAML config files without redeploying. Requires X-Admin-Key header."""

@@ -7,6 +7,8 @@ GHL: Ed25519 signature in X-GHL-Signature header
 VAPI: HMAC-SHA256 signature in X-Vapi-Signature header
 """
 
+from __future__ import annotations
+
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from fastapi import HTTPException

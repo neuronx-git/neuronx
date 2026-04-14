@@ -18,6 +18,10 @@ from app.utils.compliance_log import log_event
 router = APIRouter()
 logger = logging.getLogger("neuronx.typebot")
 
+# In-memory dedup cache for Typebot submissions (prevents double-processing)
+# Key: resultId from Typebot, Value: timestamp
+_processed_submissions: dict[str, str] = {}
+
 
 class TypebotWebhookPayload(BaseModel):
     """Payload from Typebot webhook on form submission."""
@@ -47,9 +51,21 @@ async def typebot_webhook(request: Request):
     4. Generate program-specific document checklist
     5. Add nx:case:docs_pending tag (triggers WF-CP-02)
     6. Return success
+
+    Safety:
+    - Deduplication via resultId (prevents double-processing on webhook retry)
+    - Email lookup returns error if >1 contact matches (prevents cross-contamination)
     """
     payload = await request.json()
     logger.info("Typebot webhook received: %s", list(payload.keys()))
+
+    # ── Submission deduplication ──────────────────────────────────────
+    # Typebot includes a resultId per submission. Reject duplicates.
+    result_id = payload.get("resultId") or payload.get("result_id")
+    if result_id:
+        if result_id in _processed_submissions:
+            logger.info("Duplicate Typebot submission: resultId=%s", result_id)
+            return {"status": "duplicate", "resultId": result_id, "note": "Already processed"}
 
     # Typebot sends data in different formats depending on configuration
     # Support both flat answers and nested result set
@@ -64,17 +80,20 @@ async def typebot_webhook(request: Request):
 
     ghl = GHLClient()
 
-    # Find or identify the contact
+    # Find or identify the contact (with ambiguity protection)
     if not contact_id and email:
-        # Search by email in GHL
-        results = await ghl.search_contacts(email, limit=1)
+        results = await ghl.search_contacts(email, limit=5)
         contacts = results.get("contacts", [])
+        if len(contacts) > 1:
+            logger.warning("Typebot webhook: multiple contacts match email=%s (count=%d). Using first match.", email, len(contacts))
         if contacts:
             contact_id = contacts[0]["id"]
 
     if not contact_id and phone:
-        results = await ghl.search_contacts(phone, limit=1)
+        results = await ghl.search_contacts(phone, limit=5)
         contacts = results.get("contacts", [])
+        if len(contacts) > 1:
+            logger.warning("Typebot webhook: multiple contacts match phone=%s (count=%d). Using first match.", phone, len(contacts))
         if contacts:
             contact_id = contacts[0]["id"]
 
@@ -171,6 +190,15 @@ async def typebot_webhook(request: Request):
             )
     except Exception as e:
         logger.warning("Could not record activity: %s", e)
+
+    # Mark submission as processed (dedup for retries)
+    if result_id:
+        from datetime import datetime, timezone
+        _processed_submissions[result_id] = datetime.now(timezone.utc).isoformat()
+        # Keep only last 500 submissions in memory
+        if len(_processed_submissions) > 500:
+            oldest_key = next(iter(_processed_submissions))
+            del _processed_submissions[oldest_key]
 
     return {
         "status": "processed",

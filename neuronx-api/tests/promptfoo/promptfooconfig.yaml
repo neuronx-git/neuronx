@@ -1,0 +1,77 @@
+description: NeuronX Document OCR Extraction — Prompt Quality Eval
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-6
+    config:
+      temperature: 0
+
+prompts:
+  - id: passport_extraction
+    raw: |
+      Extract the following fields from this passport image as JSON:
+      - full_name
+      - date_of_birth (ISO format)
+      - passport_number
+      - passport_expiry (ISO format)
+      - country_of_citizenship
+      - sex (M/F)
+
+      Return ONLY valid JSON, no other text.
+
+      {{document_description}}
+
+  - id: ielts_extraction
+    raw: |
+      Extract the following fields from this IELTS score sheet as JSON:
+      - listening_score
+      - reading_score
+      - writing_score
+      - speaking_score
+      - overall_score
+      - test_type (Academic or General Training)
+      - test_date (ISO format if visible)
+
+      Return ONLY valid JSON, no other text.
+
+      {{document_description}}
+
+tests:
+  - description: "Passport — standard Indian passport"
+    vars:
+      document_description: "This is a scan of an Indian passport. The MRZ zone shows: P<INDSANTOS<<MARIA<<<<<<<<<<<<<<<<<<<<<<<<<<AB1234567IND9003158F3103148<<<<<<<<<<<<<<00"
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).full_name !== undefined"
+      - type: javascript
+        value: "JSON.parse(output).passport_number !== undefined"
+      - type: javascript
+        value: "JSON.parse(output).date_of_birth !== undefined"
+
+  - description: "IELTS — Academic with all bands"
+    vars:
+      document_description: "IELTS Academic Test Report Form. Candidate: Maria Santos. Listening: 8.0, Reading: 7.5, Writing: 7.0, Speaking: 7.5, Overall Band Score: 7.5. Test date: 20 November 2025. TRF Number: 25IN123456SANTM."
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "parseFloat(JSON.parse(output).overall_score) >= 0"
+      - type: javascript
+        value: "JSON.parse(output).listening_score !== undefined"
+      - type: javascript
+        value: "JSON.parse(output).test_type !== undefined"
+
+  - description: "IELTS — General Training"
+    vars:
+      document_description: "IELTS General Training Test Report. Candidate: John Singh. Listening: 6.5, Reading: 6.0, Writing: 5.5, Speaking: 6.0, Overall: 6.0. Date: 15 January 2026."
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "parseFloat(JSON.parse(output).overall_score) >= 0"
+
+  - description: "Passport — edge case, minimal info"
+    vars:
+      document_description: "Passport scan, partially obscured. Visible: Name KUMAR RAJ, DOB 1985-07-22, Passport P9876543, India."
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).full_name !== undefined"

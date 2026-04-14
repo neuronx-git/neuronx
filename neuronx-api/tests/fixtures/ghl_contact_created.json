@@ -1,0 +1,19 @@
+{
+  "type": "ContactCreate",
+  "locationId": "FlRL82M0D6nclmKT7eXH",
+  "id": "contact-ghl-001",
+  "firstName": "Maria",
+  "lastName": "Santos",
+  "email": "maria.santos@example.com",
+  "phone": "+14165559999",
+  "source": "Landing Page",
+  "dateAdded": "2026-04-13T10:30:00.000Z",
+  "tags": [],
+  "customFields": [],
+  "address1": "",
+  "city": "",
+  "state": "",
+  "country": "Canada",
+  "companyName": "",
+  "website": ""
+}

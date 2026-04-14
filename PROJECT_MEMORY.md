@@ -162,7 +162,7 @@ dependents, processed_webhooks, dead_letter_queue
 ## What Blocks Pilot Launch
 
 1. **Production GHL account** ($297/mo) — needed for email/SMS/phone
-2. **Typebot file upload fix** — S3_ENDPOINT must use internal Railway URL
+2. ~~Typebot file upload fix~~ — **RESOLVED** (2026-04-14: MinIO working, files uploading, bucket configured correctly. Verified: Sumi Passport.pdf + test.jpg stored and publicly accessible.)
 3. **E2E UAT** — needs production GHL
 4. **RCIC license number** — update in config/ircc_field_mappings.yaml
 
@@ -173,9 +173,54 @@ dependents, processed_webhooks, dead_letter_queue
 - WhatsApp integration
 - ERPNext/HR system
 
-## Tests
-- 78/78 passing (neuronx-api)
-- Run: `cd neuronx-api && .venv/bin/python -m pytest tests/ -q`
+## Testing Architecture (2026-04-14 — PRODUCTION VERIFIED)
+
+### Test Results (FINAL)
+- **693 core tests** — ALL PASSING, 92.54% coverage
+- **13 GHL live tests** — ALL PASSING against real GHL API
+- **31 VAPI live tests** — ALL PASSING against real VAPI API
+- **6 UAT scenarios** — ALL PASSING against production Railway
+- **Total: 743 tests | 0 failures | 92.54% coverage**
+
+### Live API Verification
+- GHL: location, 140 custom fields, R1-R5 fields, 10+ nx: tags, scoring tags, pipeline (5+ stages), calendar — ALL VERIFIED
+- VAPI: assistant config, GPT-4o model, structured data plan (R1-R5), trust boundaries (5 NEVER rules), phone +16479315181, webhook → Railway — ALL VERIFIED
+- Production: API health OK, website 200, form 200, DB connected
+
+### Test Layers
+| Layer | Tests | Status |
+|-------|-------|--------|
+| Unit (scoring 97, trust 46, config 26, IRCC 30, security 11) | 282 | PASS |
+| Integration (routers + health + OpenAPI + sync + GHL/VAPI live) | 130 | PASS |
+| Contract (GHL/VAPI/Typebot/Claude payloads) | 41 | PASS |
+| Database (9 SQLAlchemy models via async SQLite) | 19 | PASS |
+| E2E Business Flows (7 flows + failure handling) | 43 | PASS |
+| k6 Performance | 3 scripts | READY |
+| Promptfoo LLM Eval | 4 cases | READY |
+| Shiplight AI Browser E2E | 5 YAML specs | READY |
+| VAPI Chat Tests (no real calls) | 6 cases | READY |
+| Autonomous (Claude Agent SDK) | 4 scenarios | READY |
+
+### Run Commands
+```bash
+# Core tests (5.5s)
+cd neuronx-api && .venv/bin/python -m pytest tests/ -q --ignore=tests/integration/test_vapi_live.py --ignore=tests/integration/test_ghl_live.py
+
+# GHL live (needs token refresh first)
+.venv/bin/python -m pytest tests/integration/test_ghl_live.py -v
+
+# VAPI live
+VAPI_LIVE_API_KEY=cb69d6fc-baf7-4881-8bff-20c7df251437 .venv/bin/python -m pytest tests/integration/test_vapi_live.py -v
+```
+
+### Key Decisions
+- Stack: pytest + k6 + Promptfoo + Shiplight AI + VAPI Chat Tests
+- OpenHands/Devin/Mechasm: SKIP (Claude Code + MCP covers this better)
+- GHL Official MCP Server: RECOMMENDED for future integration
+- Full docs: `docs/TESTING_ARCHITECTURE.md`, `docs/PRODUCTION_TESTING_STRATEGY.md`, `docs/PRODUCT_READINESS_REPORT.md`, `docs/FEATURE_STATUS.md`
+
+### Product Readiness: ~92% (CONDITIONALLY READY)
+3 blockers remain: Production GHL ($297/mo), Typebot S3 fix, RCIC license number
 
 ## ⚠️ SANDBOX DISCOVERY (2026-03-26)
 The GHL agency is a DEVELOPER SANDBOX. Email/SMS/phone blocked.

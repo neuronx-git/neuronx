@@ -1,6 +1,7 @@
 """Tests for Typebot webhook and form generation."""
 
 import pytest
+from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from main import app
 from app.services.typebot_service import TypebotService
@@ -70,7 +71,8 @@ def test_webhook_endpoint_no_contact(client):
 
 def test_form_url_no_typebot(client):
     """Form URL should indicate Typebot not deployed."""
-    r = client.get("/typebot/form-url/Express Entry")
+    with patch("app.config.settings.typebot_viewer_url", ""):
+        r = client.get("/typebot/form-url/Express Entry")
     assert r.status_code == 200
     data = r.json()
     assert data["url"] is None
@@ -79,9 +81,13 @@ def test_form_url_no_typebot(client):
 
 def test_create_form_no_typebot(client):
     """Create form should return 503 when Typebot not configured."""
-    r = client.post("/typebot/create-form", json={
-        "program_type": "Express Entry",
-    })
+    with patch("app.routers.typebot.TypebotService") as MockService:
+        mock = MagicMock()
+        mock.is_configured.return_value = False
+        MockService.return_value = mock
+        r = client.post("/typebot/create-form", json={
+            "program_type": "Express Entry",
+        })
     assert r.status_code == 503
 
 

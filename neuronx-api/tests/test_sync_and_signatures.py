@@ -1,6 +1,7 @@
 """Tests for sync and signature endpoints (without database)."""
 
 import pytest
+from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from main import app
 
@@ -28,17 +29,25 @@ def test_full_sync_no_db(client):
 
 def test_signature_send_no_documenso(client):
     """Signature send should return 503 when Documenso not configured."""
-    r = client.post("/signatures/send", json={
-        "contact_id": "test123",
-        "retainer_amount": 3500,
-    })
+    with patch("app.routers.signatures.DocumensoClient") as MockDocumenso:
+        mock = MagicMock()
+        mock.is_configured.return_value = False
+        MockDocumenso.return_value = mock
+        r = client.post("/signatures/send", json={
+            "contact_id": "test123",
+            "retainer_amount": 3500,
+        })
     assert r.status_code == 503
     assert "Documenso not configured" in r.json()["detail"]
 
 
 def test_signature_status_no_documenso(client):
     """Signature status check should return 503 when not configured."""
-    r = client.get("/signatures/status/doc123")
+    with patch("app.routers.signatures.DocumensoClient") as MockDocumenso:
+        mock = MagicMock()
+        mock.is_configured.return_value = False
+        MockDocumenso.return_value = mock
+        r = client.get("/signatures/status/doc123")
     assert r.status_code == 503
 
 

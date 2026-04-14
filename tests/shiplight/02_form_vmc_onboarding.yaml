@@ -1,0 +1,14 @@
+# Shiplight AI Test — VMC Onboarding Form (Typebot Embed)
+# Tests multi-tenant form rendering and Typebot iframe load
+# Target: www.neuronx.co/intake/vmc/onboarding (Vercel proxy -> Railway)
+
+goal: Verify the VMC onboarding form loads correctly with proper branding
+url: https://www.neuronx.co/intake/vmc/onboarding
+
+statements:
+  - Wait for the page to fully load
+  - VERIFY: Page contains 'Visa Master Canada' or immigration-related branding
+  - VERIFY: A chat-like form interface is visible (Typebot embed)
+  - VERIFY: The form displays a welcome or greeting message
+  - VERIFY: No error messages or broken elements are visible on the page
+  - VERIFY: The page background and colors match a professional dark blue theme

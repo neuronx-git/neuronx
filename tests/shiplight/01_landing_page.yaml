@@ -1,0 +1,18 @@
+# Shiplight AI Test — NeuronX Landing Page
+# Run: via Shiplight MCP in Claude Code or Desktop App
+# Target: www.neuronx.co (Vercel)
+
+goal: Verify NeuronX landing page loads correctly and key sections are visible
+url: https://www.neuronx.co
+
+statements:
+  - VERIFY: Page title contains 'NeuronX'
+  - VERIFY: Navigation bar is visible with logo
+  - Scroll down to the features section
+  - VERIFY: Features section shows AI-powered immigration consulting capabilities
+  - Scroll down to the pricing section
+  - VERIFY: Pricing section is visible
+  - Scroll down to the footer
+  - VERIFY: Footer contains copyright information
+  - Scroll back to the top
+  - VERIFY: Hero section is visible with a call-to-action button
