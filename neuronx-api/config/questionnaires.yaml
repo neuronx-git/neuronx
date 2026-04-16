@@ -9,16 +9,17 @@
 # SOURCES: Question fields derived from IRCC official application
 # requirements and document checklists.
 # See docs/09_domain_knowledge/GOVERNMENT_SOURCES.md for citations.
-# LAST VERIFIED: 2026-04-04 against canada.ca
-# NEXT REVIEW: 2026-05-04 (monthly)
+# LAST VERIFIED: 2026-04-16 against canada.ca
+# NEXT REVIEW: 2026-05-16 (monthly)
 #
 # IMPORTANT: These questions collect INTAKE DATA only.
 # They do NOT assess eligibility — that is the RCIC's role.
 # See docs/04_compliance/trust_boundaries.md.
 # ============================================
 
-# Common questions asked for ALL programs
+# Common questions asked for ALL programs (21 fields)
 common_questions:
+  # ── Personal Information ──
   - key: "full_name"
     label: "Full Legal Name (as on passport)"
     type: "text"
@@ -55,6 +56,7 @@ common_questions:
     required: true
     section: "Personal Information"
 
+  # ── Contact ──
   - key: "email"
     label: "Email Address"
     type: "email"
@@ -67,12 +69,41 @@ common_questions:
     required: true
     section: "Contact"
 
+  # ── Family ──
   - key: "marital_status"
     label: "Marital Status"
     type: "select"
     required: true
     section: "Family"
     options: ["Single", "Married", "Common-Law", "Divorced", "Widowed", "Separated"]
+
+  - key: "has_spouse_on_application"
+    label: "Will your spouse/partner be included in this application?"
+    type: "boolean"
+    required: true
+    section: "Family"
+    show_if: {key: "marital_status", value: "Single", negate: true}
+
+  - key: "spouse_full_name"
+    label: "Spouse/Partner's Full Legal Name"
+    type: "text"
+    required: false
+    section: "Family"
+    show_if: {key: "has_spouse_on_application", value: true}
+
+  - key: "spouse_date_of_birth"
+    label: "Spouse/Partner's Date of Birth"
+    type: "date"
+    required: false
+    section: "Family"
+    show_if: {key: "has_spouse_on_application", value: true}
+
+  - key: "spouse_citizenship"
+    label: "Spouse/Partner's Country of Citizenship"
+    type: "text"
+    required: false
+    section: "Family"
+    show_if: {key: "has_spouse_on_application", value: true}
 
   - key: "has_dependents"
     label: "Do you have dependent children (under 22)?"
@@ -87,6 +118,15 @@ common_questions:
     section: "Family"
     show_if: {key: "has_dependents", value: true}
 
+  - key: "dependent_names_dobs"
+    label: "List each dependent's name and date of birth"
+    type: "textarea"
+    required: false
+    section: "Family"
+    show_if: {key: "has_dependents", value: true}
+    help_text: "Format: Name - YYYY-MM-DD, one per line. Needed for medical exam scheduling."
+
+  # ── Background ──
   - key: "criminal_history"
     label: "Have you ever been convicted of a criminal offence in any country?"
     type: "boolean"
@@ -100,7 +140,7 @@ common_questions:
     section: "Background"
 
   - key: "previous_refusal_details"
-    label: "If yes, please provide details (country, year, reason if known)"
+    label: "If yes, please provide details (country, year, program, reason if known)"
     type: "textarea"
     required: false
     section: "Background"
@@ -125,6 +165,7 @@ common_questions:
     section: "Background"
     help_text: "Used to determine which police clearance certificates you need. Separate with commas."
 
+  # ── Consent (ICCRC Required) ──
   - key: "consent_true_information"
     label: "I confirm that all information provided is true and accurate to the best of my knowledge"
     type: "boolean"
@@ -132,17 +173,20 @@ common_questions:
     section: "Consent"
 
   - key: "consent_representation"
-    label: "I authorize Visa Master Canada to act as my immigration representative"
+    label: "I authorize this firm to act as my immigration representative"
     type: "boolean"
     required: true
     section: "Consent"
 
+# ============================================
 # Program-specific questions
+# ============================================
 programs:
 
   Express Entry:
     sections: ["Education", "Work Experience", "Language", "Settlement Funds"]
     questions:
+      # ── Education ──
       - key: "education_level"
         label: "Highest Level of Education Completed"
         type: "select"
@@ -164,6 +208,7 @@ programs:
         show_if: {key: "eca_completed", value: true}
         options: ["WES", "IQAS", "CES", "MCC", "PEBC", "Other"]
 
+      # ── Work Experience ──
       - key: "years_work_experience"
         label: "Total Years of Skilled Work Experience"
         type: "number"
@@ -183,11 +228,32 @@ programs:
         section: "Work Experience"
 
       - key: "noc_code"
-        label: "NOC Code (if known)"
+        label: "NOC Code (if known — look up at canada.ca/noc)"
         type: "text"
         required: false
         section: "Work Experience"
 
+      - key: "has_job_offer"
+        label: "Do you have a valid Canadian job offer?"
+        type: "boolean"
+        required: true
+        section: "Work Experience"
+
+      - key: "job_offer_lmia_status"
+        label: "Is the job offer supported by an LMIA?"
+        type: "select"
+        required: false
+        section: "Work Experience"
+        show_if: {key: "has_job_offer", value: true}
+        options: ["LMIA Approved", "LMIA Exempt", "Not Sure"]
+
+      - key: "provincial_nomination"
+        label: "Do you have a Provincial Nominee Program (PNP) nomination?"
+        type: "boolean"
+        required: true
+        section: "Work Experience"
+
+      # ── Language ──
       - key: "language_test_type"
         label: "Language Test Taken"
         type: "select"
@@ -238,6 +304,7 @@ programs:
         section: "Language"
         options: ["No", "Basic", "Intermediate", "Advanced/Fluent"]
 
+      # ── Settlement Funds ──
       - key: "settlement_funds"
         label: "Available Settlement Funds (CAD)"
         type: "number"
@@ -245,21 +312,17 @@ programs:
         section: "Settlement Funds"
         help_text: "Minimum required varies by family size. Single: ~$14,690 CAD"
 
-      - key: "has_job_offer"
-        label: "Do you have a valid Canadian job offer?"
-        type: "boolean"
+      - key: "settlement_funds_source"
+        label: "Where are your settlement funds held?"
+        type: "select"
         required: true
-        section: "Work Experience"
-
-      - key: "provincial_nomination"
-        label: "Do you have a Provincial Nominee Program (PNP) nomination?"
-        type: "boolean"
-        required: true
-        section: "Work Experience"
+        section: "Settlement Funds"
+        options: ["Bank Account (liquid)", "Investments", "Property", "Combination"]
 
   Spousal Sponsorship:
-    sections: ["Sponsor Information", "Relationship", "Applicant Status"]
+    sections: ["Sponsor Information", "Sponsor Financial", "Relationship", "Applicant Status"]
     questions:
+      # ── Sponsor Information ──
       - key: "sponsor_name"
         label: "Sponsor's Full Legal Name"
         type: "text"
@@ -280,6 +343,34 @@ programs:
         section: "Sponsor Information"
         options: ["Ontario", "British Columbia", "Alberta", "Quebec", "Manitoba", "Saskatchewan", "Nova Scotia", "New Brunswick", "Newfoundland", "PEI", "Northwest Territories", "Yukon", "Nunavut"]
 
+      - key: "previous_sponsorship"
+        label: "Has the sponsor previously sponsored someone?"
+        type: "boolean"
+        required: true
+        section: "Sponsor Information"
+
+      - key: "sponsor_previous_marriage"
+        label: "Was the sponsor previously married to someone else?"
+        type: "boolean"
+        required: true
+        section: "Sponsor Information"
+
+      # ── Sponsor Financial ──
+      - key: "sponsor_annual_income"
+        label: "Sponsor's Annual Income (CAD)"
+        type: "number"
+        required: true
+        section: "Sponsor Financial"
+        help_text: "Used to verify Low Income Cut-off (LICO) requirement"
+
+      - key: "sponsor_income_source"
+        label: "Sponsor's Primary Income Source"
+        type: "select"
+        required: true
+        section: "Sponsor Financial"
+        options: ["Employment", "Self-Employment", "Pension/Benefits", "Investment Income", "Other"]
+
+      # ── Relationship ──
       - key: "relationship_type"
         label: "Type of Relationship"
         type: "select"
@@ -293,12 +384,26 @@ programs:
         required: true
         section: "Relationship"
 
+      - key: "relationship_how_met"
+        label: "How did you and your sponsor meet?"
+        type: "select"
+        required: true
+        section: "Relationship"
+        options: ["In Person", "Online/Dating App", "Introduced by Family", "Work/School", "Other"]
+
+      - key: "relationship_duration_months"
+        label: "How long have you been in this relationship? (months)"
+        type: "number"
+        required: true
+        section: "Relationship"
+
       - key: "met_in_person"
         label: "Have you and your sponsor met in person?"
         type: "boolean"
         required: true
         section: "Relationship"
 
+      # ── Applicant Status ──
       - key: "applicant_in_canada"
         label: "Is the applicant currently in Canada?"
         type: "boolean"
@@ -312,27 +417,29 @@ programs:
         section: "Applicant Status"
         options: ["Outside Canada", "Visitor", "Student", "Worker", "Refugee Claimant", "No Status (Undocumented)", "Other"]
 
-      - key: "previous_sponsorship"
-        label: "Has the sponsor previously sponsored someone?"
+      - key: "applicant_wants_open_work_permit"
+        label: "Does the applicant want to apply for an Open Work Permit while sponsorship is processing?"
         type: "boolean"
-        required: true
-        section: "Sponsor Information"
+        required: false
+        section: "Applicant Status"
+        show_if: {key: "applicant_in_canada", value: true}
 
   Work Permit:
-    sections: ["Employment", "Employer", "Current Status"]
+    sections: ["Employment", "Employer", "Employment Details", "Current Status"]
     questions:
+      # ── Employment ──
       - key: "has_job_offer"
         label: "Do you have a job offer from a Canadian employer?"
         type: "boolean"
         required: true
         section: "Employment"
 
-      - key: "employer_name"
-        label: "Canadian Employer Name"
-        type: "text"
-        required: false
-        section: "Employer"
-        show_if: {key: "has_job_offer", value: true}
+      - key: "work_permit_type"
+        label: "Type of Work Permit Sought"
+        type: "select"
+        required: true
+        section: "Employment"
+        options: ["Employer-Specific", "Open Work Permit", "PGWP", "Spousal Open Work Permit", "IEC Working Holiday", "Intra-Company Transfer", "CUSMA/NAFTA"]
 
       - key: "job_title"
         label: "Job Title"
@@ -346,6 +453,21 @@ programs:
         required: false
         section: "Employment"
 
+      # ── Employer ──
+      - key: "employer_name"
+        label: "Canadian Employer Name"
+        type: "text"
+        required: false
+        section: "Employer"
+        show_if: {key: "has_job_offer", value: true}
+
+      - key: "employer_province"
+        label: "Province of Employment"
+        type: "text"
+        required: false
+        section: "Employer"
+        show_if: {key: "has_job_offer", value: true}
+
       - key: "lmia_status"
         label: "LMIA Status"
         type: "select"
@@ -353,13 +475,29 @@ programs:
         section: "Employer"
         options: ["LMIA Approved", "LMIA Pending", "LMIA Exempt", "Not Sure", "Not Applicable"]
 
-      - key: "work_permit_type"
-        label: "Type of Work Permit Sought"
-        type: "select"
-        required: true
-        section: "Employment"
-        options: ["Employer-Specific", "Open Work Permit", "PGWP", "Spousal Open Work Permit", "IEC Working Holiday", "Intra-Company Transfer", "CUSMA/NAFTA"]
+      # ── Employment Details ──
+      - key: "employment_start_date"
+        label: "Expected Employment Start Date"
+        type: "date"
+        required: false
+        section: "Employment Details"
+        show_if: {key: "has_job_offer", value: true}
 
+      - key: "employment_salary"
+        label: "Annual Salary (CAD)"
+        type: "number"
+        required: false
+        section: "Employment Details"
+        show_if: {key: "has_job_offer", value: true}
+
+      - key: "employment_duration_months"
+        label: "Employment Contract Duration (months)"
+        type: "number"
+        required: false
+        section: "Employment Details"
+        show_if: {key: "has_job_offer", value: true}
+
+      # ── Current Status ──
       - key: "currently_in_canada"
         label: "Are you currently in Canada?"
         type: "boolean"
@@ -373,9 +511,17 @@ programs:
         section: "Current Status"
         options: ["Outside Canada", "Visitor", "Student", "Worker (current permit)", "PR Holder", "No Status", "Other"]
 
+      - key: "current_permit_expiry"
+        label: "Current Permit/Status Expiry Date"
+        type: "date"
+        required: false
+        section: "Current Status"
+        show_if: {key: "currently_in_canada", value: true}
+
   Study Permit:
-    sections: ["Study Plans", "Finances", "Current Status"]
+    sections: ["Study Plans", "Finances", "Eligibility"]
     questions:
+      # ── Study Plans ──
       - key: "dli_name"
         label: "Name of Designated Learning Institution (DLI)"
         type: "text"
@@ -401,6 +547,27 @@ programs:
         required: true
         section: "Study Plans"
 
+      - key: "studying_in_quebec"
+        label: "Will you be studying in Quebec?"
+        type: "boolean"
+        required: true
+        section: "Study Plans"
+
+      - key: "has_caq"
+        label: "Do you have a CAQ (Certificat d'acceptation du Quebec)?"
+        type: "boolean"
+        required: false
+        section: "Study Plans"
+        show_if: {key: "studying_in_quebec", value: true}
+
+      - key: "post_study_plan"
+        label: "What are your plans after completing your studies?"
+        type: "select"
+        required: true
+        section: "Study Plans"
+        options: ["Return to Home Country", "Apply for Work Permit (PGWP)", "Apply for PR", "Not Sure Yet"]
+
+      # ── Finances ──
       - key: "tuition_amount"
         label: "Annual Tuition (CAD)"
         type: "number"
@@ -420,16 +587,23 @@ programs:
         required: false
         section: "Finances"
 
-      - key: "studying_in_quebec"
-        label: "Will you be studying in Quebec?"
-        type: "boolean"
+      - key: "total_funds_available"
+        label: "Total Funds Available for Studies + Living Expenses (CAD)"
+        type: "number"
         required: true
-        section: "Study Plans"
+        section: "Finances"
+        help_text: "Include tuition + living expenses for first year (~$20,635 CAD living costs outside Quebec)"
 
-  # LMIA, PR Renewal, Citizenship, Visitor — use common questions only
-  # RCIC collects program-specific details during consultation
+      # ── Eligibility ──
+      - key: "previous_education_level"
+        label: "Highest Education Completed (before this program)"
+        type: "select"
+        required: true
+        section: "Eligibility"
+        options: ["High School", "Diploma/Certificate", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]
+
   LMIA:
-    sections: ["Employer Details"]
+    sections: ["Employer Details", "Position Details"]
     questions:
       - key: "employer_name"
         label: "Employer Business Name"
@@ -441,20 +615,36 @@ programs:
         type: "text"
         required: true
         section: "Employer Details"
+      - key: "employer_industry"
+        label: "Industry Sector"
+        type: "select"
+        required: true
+        section: "Employer Details"
+        options: ["Technology", "Healthcare", "Agriculture", "Hospitality", "Construction", "Manufacturing", "Retail", "Other"]
       - key: "position_title"
         label: "Position to be Filled"
         type: "text"
         required: true
-        section: "Employer Details"
+        section: "Position Details"
+      - key: "position_salary"
+        label: "Proposed Annual Salary (CAD)"
+        type: "number"
+        required: true
+        section: "Position Details"
       - key: "lmia_stream"
         label: "LMIA Stream"
         type: "select"
         required: true
-        section: "Employer Details"
+        section: "Position Details"
         options: ["High-Wage", "Low-Wage", "Global Talent Stream", "Agricultural", "Caregiver", "Permanent Residence"]
+      - key: "recruitment_completed"
+        label: "Has the employer completed 4 weeks of recruitment for Canadian workers?"
+        type: "boolean"
+        required: true
+        section: "Position Details"
 
   PR Renewal:
-    sections: ["Residency"]
+    sections: ["Residency", "Travel History"]
     questions:
       - key: "pr_card_expiry"
         label: "Current PR Card Expiry Date"
@@ -471,10 +661,22 @@ programs:
         label: "Have you travelled outside Canada in the last 5 years?"
         type: "boolean"
         required: true
-        section: "Residency"
+        section: "Travel History"
+      - key: "longest_absence_months"
+        label: "Longest single absence from Canada (months)"
+        type: "number"
+        required: false
+        section: "Travel History"
+        show_if: {key: "travel_outside_canada", value: true}
+      - key: "employed_abroad_canadian_company"
+        label: "Were you employed abroad by a Canadian company during any absence?"
+        type: "boolean"
+        required: false
+        section: "Travel History"
+        show_if: {key: "travel_outside_canada", value: true}
 
   Citizenship:
-    sections: ["Eligibility"]
+    sections: ["Eligibility", "Tax & Language"]
     questions:
       - key: "pr_start_date"
         label: "Date You Became a Permanent Resident"
@@ -491,15 +693,33 @@ programs:
         label: "Have You Filed Canadian Income Taxes for at Least 3 of the Last 5 Years?"
         type: "boolean"
         required: true
-        section: "Eligibility"
+        section: "Tax & Language"
+      - key: "tax_years_filed"
+        label: "Which tax years have you filed? (e.g., 2023, 2024, 2025)"
+        type: "text"
+        required: false
+        section: "Tax & Language"
+        show_if: {key: "filed_taxes", value: true}
       - key: "language_test_taken"
         label: "Have You Taken a Language Test (CLB 4+)?"
+        type: "boolean"
+        required: true
+        section: "Tax & Language"
+      - key: "citizenship_language_score"
+        label: "CLB Level Achieved"
+        type: "select"
+        required: false
+        section: "Tax & Language"
+        show_if: {key: "language_test_taken", value: true}
+        options: ["CLB 4", "CLB 5", "CLB 6", "CLB 7", "CLB 8+", "Not Sure"]
+      - key: "name_changed_since_pr"
+        label: "Has your name changed since becoming a Permanent Resident?"
         type: "boolean"
         required: true
         section: "Eligibility"
 
   Visitor Visa:
-    sections: ["Visit Details"]
+    sections: ["Visit Details", "Host & Ties", "Financial"]
     questions:
       - key: "purpose_of_visit"
         label: "Purpose of Visit"
@@ -513,13 +733,62 @@ programs:
         required: true
         section: "Visit Details"
         options: ["Less than 2 weeks", "2-4 weeks", "1-3 months", "3-6 months", "6+ months (Super Visa)"]
-      - key: "host_in_canada"
-        label: "Do You Have a Host in Canada?"
-        type: "boolean"
-        required: true
-        section: "Visit Details"
       - key: "previous_visits_canada"
         label: "Have You Previously Visited Canada?"
         type: "boolean"
         required: true
         section: "Visit Details"
+      # ── Host & Ties ──
+      - key: "host_in_canada"
+        label: "Do You Have a Host in Canada?"
+        type: "boolean"
+        required: true
+        section: "Host & Ties"
+      - key: "host_name"
+        label: "Host's Full Name"
+        type: "text"
+        required: false
+        section: "Host & Ties"
+        show_if: {key: "host_in_canada", value: true}
+      - key: "host_relationship"
+        label: "Your Relationship to the Host"
+        type: "select"
+        required: false
+        section: "Host & Ties"
+        show_if: {key: "host_in_canada", value: true}
+        options: ["Parent", "Child", "Sibling", "Extended Family", "Friend", "Business Contact", "Other"]
+      - key: "employment_in_home_country"
+        label: "Are you currently employed in your home country?"
+        type: "boolean"
+        required: true
+        section: "Host & Ties"
+        help_text: "Demonstrates ties to home country"
+      - key: "owns_property_home_country"
+        label: "Do you own property in your home country?"
+        type: "boolean"
+        required: true
+        section: "Host & Ties"
+      # ── Financial ──
+      - key: "funds_for_visit"
+        label: "Total Funds Available for This Visit (CAD)"
+        type: "number"
+        required: true
+        section: "Financial"
+      - key: "flight_booked"
+        label: "Have you booked your flight?"
+        type: "boolean"
+        required: true
+        section: "Financial"
+      # ── Super Visa specifics ──
+      - key: "supervisa_child_in_canada"
+        label: "Name of your child/grandchild in Canada (Super Visa sponsor)"
+        type: "text"
+        required: false
+        section: "Visit Details"
+        show_if: {key: "purpose_of_visit", value: "Super Visa (Parent/Grandparent)"}
+      - key: "supervisa_has_medical_insurance"
+        label: "Do you have Canadian medical insurance (min $100K coverage, 1 year)?"
+        type: "boolean"
+        required: false
+        section: "Visit Details"
+        show_if: {key: "purpose_of_visit", value: "Super Visa (Parent/Grandparent)"}
