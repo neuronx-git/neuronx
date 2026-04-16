@@ -296,6 +296,19 @@ async def generate_onboarding_url(contact_id: str, base_url: str = "https://www.
     else:
         url = base_url
 
+    # Calculate actual field count for the program (dynamic, not hardcoded)
+    program_interest = prefill.get("program_interest", "")
+    total_fields = 15  # common questions baseline
+    if program_interest:
+        q_config = load_yaml_config("questionnaires")
+        if q_config:
+            programs_q = q_config.get("programs", {})
+            # Try exact match first, then slug match
+            slug_map = {p.lower().replace(" ", "-"): p for p in programs_q.keys()}
+            display = slug_map.get(program_interest.lower().replace(" ", "-"), program_interest)
+            prog = programs_q.get(display, {})
+            total_fields += len(prog.get("questions", []))
+
     logger.info("Generated onboarding URL for %s with %d prefilled fields", contact_id, len(prefill))
 
     return {
@@ -303,8 +316,8 @@ async def generate_onboarding_url(contact_id: str, base_url: str = "https://www.
         "onboarding_url": url,
         "prefilled_fields": list(prefill.keys()),
         "prefill_count": len(prefill),
-        "total_form_fields": 68,
-        "fields_client_still_needs": 68 - len(prefill),
+        "total_form_fields": total_fields,
+        "fields_client_still_needs": total_fields - len(prefill),
         "ghl_workflow_template": (
             f"Hi {{{{contact.firstName}}}}, your retainer is confirmed! 🎉\n\n"
             f"Complete your onboarding assessment here:\n{url}\n\n"

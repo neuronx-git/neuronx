@@ -102,23 +102,30 @@ async def typebot_webhook(request: Request):
         return {"status": "unmatched", "note": "Could not find contact in GHL"}
 
     # Map Typebot answers to GHL custom fields
+    # Covers all 8 programs — common (15) + program-specific (38) = 53 fields
     field_mapping = {
-        # Personal info
+        # ── Common: Personal Information ──
         "full_name": "full_name",
         "date_of_birth": "date_of_birth",
         "country_of_citizenship": "country_of_citizenship",
         "current_country": "current_country",
         "passport_number": "passport_number",
         "passport_expiry": "passport_expiry",
+        # ── Common: Contact ──
+        # email and phone handled separately for contact lookup
+        # ── Common: Family ──
         "marital_status": "marital_status",
         "has_dependents": "has_dependents",
         "num_dependents": "num_dependents",
+        # ── Common: Background ──
         "criminal_history": "criminal_history",
         "previous_refusal": "previous_refusal",
+        "previous_refusal_details": "previous_refusal_details",
         "medical_conditions": "medical_conditions",
-        # Express Entry
+        # ── Express Entry (P0) ──
         "education_level": "r2_education_level",
         "eca_completed": "eca_completed",
+        "eca_organization": "eca_organization",
         "years_work_experience": "years_work_experience",
         "canadian_work_experience": "canadian_work_experience",
         "primary_occupation": "primary_occupation",
@@ -129,7 +136,7 @@ async def typebot_webhook(request: Request):
         "settlement_funds": "settlement_funds",
         "has_job_offer": "has_job_offer",
         "provincial_nomination": "provincial_nomination",
-        # Spousal
+        # ── Spousal Sponsorship (P0) ──
         "sponsor_name": "sponsor_name",
         "sponsor_status": "sponsor_status",
         "sponsor_province": "sponsor_province",
@@ -138,19 +145,42 @@ async def typebot_webhook(request: Request):
         "met_in_person": "met_in_person",
         "applicant_in_canada": "applicant_in_canada",
         "applicant_current_status": "applicant_current_status",
-        # Work Permit
+        "previous_sponsorship": "previous_sponsorship",
+        # ── Work Permit (P0) ──
         "employer_name": "employer_name",
         "job_title": "job_title",
         "lmia_status": "lmia_status",
         "work_permit_type": "work_permit_type",
-        # Study Permit
+        "currently_in_canada": "currently_in_canada",
+        "current_immigration_status": "current_immigration_status",
+        # ── Study Permit (P1) ──
         "dli_name": "dli_name",
         "program_name": "program_name",
         "program_duration": "program_duration",
         "has_acceptance_letter": "has_acceptance_letter",
         "tuition_amount": "tuition_amount",
         "funding_source": "funding_source",
-        # Program interest
+        "has_gic": "has_gic",
+        "studying_in_quebec": "studying_in_quebec",
+        # ── LMIA (P2) ──
+        "employer_province": "employer_province",
+        "position_title": "position_title",
+        "lmia_stream": "lmia_stream",
+        # ── PR Renewal (P2) ──
+        "pr_card_expiry": "pr_card_expiry",
+        "days_in_canada": "days_in_canada",
+        "travel_outside_canada": "travel_outside_canada",
+        # ── Citizenship (P2) ──
+        "pr_start_date": "pr_start_date",
+        "days_in_canada_as_pr": "days_in_canada_as_pr",
+        "filed_taxes": "filed_taxes",
+        "language_test_taken": "language_test_taken",
+        # ── Visitor Visa (P2) ──
+        "purpose_of_visit": "purpose_of_visit",
+        "planned_duration": "planned_duration",
+        "host_in_canada": "host_in_canada",
+        "previous_visits_canada": "previous_visits_canada",
+        # ── Program interest ──
         "program_interest": "ai_program_interest",
     }
 
