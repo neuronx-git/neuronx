@@ -224,8 +224,9 @@ deportation history, countries lived (police clearance), escalation logic
 2. ~~Typebot file upload fix~~ — **RESOLVED** (2026-04-14)
 3. ~~Typebot webhook URLs~~ — **RESOLVED** (2026-04-16: all 3 webhooks wired)
 4. ~~GHL token auto-refresh~~ — **RESOLVED** (2026-04-16: auto-refreshes on 401)
-5. **RCIC license number** — update in config/ircc_field_mappings.yaml
-6. **Anthropic API key** — not configured in Railway (OCR via Claude vision won't work, FastMRZ passport OK)
+5. ~~IRCC form mappings~~ — **RESOLVED** (2026-04-16: all 8 programs, 13 forms total)
+6. ~~Anthropic fallback~~ — **REMOVED** (2026-04-16: Ollama Cloud is sole OCR provider)
+7. **RCIC license number** — `R000000` placeholder in config/ircc_field_mappings.yaml, needs real license before pilot
 
 ## What Does NOT Block Pilot
 - Client portal (RCICs use GHL directly)
