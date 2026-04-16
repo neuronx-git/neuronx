@@ -112,6 +112,31 @@ common_questions:
     required: true
     section: "Background"
 
+  - key: "deportation_history"
+    label: "Have you ever been deported, removed, or subject to a removal order from any country?"
+    type: "boolean"
+    required: true
+    section: "Background"
+
+  - key: "countries_lived"
+    label: "List all countries you have lived in for 6+ months (other than your current country)"
+    type: "textarea"
+    required: false
+    section: "Background"
+    help_text: "Used to determine which police clearance certificates you need. Separate with commas."
+
+  - key: "consent_true_information"
+    label: "I confirm that all information provided is true and accurate to the best of my knowledge"
+    type: "boolean"
+    required: true
+    section: "Consent"
+
+  - key: "consent_representation"
+    label: "I authorize Visa Master Canada to act as my immigration representative"
+    type: "boolean"
+    required: true
+    section: "Consent"
+
 # Program-specific questions
 programs:
 
@@ -170,12 +195,41 @@ programs:
         section: "Language"
         options: ["IELTS General", "CELPIP General", "TEF Canada", "TCF Canada", "Not Yet Taken"]
 
-      - key: "language_scores"
-        label: "Language Test Scores (Listening / Reading / Writing / Speaking)"
-        type: "text"
+      - key: "language_listening"
+        label: "Listening Score"
+        type: "number"
         required: false
         section: "Language"
-        placeholder: "e.g., L:8.0 / R:7.5 / W:7.0 / S:7.5"
+        show_if: {key: "language_test_type", value: "Not Yet Taken", negate: true}
+        help_text: "IELTS: 0-9, CELPIP: 1-12"
+
+      - key: "language_reading"
+        label: "Reading Score"
+        type: "number"
+        required: false
+        section: "Language"
+        show_if: {key: "language_test_type", value: "Not Yet Taken", negate: true}
+
+      - key: "language_writing"
+        label: "Writing Score"
+        type: "number"
+        required: false
+        section: "Language"
+        show_if: {key: "language_test_type", value: "Not Yet Taken", negate: true}
+
+      - key: "language_speaking"
+        label: "Speaking Score"
+        type: "number"
+        required: false
+        section: "Language"
+        show_if: {key: "language_test_type", value: "Not Yet Taken", negate: true}
+
+      - key: "language_overall"
+        label: "Overall Score"
+        type: "number"
+        required: false
+        section: "Language"
+        show_if: {key: "language_test_type", value: "Not Yet Taken", negate: true}
 
       - key: "french_ability"
         label: "Do you speak French?"

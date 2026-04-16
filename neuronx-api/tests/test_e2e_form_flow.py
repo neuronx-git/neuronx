@@ -67,14 +67,14 @@ class TestQuestionnaireAPI:
         return TestClient(app)
 
     @pytest.mark.parametrize("slug,display_name,min_questions", [
-        ("express-entry", "Express Entry", 28),
-        ("spousal-sponsorship", "Spousal Sponsorship", 24),
-        ("work-permit", "Work Permit", 23),
-        ("study-permit", "Study Permit", 23),
-        ("lmia", "LMIA", 19),
-        ("pr-renewal", "PR Renewal", 18),
-        ("citizenship", "Citizenship", 19),
-        ("visitor-visa", "Visitor Visa", 19),
+        ("express-entry", "Express Entry", 36),
+        ("spousal-sponsorship", "Spousal Sponsorship", 28),
+        ("work-permit", "Work Permit", 27),
+        ("study-permit", "Study Permit", 27),
+        ("lmia", "LMIA", 23),
+        ("pr-renewal", "PR Renewal", 22),
+        ("citizenship", "Citizenship", 23),
+        ("visitor-visa", "Visitor Visa", 23),
     ])
     def test_questionnaire_returns_correct_count(self, client, slug, display_name, min_questions):
         r = client.get(f"/cases/questionnaire/{slug}")
@@ -82,7 +82,7 @@ class TestQuestionnaireAPI:
         data = r.json()
         assert data["program_type"] == display_name
         assert data["total_questions"] >= min_questions
-        assert data["common_count"] == 15
+        assert data["common_count"] == 19
 
     def test_questionnaire_express_entry_has_sections(self, client):
         r = client.get("/cases/questionnaire/express-entry")
@@ -94,7 +94,7 @@ class TestQuestionnaireAPI:
     def test_questionnaire_unknown_program_returns_common_only(self, client):
         r = client.get("/cases/questionnaire/unknown-program")
         data = r.json()
-        assert data["total_questions"] == 15
+        assert data["total_questions"] == 19
         assert "note" in data
 
 
@@ -325,7 +325,7 @@ class TestOnboardingURL:
 
             r = client.get("/cases/onboarding-url/test-contact-456")
             data = r.json()
-            assert data["total_form_fields"] == 28  # Express Entry = 15 common + 13
+            assert data["total_form_fields"] == 36  # Express Entry = 19 common + 17
 
 
 class TestDeepHealth:

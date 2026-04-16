@@ -122,6 +122,10 @@ async def typebot_webhook(request: Request):
         "previous_refusal": "previous_refusal",
         "previous_refusal_details": "previous_refusal_details",
         "medical_conditions": "medical_conditions",
+        "deportation_history": "deportation_history",
+        "countries_lived": "countries_lived",
+        "consent_true_information": "consent_true_information",
+        "consent_representation": "consent_representation",
         # ── Express Entry (P0) ──
         "education_level": "r2_education_level",
         "eca_completed": "eca_completed",
@@ -134,6 +138,11 @@ async def typebot_webhook(request: Request):
         "language_scores": "language_scores",
         "french_ability": "french_ability",
         "settlement_funds": "settlement_funds",
+        "language_listening": "language_listening",
+        "language_reading": "language_reading",
+        "language_writing": "language_writing",
+        "language_speaking": "language_speaking",
+        "language_overall": "language_overall",
         "has_job_offer": "has_job_offer",
         "provincial_nomination": "provincial_nomination",
         # ── Spousal Sponsorship (P0) ──
@@ -198,6 +207,18 @@ async def typebot_webhook(request: Request):
 
     # Add tag to trigger document collection workflow
     await ghl.add_tag(contact_id, "nx:case:docs_pending")
+
+    # Escalation: flag sensitive cases for RCIC priority review
+    escalation_triggers = [
+        ("deportation_history", "Yes"),
+        ("criminal_history", "Yes"),
+    ]
+    for field, trigger_value in escalation_triggers:
+        val = str(answers.get(field, "")).strip().lower()
+        if val in (trigger_value.lower(), "true", "yes"):
+            await ghl.add_tag(contact_id, "nx:escalation:rcic_review")
+            logger.warning("ESCALATION: contact %s flagged for RCIC review (field=%s)", contact_id, field)
+            break
 
     # Log the event
     log_event("typebot_submission", {

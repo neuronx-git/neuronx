@@ -296,18 +296,16 @@ async def generate_onboarding_url(contact_id: str, base_url: str = "https://www.
     else:
         url = base_url
 
-    # Calculate actual field count for the program (dynamic, not hardcoded)
+    # Calculate actual field count for the program (fully dynamic from YAML)
     program_interest = prefill.get("program_interest", "")
-    total_fields = 15  # common questions baseline
-    if program_interest:
-        q_config = load_yaml_config("questionnaires")
-        if q_config:
-            programs_q = q_config.get("programs", {})
-            # Try exact match first, then slug match
-            slug_map = {p.lower().replace(" ", "-"): p for p in programs_q.keys()}
-            display = slug_map.get(program_interest.lower().replace(" ", "-"), program_interest)
-            prog = programs_q.get(display, {})
-            total_fields += len(prog.get("questions", []))
+    q_config = load_yaml_config("questionnaires")
+    total_fields = len(q_config.get("common_questions", [])) if q_config else 19
+    if program_interest and q_config:
+        programs_q = q_config.get("programs", {})
+        slug_map = {p.lower().replace(" ", "-"): p for p in programs_q.keys()}
+        display = slug_map.get(program_interest.lower().replace(" ", "-"), program_interest)
+        prog = programs_q.get(display, {})
+        total_fields += len(prog.get("questions", []))
 
     logger.info("Generated onboarding URL for %s with %d prefilled fields", contact_id, len(prefill))
 
