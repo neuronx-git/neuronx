@@ -90,7 +90,7 @@ export const ProductModules = () => {
                     {mod.icon}
                   </div>
                   {mod.status === "live" && (
-                    <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-200 bg-emerald-50">
+                    <Badge variant="outline" className="text-xs text-emerald-800 border-emerald-300 bg-emerald-50">
                       Live
                     </Badge>
                   )}

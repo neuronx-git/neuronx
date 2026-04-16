@@ -58,13 +58,11 @@ export const Navbar = () => {
           </NavigationMenuItem>
 
           {/* mobile */}
-          <span className="flex md:hidden">
+          <NavigationMenuItem className="flex md:hidden">
             <ModeToggle />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger className="px-2">
-                <Menu className="flex md:hidden h-5 w-5" onClick={() => setIsOpen(true)}>
-                  <span className="sr-only">Menu Icon</span>
-                </Menu>
+              <SheetTrigger className="px-2" aria-label="Open navigation menu">
+                <Menu className="flex md:hidden h-5 w-5" onClick={() => setIsOpen(true)} />
               </SheetTrigger>
               <SheetContent side={"left"}>
                 <SheetHeader>
@@ -92,10 +90,10 @@ export const Navbar = () => {
                 </nav>
               </SheetContent>
             </Sheet>
-          </span>
+          </NavigationMenuItem>
 
           {/* desktop */}
-          <nav className="hidden md:flex gap-2">
+          <NavigationMenuItem className="hidden md:flex gap-2 list-none">
             {routeList.map((route: RouteProps, i) => (
               <a
                 href={route.href}
@@ -105,9 +103,9 @@ export const Navbar = () => {
                 {route.label}
               </a>
             ))}
-          </nav>
+          </NavigationMenuItem>
 
-          <div className="hidden md:flex gap-2">
+          <NavigationMenuItem className="hidden md:flex gap-2 list-none">
             <a
               href="https://api.leadconnectorhq.com/widget/booking/clvODWkfByOZnzeqyPPW"
               target="_blank"
@@ -117,7 +115,7 @@ export const Navbar = () => {
               Book a Demo
             </a>
             <ModeToggle />
-          </div>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </header>

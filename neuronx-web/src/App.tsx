@@ -20,19 +20,21 @@ function App() {
   return (
     <>
       <Navbar />
-      <Hero />
-      <Credibility />
-      <Problem />
-      <TwoPhase />
-      <HowItWorks />
-      <Differentiation />
-      <BeforeAfter />
-      <ProductModules />
-      <Pricing />
-      <About />
-      <Team />
-      <FAQ />
-      <Cta />
+      <main>
+        <Hero />
+        <Credibility />
+        <Problem />
+        <TwoPhase />
+        <HowItWorks />
+        <Differentiation />
+        <BeforeAfter />
+        <ProductModules />
+        <Pricing />
+        <About />
+        <Team />
+        <FAQ />
+        <Cta />
+      </main>
       <Footer />
       <ScrollToTop />
     </>
