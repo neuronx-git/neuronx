@@ -442,7 +442,7 @@ class TestProductionEndpoints:
         async with AsyncClient() as client:
             r = await client.get(f"{PROD_URL}/cases/questionnaire/express-entry")
             assert r.status_code == 200
-            assert r.json()["total_questions"] == 28
+            assert r.json()["total_questions"] == 43
 
     @pytest.mark.asyncio
     async def test_production_extract_types(self):
