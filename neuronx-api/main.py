@@ -186,5 +186,4 @@ async def root():
         "health": "/health",
     }
 
-# Railway deploy fix confirmed
-# Deploy trigger 1776331191
+# Railway deploy — GitHub repo reconnected 2026-04-16
