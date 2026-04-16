@@ -122,7 +122,10 @@ programs:
       min: 2
       max: 4
       avg: 3
-    ircc_forms: []  # Manual form prep by RCIC
+    ircc_forms:
+      - {code: "IMM 1294", name: "Application for Study Permit", required: true}
+      - {code: "IMM 5707", name: "Family Information Form", required: true}
+      - {code: "IMM 5476", name: "Use of a Representative", required: true}
     required_documents:
       - "Valid passport"
       - "Letter of acceptance from Designated Learning Institution (DLI)"
@@ -145,7 +148,9 @@ programs:
       min: 2
       max: 5
       avg: 3
-    ircc_forms: []
+    ircc_forms:
+      - {code: "EMP 5593", name: "LMIA Application Form", required: true}
+      - {code: "EMP 5627", name: "Transition Plan", required: false}
     required_documents:
       - "Employer's business registration documents"
       - "Job description with NOC code"
@@ -166,7 +171,8 @@ programs:
       min: 2
       max: 6
       avg: 4
-    ircc_forms: []
+    ircc_forms:
+      - {code: "IMM 5644", name: "Application for PR Card", required: true}
     required_documents:
       - "Current PR card (both sides)"
       - "Valid passport"
@@ -186,7 +192,8 @@ programs:
       min: 8
       max: 14
       avg: 12
-    ircc_forms: []
+    ircc_forms:
+      - {code: "CIT 0002", name: "Application for Canadian Citizenship", required: true}
     required_documents:
       - "Valid PR card or proof of PR status"
       - "Valid passport"
@@ -208,7 +215,9 @@ programs:
       min: 0.5
       max: 3
       avg: 1.5
-    ircc_forms: []
+    ircc_forms:
+      - {code: "IMM 5257", name: "Application for Temporary Resident Visa", required: true}
+      - {code: "IMM 5707", name: "Family Information Form", required: true}
     required_documents:
       - "Valid passport (6+ months validity beyond planned stay)"
       - "Digital photo"

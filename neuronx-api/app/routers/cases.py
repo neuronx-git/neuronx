@@ -63,7 +63,7 @@ class DecisionRequest(BaseModel):
 async def initiate_case(payload: CaseInitiateRequest):
     """
     Start a new immigration case after retainer is signed.
-    Creates case record in GHL, generates doc checklist, sets deadlines.
+    Creates case record in PostgreSQL + GHL, generates doc checklist, sets deadlines.
     """
     service = CaseService()
     try:
@@ -72,7 +72,11 @@ async def initiate_case(payload: CaseInitiateRequest):
             program_type=payload.program_type,
             assigned_rcic=payload.assigned_rcic,
         )
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Case initiation failed for %s: %s", payload.contact_id, e)
         raise HTTPException(status_code=500, detail=str(e))

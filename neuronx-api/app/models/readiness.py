@@ -61,7 +61,7 @@ class ReadinessInput(BaseModel):
     r3_timeline_urgency: Optional[TimelineUrgency] = None
     r4_prior_applications: Optional[PriorApplications] = None
     r5_budget_awareness: Optional[BudgetAwareness] = None
-    transcript_excerpt: Optional[str] = Field(None, description="Relevant call transcript for complexity detection")
+    transcript_excerpt: Optional[str] = Field(None, max_length=50000, description="Relevant call transcript for complexity detection")
     call_id: Optional[str] = None
 
 

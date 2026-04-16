@@ -8,6 +8,7 @@ GET  /typebot/form-url        — Get the published form URL for a program
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime
 import logging
 
 from app.services.ghl_client import GHLClient
@@ -20,7 +21,56 @@ logger = logging.getLogger("neuronx.typebot")
 
 # In-memory dedup cache for Typebot submissions (prevents double-processing)
 # Key: resultId from Typebot, Value: timestamp
+# Also backed by processed_webhooks DB table for durability across restarts
 _processed_submissions: dict[str, str] = {}
+
+
+async def _is_typebot_duplicate(result_id: str) -> bool:
+    """Check in-memory cache first, then DB."""
+    if result_id in _processed_submissions:
+        return True
+    from app.database import is_db_configured
+    if is_db_configured():
+        try:
+            from app.database import get_session
+            from sqlalchemy import text
+            async for session in get_session():
+                row = await session.execute(
+                    text("SELECT 1 FROM processed_webhooks WHERE webhook_id = :wid AND source = 'typebot'"),
+                    {"wid": f"typebot-{result_id}"},
+                )
+                if row.scalar() is not None:
+                    _processed_submissions[result_id] = "db"
+                    return True
+        except Exception:
+            pass
+    return False
+
+
+async def _mark_typebot_processed(result_id: str):
+    """Mark in memory + DB."""
+    _processed_submissions[result_id] = datetime.now().isoformat()
+    # Trim in-memory cache
+    if len(_processed_submissions) > 500:
+        oldest_keys = list(_processed_submissions.keys())[:-500]
+        for k in oldest_keys:
+            _processed_submissions.pop(k, None)
+    # Persist to DB
+    from app.database import is_db_configured
+    if is_db_configured():
+        try:
+            from app.database import async_session_factory
+            from app.models.db_models import ProcessedWebhook
+            if async_session_factory:
+                async with async_session_factory() as session:
+                    session.add(ProcessedWebhook(
+                        webhook_id=f"typebot-{result_id}",
+                        source="typebot",
+                        response_status=200,
+                    ))
+                    await session.commit()
+        except Exception:
+            pass  # In-memory cache still protects
 
 
 class TypebotWebhookPayload(BaseModel):
@@ -59,11 +109,10 @@ async def typebot_webhook(request: Request):
     payload = await request.json()
     logger.info("Typebot webhook received: %s", list(payload.keys()))
 
-    # ── Submission deduplication ──────────────────────────────────────
-    # Typebot includes a resultId per submission. Reject duplicates.
+    # ── Submission deduplication (memory + DB backed) ──────────────────
     result_id = payload.get("resultId") or payload.get("result_id")
     if result_id:
-        if result_id in _processed_submissions:
+        if await _is_typebot_duplicate(result_id):
             logger.info("Duplicate Typebot submission: resultId=%s", result_id)
             return {"status": "duplicate", "resultId": result_id, "note": "Already processed"}
 
@@ -277,14 +326,9 @@ async def typebot_webhook(request: Request):
     except Exception as e:
         logger.warning("Could not record activity: %s", e)
 
-    # Mark submission as processed (dedup for retries)
+    # Mark submission as processed (memory + DB)
     if result_id:
-        from datetime import datetime, timezone
-        _processed_submissions[result_id] = datetime.now(timezone.utc).isoformat()
-        # Keep only last 500 submissions in memory
-        if len(_processed_submissions) > 500:
-            oldest_key = next(iter(_processed_submissions))
-            del _processed_submissions[oldest_key]
+        await _mark_typebot_processed(result_id)
 
     return {
         "status": "processed",
