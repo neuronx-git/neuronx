@@ -1,7 +1,7 @@
 # NeuronX — Project Memory (Compact)
 
 **Last Updated**: 2026-04-16
-**Session**: Railway deploy fix + Typebot E2E audit + GHL auto-refresh + full data flow wiring
+**Session**: Railway deploy fix + Typebot E2E audit + zero-gap form + GHL auto-refresh
 
 ## Canon (Authority)
 
@@ -196,9 +196,27 @@ dependents, processed_webhooks, dead_letter_queue
 ### Form Flow (Verified E2E)
 1. Welcome → Passport upload (optional, OCR) → Name → Country → Passport# → Email → DOB → Current country → Passport expiry → Phone
 2. Program Selection (8 choices) → Program-specific questions → Document checklist per program
-3. Family (dependents, marital) → Background (criminal, refusal, medical)
-4. Document Upload (supporting docs + optional additional)
-5. Completion → Webhook → GHL sync (53 fields + nx:case:docs_pending tag)
+3. Family (spouse details, dependents with names/DOBs) → Background (criminal, refusal, deportation, medical, countries lived)
+4. Consent (true information + representation authorization — ICCRC required)
+5. Document Upload (supporting docs + optional additional)
+6. Completion → Webhook → GHL sync (96 fields + nx:case:docs_pending tag + escalation)
+
+### Questionnaire Coverage (Zero-Gap — 2026-04-16)
+| Program | Common | Specific | Total |
+|---------|--------|----------|-------|
+| Express Entry | 24 | 19 | 43 |
+| Spousal Sponsorship | 24 | 15 | 39 |
+| Work Permit | 24 | 13 | 37 |
+| Study Permit | 24 | 12 | 36 |
+| LMIA | 24 | 7 | 31 |
+| PR Renewal | 24 | 5 | 29 |
+| Citizenship | 24 | 7 | 31 |
+| Visitor Visa | 24 | 12 | 36 |
+
+Key additions: spouse/partner data, structured dependents (names+DOBs),
+employer financials, settlement fund sources, host details, Super Visa insurance,
+CAQ for Quebec, CLB scores, tax years, travel absence details, consent/attestation,
+deportation history, countries lived (police clearance), escalation logic
 
 ## What Blocks Pilot Launch
 
