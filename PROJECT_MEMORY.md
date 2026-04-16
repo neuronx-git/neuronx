@@ -1,7 +1,7 @@
 # NeuronX — Project Memory (Compact)
 
-**Last Updated**: 2026-04-13
-**Session**: Architecture audit + production hardening + Typebot form upgrade
+**Last Updated**: 2026-04-16
+**Session**: Railway deploy fix + Typebot form E2E audit + webhook field mapping
 
 ## Canon (Authority)
 
@@ -48,6 +48,9 @@
 - **Vercel**: deploys from `neuronx-git/neuronx` main branch, root dir `neuronx-web`
 - **Typebot**: Docker images from Docker Hub (not our repo)
 - **⚠️ Railway deploy gotcha**: After a failed deploy, subsequent commits may not auto-deploy. Check Railway dashboard if version seems stale.
+- **⚠️ Railway startCommand**: Do NOT use shell variable expansion (`${PORT:-8000}`) in Railway's startCommand field — it's passed literally, not through a shell. Use hardcoded port or let Dockerfile CMD handle it.
+- **⚠️ Railway GitHub connection**: Was connected to wrong repo (ranjan-expatready/neuronx) — fixed 2026-04-16 to neuronx-git/neuronx. Always verify in Settings after repo changes.
+- **Railway startCommand**: `uvicorn main:app --host 0.0.0.0 --port 8000` (set by Railway AI 2026-04-16)
 
 ## NeuronX API — v0.4.0 (Railway)
 
@@ -159,12 +162,33 @@ dependents, processed_webhooks, dead_letter_queue
 - Processing times verified April 2026 against IRCC
 - Full domain registry: docs/09_domain_knowledge/DOMAIN_KNOWLEDGE_REGISTRY.md
 
+## Session 2026-04-16: Railway + Form Fixes
+
+### Railway Deploy Fixed
+- **Root cause 1**: GitHub repo was connected to old `ranjan-expatready/neuronx` — fixed to `neuronx-git/neuronx`
+- **Root cause 2**: Railway `startCommand` doesn't support shell expansion — `${PORT:-8000}` passed literally. Fixed to `uvicorn main:app --host 0.0.0.0 --port 8000`
+- **Deep health fixes**: DB session async generator error fixed, empty GHL/Typebot token guards added
+- **Questionnaire slug fix**: `/cases/questionnaire/express-entry` now resolves to `Express Entry` (28 questions)
+
+### Webhook Field Mapping Complete (53 fields)
+- All 8 programs now mapped in `/typebot/webhook` (was missing P2 programs + conditionals)
+- Added 21 new field mappings: previous_refusal_details, eca_organization, previous_sponsorship, all LMIA/PR Renewal/Citizenship/Visitor Visa fields
+
+### Typebot Viewer BLOCKED
+- `NEXT_PUBLIC_TYPEBOT_API_URL` set to internal `builder.railway.internal` — browsers can't reach it
+- Fixed env var to `https://builder-production-6784.up.railway.app` but viewer deploy not picking it up
+- **ACTION NEEDED**: Trigger fresh viewer deploy from Railway dashboard (Typebot project → Viewer service)
+
+### Dynamic Field Count
+- `/cases/onboarding-url` now returns dynamic `total_form_fields` per program (was hardcoded 68)
+
 ## What Blocks Pilot Launch
 
 1. **Production GHL account** ($297/mo) — needed for email/SMS/phone
-2. ~~Typebot file upload fix~~ — **RESOLVED** (2026-04-14: MinIO working, files uploading, bucket configured correctly. Verified: Sumi Passport.pdf + test.jpg stored and publicly accessible.)
-3. **E2E UAT** — needs production GHL
-4. **RCIC license number** — update in config/ircc_field_mappings.yaml
+2. ~~Typebot file upload fix~~ — **RESOLVED** (2026-04-14)
+3. **Typebot viewer ENV fix** — needs manual Railway dashboard deploy (Typebot project → Viewer)
+4. **E2E UAT** — needs production GHL + working viewer
+5. **RCIC license number** — update in config/ircc_field_mappings.yaml
 
 ## What Does NOT Block Pilot
 - Client portal (RCICs use GHL directly)
