@@ -179,10 +179,19 @@ dependents, processed_webhooks, dead_letter_queue
 - **GET /demo/summary** — Investor demo summary: pipeline metrics, revenue, case distribution, activity volume
 - **POST /admin/install-views** — Install 10 Metabase SQL views for 3 dashboards
 - **Deep health fixed** — Removed Anthropic check (not needed), fixed Typebot check (added workspace ID)
+- **Rate limiting** — slowapi at 200 req/min global (protects against webhook floods)
+- **GET /health/smoke** — Production smoke test (DB, configs, lifecycle, GHL)
 - **23 new tests** — State machine (9), lifecycle service (11), router (3)
 - **Total: 763+ tests, all passing**
 
-### Metabase Dashboard SQL Views (10 views)
+### Metabase Dashboards (LIVE — 3 dashboards, 10 cards)
+| Dashboard | URL | Cards |
+|-----------|-----|-------|
+| Pipeline Health | metabase-production-1846.up.railway.app/dashboard/8 | Conversion Funnel, Pipeline Stages, Lead Sources |
+| Case Status | metabase-production-1846.up.railway.app/dashboard/9 | Stage Distribution, RCIC Workload, Revenue, Doc Progress |
+| Activity Timeline | metabase-production-1846.up.railway.app/dashboard/10 | Daily Volume, Recent Activities, Stage Transitions |
+
+### Metabase SQL Views (10 views — installed in PostgreSQL)
 | View | Dashboard | Purpose |
 |------|-----------|---------|
 | v_pipeline_funnel | Pipeline Health | Intake funnel by stage + status |
