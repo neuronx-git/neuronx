@@ -181,8 +181,18 @@ dependents, processed_webhooks, dead_letter_queue
 - **Deep health fixed** — Removed Anthropic check (not needed), fixed Typebot check (added workspace ID)
 - **Rate limiting** — slowapi at 200 req/min global (protects against webhook floods)
 - **GET /health/smoke** — Production smoke test (DB, configs, lifecycle, GHL)
-- **23 new tests** — State machine (9), lifecycle service (11), router (3)
-- **Total: 763+ tests, all passing**
+- **54 new tests** — State machine (9), lifecycle service (11), router (3), E2E journey (31)
+- **Total: 780+ tests, all passing**
+
+### E2E Customer Journey Audit (2026-04-16)
+**Gaps found and fixed:**
+1. **Case initiation didn't persist to PostgreSQL** — PATCH /cases/{id}/status couldn't find initiated cases. Now writes to DB.
+2. **Typebot webhook dedup lost on restart** — In-memory only. Now backed by processed_webhooks DB table.
+3. **Analytics had no input validation** — days/threshold_days unbounded. Now: days 1-365, threshold 1-90, limit on stuck results.
+4. **Transcript field unbounded** — Could crash API with huge payloads. Now max_length=50000.
+5. **Case initiation accepted invalid programs** — Now validates against programs.yaml.
+6. **5 programs had no IRCC forms** — Study, LMIA, PR Renewal, Citizenship, Visitor now have forms configured.
+7. **Case initiation response incomplete** — Now returns allowed_transitions + docs_required.
 
 ### Metabase Dashboards (LIVE — 3 dashboards, 10 cards)
 | Dashboard | URL | Cards |
