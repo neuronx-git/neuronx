@@ -494,19 +494,18 @@ class TestDocOCRService:
             mock_claude.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_extract_with_claude_no_key(self, service):
+    async def test_extract_with_no_api_key(self, service):
         with patch("app.services.doc_ocr_service.settings") as mock_s:
-            mock_s.anthropic_api_key = ""
             mock_s.ollama_cloud_api_key = ""
             result = await service._extract_with_claude(b"fake", "doc.pdf", {"prompt": "test"})
-            assert "not configured" in result.get("error", "").lower() or "no llm" in result.get("error", "").lower()
+            assert "not configured" in result.get("error", "").lower() or "ollama" in result.get("error", "").lower()
 
     @pytest.mark.asyncio
-    async def test_extract_with_claude_success(self, service):
+    async def test_extract_via_ollama_cloud_success(self, service):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
-            "content": [{"text": '{"candidate_name": "John Doe", "overall_score": "7.5"}'}]
+            "message": {"content": '{"candidate_name": "John Doe", "overall_score": "7.5"}'}
         }
 
         mock_client = AsyncMock()
@@ -516,11 +515,11 @@ class TestDocOCRService:
 
         with patch("app.services.doc_ocr_service.settings") as mock_s, \
              patch("app.services.doc_ocr_service.httpx.AsyncClient", return_value=mock_client):
-            mock_s.anthropic_api_key = "test-key"
-            mock_s.ollama_cloud_api_key = ""
-            mock_s.briefing_model = "claude-sonnet-4-6"
+            mock_s.ollama_cloud_api_key = "test-key"
+            mock_s.ollama_cloud_url = "https://ollama.com/api"
+            mock_s.ocr_model = "gemini-3-flash-preview"
             result = await service._extract_with_claude(b"fake", "ielts.pdf", {"prompt": "Extract"})
-            assert "anthropic" in result["method"]
+            assert "ollama" in result["method"]
             assert result["extracted_fields"]["candidate_name"] == "John Doe"
 
     @pytest.mark.asyncio

@@ -267,22 +267,15 @@ class DocOCRService:
 
     async def _extract_with_claude(self, file_bytes: bytes, filename: str, config: dict) -> dict:
         """
-        Extract document data using vision LLM.
-
-        Priority:
-        1. OpenRouter API (if OPENROUTER_API_KEY set) — uses configurable model
-        2. Anthropic API direct (if ANTHROPIC_API_KEY set) — uses Claude
-        3. Returns error if neither configured
+        Extract document data using Ollama Cloud vision LLM.
+        Ollama Cloud is the sole OCR provider — unified API, cost-effective.
         """
-        # Choose API: Ollama Cloud preferred (unified, cost-effective)
         if settings.ollama_cloud_api_key:
             return await self._extract_via_ollama_cloud(file_bytes, filename, config)
-        elif settings.anthropic_api_key:
-            return await self._extract_via_anthropic(file_bytes, filename, config)
         else:
             return {
                 "method": "none",
-                "error": "No LLM API key configured. Set OLLAMA_CLOUD_API_KEY or ANTHROPIC_API_KEY.",
+                "error": "Ollama Cloud API key not configured. Set OLLAMA_CLOUD_API_KEY.",
                 "extracted_fields": {},
                 "field_count": 0,
                 "confidence": "none",

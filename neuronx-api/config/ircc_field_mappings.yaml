@@ -153,6 +153,94 @@ forms:
       work_permit_type: "WorkPermitType"
     notes: "Worker-specific section of work permit application."
 
+  # ── P1/P2 Program Forms ──
+
+  IMM_1294:
+    form_code: "IMM 1294"
+    form_name: "Application for a Study Permit Made Outside of Canada"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Study Permit"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "Citizenship"
+      passport_number: "PassportNumber"
+      dli_name: "NameOfInstitution"
+      program_name: "ProgramOfStudy"
+      program_duration: "DurationOfStudy"
+      has_acceptance_letter: "LetterOfAcceptance"
+      tuition_amount: "TuitionAmount"
+      funding_source: "SourceOfFunds"
+      studying_in_quebec: "StudyingInQuebec"
+    notes: "Study permit application. Field names are estimates — run field discovery on downloaded PDF."
+
+  IMM_5707:
+    form_code: "IMM 5707"
+    form_name: "Family Information Form"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["Study Permit", "Visitor Visa"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      marital_status: "MaritalStatus"
+      has_dependents: "DependantChildren"
+      spouse_full_name: "SpouseFamilyName"
+    notes: "Family information for study permit and visitor visa applications."
+
+  IMM_5644:
+    form_code: "IMM 5644"
+    form_name: "Application for a Permanent Resident Card"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides.html"
+    programs: ["PR Renewal"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "Citizenship"
+      passport_number: "PassportNumber"
+      pr_card_expiry: "PRCardExpiryDate"
+      days_in_canada: "DaysInCanada"
+      current_country: "CountryOfResidence"
+    notes: "PR card renewal form. Requires residency calculation."
+
+  CIT_0002:
+    form_code: "CIT 0002"
+    form_name: "Application for Canadian Citizenship - Adults"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/become-canadian-citizen/apply.html"
+    programs: ["Citizenship"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "CurrentCitizenship"
+      pr_start_date: "DateBecamePR"
+      days_in_canada_as_pr: "PhysicalPresenceDays"
+      filed_taxes: "TaxesFiled"
+      language_test_taken: "LanguageTestTaken"
+      citizenship_language_score: "CLBLevel"
+      name_changed_since_pr: "NameChanged"
+    notes: "Citizenship application. Requires physical presence calculator."
+
+  IMM_5257:
+    form_code: "IMM 5257"
+    form_name: "Application for Visitor Visa (Temporary Resident Visa)"
+    source_url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/apply-visitor-visa.html"
+    programs: ["Visitor Visa"]
+    field_mappings:
+      full_name: "FamilyName"
+      full_name_given: "GivenName"
+      date_of_birth: "DOB"
+      country_of_citizenship: "Citizenship"
+      passport_number: "PassportNumber"
+      purpose_of_visit: "PurposeOfVisit"
+      planned_duration: "IntendedDuration"
+      funds_for_visit: "FundsAvailable"
+      host_name: "HostName"
+      host_relationship: "HostRelationship"
+      employment_in_home_country: "EmploymentStatus"
+    notes: "Visitor visa application. Super Visa uses same form with additional docs."
+
 # Field value transformers
 # Some IRCC fields need value conversion from questionnaire format
 transformers:
@@ -171,7 +259,7 @@ transformers:
 firm_defaults:
   firm_name: "Visa Master Canada Immigration Services"
   rcic_name: "Rajiv Mehta"
-  rcic_license: "R000000"  # Update with real license number
+  rcic_license: "R000000"  # TODO: Update with real RCIC license number before pilot launch
   firm_address: "Toronto, ON, Canada"
   firm_phone: "+16479315181"
   firm_email: "rcic@neuronx.co"
