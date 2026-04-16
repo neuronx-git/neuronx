@@ -188,14 +188,16 @@ async def install_views(x_admin_key: str = Header(...)):
     with open(sql_path) as f:
         sql = f.read()
 
-    # Split on semicolons and execute each statement
+    # Split on semicolons and execute each statement (strip leading comments)
     views_created = 0
     async with async_session_factory() as session:
         for stmt in sql.split(";"):
-            stmt = stmt.strip()
-            if stmt and not stmt.startswith("--"):
-                await session.execute(text(stmt))
-                if "CREATE" in stmt.upper():
+            # Remove comment-only lines from the front
+            lines = [l for l in stmt.strip().splitlines() if l.strip() and not l.strip().startswith("--")]
+            clean = "\n".join(lines).strip()
+            if clean:
+                await session.execute(text(clean))
+                if "CREATE" in clean.upper():
                     views_created += 1
         await session.commit()
 
