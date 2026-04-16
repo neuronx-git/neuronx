@@ -15,9 +15,16 @@
 </head>
 <body>
   <iframe
-    src="https://viewer-production-366c.up.railway.app/vmc-onboarding"
+    id="typebot-frame"
     allow="camera; microphone; clipboard-write"
     loading="eager"
   ></iframe>
+  <script>
+    // Forward URL query params to Typebot viewer for client-specific pre-fill
+    // e.g. /intake/vmc/onboarding?full_name=Priya&contact_id=abc123
+    var base = 'https://viewer-production-366c.up.railway.app/vmc-onboarding';
+    var params = window.location.search;
+    document.getElementById('typebot-frame').src = base + params;
+  </script>
 </body>
 </html>

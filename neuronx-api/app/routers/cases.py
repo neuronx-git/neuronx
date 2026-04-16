@@ -290,11 +290,10 @@ async def generate_onboarding_url(contact_id: str, base_url: str = "https://www.
         elif val.lower() in ("none", "no"):
             prefill["previous_refusal"] = "No"
 
-    # Build the URL with query parameters
-    if prefill:
-        url = f"{base_url}?{urlencode(prefill, quote_via=quote_plus)}"
-    else:
-        url = base_url
+    # Build client-specific URL: /intake/vmc/onboarding?contact_id=X&field=Y
+    # The contact_id in query params ensures Typebot webhook can identify the contact
+    prefill["contact_id"] = contact_id
+    url = f"{base_url}?{urlencode(prefill, quote_via=quote_plus)}"
 
     # Calculate actual field count for the program (fully dynamic from YAML)
     program_interest = prefill.get("program_interest", "")

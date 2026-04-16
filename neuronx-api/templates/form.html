@@ -17,9 +17,16 @@
 </head>
 <body>
   <iframe
-    src="{{ typebot_viewer_url }}/{{ typebot_id }}"
+    id="typebot-frame"
     allow="microphone; camera; clipboard-write"
     loading="eager"
   ></iframe>
+  <script>
+    // Forward all URL query params to the Typebot iframe
+    // This enables client-specific pre-fill: /form/vmc/onboarding?full_name=X&cid=abc123
+    var base = '{{ typebot_viewer_url }}/{{ typebot_id }}';
+    var params = window.location.search || '{{ prefill_params }}';
+    document.getElementById('typebot-frame').src = base + params;
+  </script>
 </body>
 </html>
