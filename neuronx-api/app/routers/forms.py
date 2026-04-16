@@ -68,6 +68,7 @@ async def serve_form(tenant_slug: str, form_slug: str):
         description=form_config.get("description", ""),
         typebot_id=form_config.get("typebot_id"),
         typebot_viewer_url=tenant.get("typebot_viewer_url", "https://viewer-production-366c.up.railway.app"),
+        typebot_api_url=tenant.get("typebot_api_url", "https://builder-production-6784.up.railway.app"),
 
         # Branding
         primary=branding.get("primary", "#1E3A5F"),

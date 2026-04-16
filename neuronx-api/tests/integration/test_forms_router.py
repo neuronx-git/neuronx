@@ -36,12 +36,12 @@ class TestServeForm:
     def test_html_contains_iframe(self, client):
         """HTML body contains an iframe pointing to the Typebot viewer."""
         response = client.get("/form/vmc/onboarding")
-        assert "<iframe" in response.text
+        assert "typebot-standard" in response.text
 
-    def test_html_contains_typebot_viewer_url(self, client):
-        """HTML iframe src contains the typebot viewer URL."""
+    def test_html_contains_typebot_api_url(self, client):
+        """HTML embed contains the typebot builder API URL."""
         response = client.get("/form/vmc/onboarding")
-        assert "viewer-production-366c.up.railway.app" in response.text
+        assert "builder-production-6784.up.railway.app" in response.text
 
     def test_invalid_tenant_returns_404(self, client):
         """GET /form/nonexistent-tenant/onboarding returns 404."""

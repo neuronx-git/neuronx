@@ -8,6 +8,7 @@ tenants:
     slug: "vmc"
     ghl_location_id: "FlRL82M0D6nclmKT7eXH"
     typebot_viewer_url: "https://viewer-production-366c.up.railway.app"
+    typebot_api_url: "https://builder-production-6784.up.railway.app"
     branding:
       primary: "#1E3A5F"       # VMC Navy
       accent: "#E8380D"        # VMC Red
