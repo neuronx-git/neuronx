@@ -194,12 +194,19 @@ dependents, processed_webhooks, dead_letter_queue
 - **GHL_ACCESS_TOKEN** set in Railway env vars
 
 ### Form Flow (Verified E2E)
+**Client-Specific URL**: `/form/vmc/onboarding/{contact_id}` — fetches GHL data, pre-fills form
+**Shared URL**: `/form/vmc/onboarding` — works without contact_id (no pre-fill)
+**Vercel proxy**: `/intake/vmc/onboarding?contact_id=X` — forwards params to Typebot
+
 1. Welcome → Passport upload (optional, OCR) → Name → Country → Passport# → Email → DOB → Current country → Passport expiry → Phone
 2. Program Selection (8 choices) → Program-specific questions → Document checklist per program
 3. Family (spouse details, dependents with names/DOBs) → Background (criminal, refusal, deportation, medical, countries lived)
 4. Consent (true information + representation authorization — ICCRC required)
 5. Document Upload (supporting docs + optional additional)
 6. Completion → Webhook → GHL sync (96 fields + nx:case:docs_pending tag + escalation)
+
+**Multi-session**: Client reopens same link → server re-fetches GHL data → form pre-fills with latest
+**No duplication**: contact_id in URL ensures same GHL record is always used
 
 ### Questionnaire Coverage (Zero-Gap — 2026-04-16)
 | Program | Common | Specific | Total |
