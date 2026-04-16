@@ -119,7 +119,7 @@ class TestGHLClientMethods:
         mock_resp.json.return_value = {"contacts": [{"id": "c1"}]}
         with patch.object(ghl, '_request', new_callable=AsyncMock, return_value=mock_resp):
             result = await ghl.search_contacts("test", 10)
-            assert result == [{"id": "c1"}]
+            assert result == {"contacts": [{"id": "c1"}]}
 
     @pytest.mark.asyncio
     async def test_get_pipeline_opportunities(self, ghl):

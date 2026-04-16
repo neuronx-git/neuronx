@@ -92,6 +92,59 @@ class GHLClient:
 
         raise RuntimeError("No GHL access token available. Set GHL_ACCESS_TOKEN or ensure .tokens.json exists.")
 
+    async def _refresh_token(self) -> bool:
+        """Auto-refresh GHL OAuth token using refresh_token. Refresh token valid until 2057."""
+        refresh_token = None
+
+        # Get refresh token from .tokens.json
+        if TOKEN_FILE.exists():
+            try:
+                data = json.loads(TOKEN_FILE.read_text())
+                refresh_token = data.get("refresh_token")
+            except (json.JSONDecodeError, KeyError):
+                pass
+
+        if not refresh_token:
+            logger.error("No refresh token available for auto-refresh")
+            return False
+
+        try:
+            client = _get_http_client()
+            r = await client.post(
+                "https://services.leadconnectorhq.com/oauth/token",
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                    "client_id": settings.ghl_client_id if hasattr(settings, 'ghl_client_id') else "",
+                    "client_secret": settings.ghl_client_secret if hasattr(settings, 'ghl_client_secret') else "",
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+            if r.status_code == 200:
+                tokens = r.json()
+                GHLClient._cached_token = tokens["access_token"]
+                GHLClient._token_expires_at = time.time() + (20 * 3600)
+                logger.info("GHL token auto-refreshed successfully")
+
+                # Update .tokens.json if it exists
+                if TOKEN_FILE.exists():
+                    try:
+                        data = json.loads(TOKEN_FILE.read_text())
+                        data["access_token"] = tokens["access_token"]
+                        if "refresh_token" in tokens:
+                            data["refresh_token"] = tokens["refresh_token"]
+                        data["refreshed_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+                        TOKEN_FILE.write_text(json.dumps(data, indent=2))
+                    except Exception as e:
+                        logger.warning("Could not update token file: %s", e)
+                return True
+            else:
+                logger.error("GHL token refresh failed: %d %s", r.status_code, r.text[:100])
+                return False
+        except Exception as e:
+            logger.error("GHL token refresh error: %s", e)
+            return False
+
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=2, min=2, max=30),
@@ -113,11 +166,19 @@ class GHLClient:
             await asyncio.sleep(retry_after)
             raise RateLimitError(retry_after)
 
-        # Handle auth failures
+        # Handle auth failures — auto-refresh token
         if r.status_code == 401:
-            logger.error("GHL 401 — token may be expired. Refresh via: cd tools/ghl-lab && npx tsx src/ghlProvisioner.ts refresh-token")
+            logger.warning("GHL 401 — attempting automatic token refresh")
             GHLClient._cached_token = None
             GHLClient._token_expires_at = 0
+            refreshed = await self._refresh_token()
+            if refreshed:
+                # Retry the request with the new token
+                r = await client.request(method, url, headers=self.headers, **kwargs)
+                if r.status_code == 401:
+                    logger.error("GHL 401 after refresh — token may be permanently invalid")
+                else:
+                    return r
 
         # Handle server errors (trigger retry)
         if r.status_code >= 500:
@@ -225,7 +286,7 @@ class GHLClient:
 
     # ── Search ──
 
-    async def search_contacts(self, query: str, limit: int = 20) -> list:
+    async def search_contacts(self, query: str, limit: int = 20) -> dict:
         """Search contacts by name, email, or phone."""
         r = await self._request(
             "POST",
@@ -233,10 +294,10 @@ class GHLClient:
             json={
                 "locationId": self.location_id,
                 "query": query,
-                "limit": limit,
+                "pageLimit": limit,
             },
         )
-        return r.json().get("contacts", [])
+        return r.json()
 
     async def get_pipeline_opportunities(
         self,
