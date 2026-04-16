@@ -32,6 +32,17 @@ DOCUMENT_TYPES = {
         "label": "Passport",
         "method": "fastmrz",
         "fields": ["full_name", "date_of_birth", "passport_number", "passport_expiry", "nationality", "sex"],
+        "prompt": (
+            "Extract the following from this passport image. "
+            "Return ONLY a JSON object with these exact field names:\n"
+            "- full_name: person's full name (given names + surname)\n"
+            "- date_of_birth: date of birth (YYYY-MM-DD format)\n"
+            "- passport_number: passport/document number\n"
+            "- passport_expiry: expiry date (YYYY-MM-DD format)\n"
+            "- nationality: nationality/country of citizenship\n"
+            "- sex: M or F\n"
+            "If a field is not visible, set it to null."
+        ),
     },
     "ielts": {
         "label": "IELTS / CELPIP Score Sheet",
@@ -217,13 +228,12 @@ class DocOCRService:
 
             try:
                 mrz = FastMRZ()
-                result = mrz.get_mrz(tmp_path)
+                result = mrz.get_details(tmp_path)
 
                 if not result:
-                    logger.warning("FastMRZ: No MRZ found in %s", filename)
-                    # Fall back to Claude for non-MRZ passport images
+                    logger.warning("FastMRZ: No MRZ found in %s — falling back to vision LLM", filename)
                     return await self._extract_with_claude(
-                        file_bytes, filename, DOCUMENT_TYPES["general"]
+                        file_bytes, filename, DOCUMENT_TYPES["passport"]
                     )
 
                 # Map MRZ fields to our form fields
@@ -250,9 +260,9 @@ class DocOCRService:
                 os.unlink(tmp_path)
 
         except Exception as e:
-            logger.error("FastMRZ extraction failed: %s — falling back to Claude", e)
+            logger.error("FastMRZ extraction failed: %s — falling back to vision LLM", e)
             return await self._extract_with_claude(
-                file_bytes, filename, DOCUMENT_TYPES["general"]
+                file_bytes, filename, DOCUMENT_TYPES["passport"]
             )
 
     async def _extract_with_claude(self, file_bytes: bytes, filename: str, config: dict) -> dict:

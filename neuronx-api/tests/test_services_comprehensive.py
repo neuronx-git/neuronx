@@ -461,7 +461,7 @@ class TestDocOCRService:
     async def test_extract_passport_fastmrz(self, service):
         mock_mrz = MagicMock()
         mock_mrz_instance = MagicMock()
-        mock_mrz_instance.get_mrz.return_value = {
+        mock_mrz_instance.get_details.return_value = {
             "given_name": "JOHN", "surname": "DOE",
             "date_of_birth": "1990-01-15", "document_number": "AB123456",
             "expiry_date": "2030-12-31", "nationality": "CAN", "sex": "M",
@@ -484,7 +484,7 @@ class TestDocOCRService:
         import sys
         mock_mod = MagicMock()
         mock_inst = MagicMock()
-        mock_inst.get_mrz.return_value = None
+        mock_inst.get_details.return_value = None
         mock_mod.FastMRZ.return_value = mock_inst
 
         with patch.dict(sys.modules, {"fastmrz": mock_mod}), \
