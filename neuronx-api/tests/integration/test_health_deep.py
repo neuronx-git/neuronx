@@ -37,7 +37,7 @@ class TestDeepHealth:
         assert "checks" in data
         assert "service" in data
         assert data["service"] == "neuronx-api"
-        assert data["version"] == "0.4.0"
+        assert data["version"] == "0.5.0"
 
     def test_deep_health_checks_keys(self, client):
         """Deep health checks include all expected dependency probes."""
@@ -47,7 +47,6 @@ class TestDeepHealth:
         checks = resp.json()["checks"]
         assert "database" in checks
         assert "ghl_api" in checks
-        assert "anthropic" in checks
         assert "configs" in checks
 
     def test_deep_health_configs_ok(self, client):
@@ -57,14 +56,6 @@ class TestDeepHealth:
 
         checks = resp.json()["checks"]
         assert "ok" in checks["configs"]
-
-    def test_deep_health_anthropic_configured(self, client):
-        """Deep health reports Anthropic as configured when API key is set."""
-        with patch("httpx.AsyncClient", return_value=_make_httpx_mock()):
-            resp = client.get("/health/deep")
-
-        checks = resp.json()["checks"]
-        assert checks["anthropic"] == "configured"
 
     def test_deep_health_ghl_reachable(self, client):
         """Deep health reports GHL as reachable when API returns 200."""

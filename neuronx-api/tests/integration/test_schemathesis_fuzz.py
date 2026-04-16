@@ -34,7 +34,7 @@ class TestOpenAPISchema:
     def test_openapi_spec_version(self, client):
         """OpenAPI spec declares version 0.4.0."""
         spec = client.get("/openapi.json").json()
-        assert spec["info"]["version"] == "0.4.0"
+        assert spec["info"]["version"] == "0.5.0"
 
     def test_all_routers_have_paths(self, client):
         """All 15 registered routers appear in the OpenAPI paths."""

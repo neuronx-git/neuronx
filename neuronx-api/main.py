@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="NeuronX API",
     description="AI orchestration layer for immigration consulting intake. Handles webhooks, readiness scoring, consultation prep, and analytics.",
-    version="0.4.0",
+    version="0.5.0",
     lifespan=lifespan,
     docs_url="/docs" if settings.env != "production" else None,
 )
@@ -76,7 +76,7 @@ async def health():
     return {
         "status": "ok",
         "service": "neuronx-api",
-        "version": "0.4.0",
+        "version": "0.5.0",
         "database": "connected" if is_db_configured() else "not configured",
     }
 
@@ -123,12 +123,6 @@ async def health_deep():
         except Exception as e:
             checks["ghl_api"] = f"unreachable: {str(e)[:80]}"
 
-    # Anthropic API key validity
-    if settings.anthropic_api_key:
-        checks["anthropic"] = "configured"
-    else:
-        checks["anthropic"] = "not configured"
-
     # YAML config parsing
     try:
         load_scoring_config()
@@ -144,9 +138,11 @@ async def health_deep():
     else:
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
-                r = await client.get(f"{settings.typebot_url}/api/v1/typebots", headers={
-                    "Authorization": f"Bearer {settings.typebot_api_token}"
-                })
+                r = await client.get(
+                    f"{settings.typebot_url}/api/v1/typebots",
+                    headers={"Authorization": f"Bearer {settings.typebot_api_token}"},
+                    params={"workspaceId": "cmnrfqc6z000034qx46joy6hf"},
+                )
                 checks["typebot"] = "ok" if r.status_code in (200, 401, 403) else f"status: {r.status_code}"
         except Exception as e:
             checks["typebot"] = f"unreachable: {str(e)[:80]}"
@@ -156,7 +152,7 @@ async def health_deep():
     return {
         "status": "ok" if all_ok else "degraded",
         "service": "neuronx-api",
-        "version": "0.4.0",
+        "version": "0.5.0",
         "checks": checks,
     }
 
@@ -170,6 +166,40 @@ async def reload_config(x_admin_key: str = Header(...)):
     from app.config_loader import reload_all
     reload_all()
     return {"status": "ok", "message": "All configs reloaded from YAML"}
+
+
+@app.post("/admin/install-views")
+async def install_views(x_admin_key: str = Header(...)):
+    """Install Metabase SQL views for dashboards. Requires X-Admin-Key header."""
+    admin_key = os.getenv("ADMIN_API_KEY", "neuronx-admin-dev")
+    if x_admin_key != admin_key:
+        raise HTTPException(status_code=401, detail="Invalid admin key")
+
+    from app.database import async_session_factory
+    from sqlalchemy import text
+
+    if not async_session_factory:
+        raise HTTPException(status_code=500, detail="Database not configured")
+
+    sql_path = os.path.join(os.path.dirname(__file__), "scripts", "metabase_views.sql")
+    if not os.path.exists(sql_path):
+        raise HTTPException(status_code=500, detail="metabase_views.sql not found")
+
+    with open(sql_path) as f:
+        sql = f.read()
+
+    # Split on semicolons and execute each statement
+    views_created = 0
+    async with async_session_factory() as session:
+        for stmt in sql.split(";"):
+            stmt = stmt.strip()
+            if stmt and not stmt.startswith("--"):
+                await session.execute(text(stmt))
+                if "CREATE" in stmt.upper():
+                    views_created += 1
+        await session.commit()
+
+    return {"status": "ok", "views_created": views_created}
 
 
 # Serve static assets (avatar, favicon, images)

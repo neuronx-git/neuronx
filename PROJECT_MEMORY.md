@@ -162,7 +162,41 @@ dependents, processed_webhooks, dead_letter_queue
 - Processing times verified April 2026 against IRCC
 - Full domain registry: docs/09_domain_knowledge/DOMAIN_KNOWLEDGE_REGISTRY.md
 
-## Session 2026-04-16: Railway + Form Fixes
+## Session 2026-04-16 (Sprint 5 P0): Case Lifecycle + Investor Demo
+
+### NeuronX API v0.5.0
+- **Case Lifecycle API** — `PATCH /cases/{case_id}/status` with state-machine validation
+  - 10 stages: onboarding → doc_collection → docs_complete → form_prep → under_review → submitted → processing → rfi → decision → closed
+  - Valid transitions enforced (e.g., can't skip from onboarding to submitted)
+  - Every stage can transition to `closed` (early termination)
+  - `rfi` ↔ `processing` loop supported (IRCC requests more info)
+  - Activity logged to PostgreSQL + compliance JSONL on every transition
+  - GHL tags synced automatically (nx:case:{stage})
+- **GET /cases/by-id/{case_id}** — Full case details + allowed transitions
+- **GET /cases/list** — All cases, filterable by stage, ordered by created_at desc
+- **GET /cases/transitions** — Returns full state machine (for UI rendering)
+- **Demo data enhanced** — 18 stage transition activities added for case timeline
+- **GET /demo/summary** — Investor demo summary: pipeline metrics, revenue, case distribution, activity volume
+- **POST /admin/install-views** — Install 10 Metabase SQL views for 3 dashboards
+- **Deep health fixed** — Removed Anthropic check (not needed), fixed Typebot check (added workspace ID)
+- **23 new tests** — State machine (9), lifecycle service (11), router (3)
+- **Total: 763+ tests, all passing**
+
+### Metabase Dashboard SQL Views (10 views)
+| View | Dashboard | Purpose |
+|------|-----------|---------|
+| v_pipeline_funnel | Pipeline Health | Intake funnel by stage + status |
+| v_lead_sources | Pipeline Health | Lead source performance + conversion |
+| v_conversion_funnel | Pipeline Health | Inquiry → booking → retainer funnel |
+| v_case_stages | Case Status | Stage × program × RCIC distribution |
+| v_rcic_workload | Case Status | RCIC active cases + approval rate |
+| v_doc_progress | Case Status | Document collection % per case |
+| v_revenue | Case Status | Revenue by program + approval rate |
+| v_daily_activity | Activity Timeline | Daily activity volume by type |
+| v_recent_activities | Activity Timeline | Last 30 days enriched with contact name |
+| v_stage_transitions | Activity Timeline | Case stage change history |
+
+## Session 2026-04-16 (earlier): Railway + Form Fixes
 
 ### Railway Deploy Fixed
 - **Root cause 1**: GitHub repo was connected to old `ranjan-expatready/neuronx` — fixed to `neuronx-git/neuronx`

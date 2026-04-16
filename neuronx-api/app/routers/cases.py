@@ -1,7 +1,10 @@
 """
 Case Processing Endpoints
 POST /cases/initiate       — Start new case after retainer signed
-POST /cases/stage          — Update case stage
+POST /cases/stage          — Update case stage (legacy, by contact_id)
+PATCH /cases/{case_id}/status — Update case stage (new, by case_id, validated)
+GET  /cases/{case_id}      — Get case details
+GET  /cases/               — List cases (filterable by stage)
 POST /cases/submission     — Record IRCC submission
 POST /cases/decision       — Record IRCC decision
 GET  /cases/forms          — Get IRCC forms for a program
@@ -11,14 +14,14 @@ GET  /cases/status         — Client-facing case status
 GET  /cases/onboarding-url — Generate pre-filled onboarding URL from Phase 1 data
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import Optional
 from urllib.parse import urlencode, quote_plus
 import logging
 
 from app.services.ghl_client import GHLClient
-from app.services.case_service import CaseService
+from app.services.case_service import CaseService, ALL_STAGES, VALID_TRANSITIONS
 from app.config_loader import load_yaml_config
 
 router = APIRouter()
@@ -35,6 +38,12 @@ class CaseStageRequest(BaseModel):
     contact_id: str
     stage: str = Field(..., description="onboarding|doc_collection|docs_complete|form_prep|under_review|submitted|processing|rfi|decision|closed")
     notes: Optional[str] = None
+
+
+class CaseStatusUpdate(BaseModel):
+    new_stage: str = Field(..., description="Target stage for the case")
+    notes: Optional[str] = None
+    updated_by: str = "system"
 
 
 class SubmissionRequest(BaseModel):
@@ -81,6 +90,53 @@ async def update_case_stage(payload: CaseStageRequest):
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
+
+
+@router.patch("/{case_id}/status")
+async def update_case_status(case_id: str, payload: CaseStatusUpdate):
+    """
+    Transition a case to a new stage with state-machine validation.
+    Returns old stage, new stage, allowed next transitions, and GHL sync status.
+    """
+    service = CaseService()
+    result = await service.update_case_status(
+        case_id=case_id,
+        new_stage=payload.new_stage,
+        notes=payload.notes,
+        updated_by=payload.updated_by,
+    )
+    if "error" in result:
+        status = 404 if "not found" in result["error"] else 400
+        raise HTTPException(status_code=status, detail=result)
+    return result
+
+
+@router.get("/by-id/{case_id}")
+async def get_case(case_id: str):
+    """Get full case details by case_id (NX-YYYYMMDD-XXXXXXXX)."""
+    service = CaseService()
+    case = await service.get_case_by_id(case_id)
+    if not case:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+    return case
+
+
+@router.get("/list")
+async def list_cases(stage: Optional[str] = Query(None), limit: int = Query(50, le=200)):
+    """List cases, optionally filtered by stage."""
+    if stage and stage not in ALL_STAGES:
+        raise HTTPException(status_code=400, detail=f"Unknown stage '{stage}'. Valid: {ALL_STAGES}")
+    service = CaseService()
+    return await service.list_cases(stage=stage, limit=limit)
+
+
+@router.get("/transitions")
+async def get_transitions():
+    """Return the case stage state machine — valid transitions from each stage."""
+    return {
+        "stages": ALL_STAGES,
+        "transitions": {k: sorted(v) for k, v in VALID_TRANSITIONS.items()},
+    }
 
 
 @router.post("/submission")

@@ -67,4 +67,4 @@ def test_health_shows_db_status(client):
     assert r.status_code == 200
     data = r.json()
     assert "database" in data
-    assert data["version"] == "0.4.0"
+    assert data["version"] == "0.5.0"

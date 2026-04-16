@@ -765,7 +765,7 @@ class TestMainApp:
         r = client.get("/health")
         assert r.status_code == 200
         assert r.json()["service"] == "neuronx-api"
-        assert r.json()["version"] == "0.4.0"
+        assert r.json()["version"] == "0.5.0"
 
     def test_root(self, client):
         r = client.get("/")

@@ -640,7 +640,7 @@ class TestHealthAndAdmin:
         data = resp.json()
         assert data["status"] == "ok"
         assert data["service"] == "neuronx-api"
-        assert data["version"] == "0.4.0"
+        assert data["version"] == "0.5.0"
         assert "database" in data
 
     def test_admin_reload_valid_key(self, client):

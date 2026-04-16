@@ -144,6 +144,36 @@ async def seed_demo_data():
                 signed_at=(now - timedelta(days=signed_days)) if signed_days else None,
             ))
 
+        # Insert case stage change activities (for Metabase timeline)
+        stage_changes = [
+            ("demo-001", "stage_changed", "onboarding → doc_collection", 88, {"case_id": "NX-20260301-DEMO01", "old_stage": "onboarding", "new_stage": "doc_collection"}),
+            ("demo-001", "stage_changed", "doc_collection → docs_complete", 75, {"case_id": "NX-20260301-DEMO01", "old_stage": "doc_collection", "new_stage": "docs_complete"}),
+            ("demo-001", "stage_changed", "docs_complete → form_prep", 72, {"case_id": "NX-20260301-DEMO01", "old_stage": "docs_complete", "new_stage": "form_prep"}),
+            ("demo-001", "stage_changed", "form_prep → under_review", 65, {"case_id": "NX-20260301-DEMO01", "old_stage": "form_prep", "new_stage": "under_review"}),
+            ("demo-001", "stage_changed", "under_review → submitted", 60, {"case_id": "NX-20260301-DEMO01", "old_stage": "under_review", "new_stage": "submitted"}),
+            ("demo-001", "stage_changed", "submitted → processing", 55, {"case_id": "NX-20260301-DEMO01", "old_stage": "submitted", "new_stage": "processing"}),
+            ("demo-001", "stage_changed", "processing → decision", 20, {"case_id": "NX-20260301-DEMO01", "old_stage": "processing", "new_stage": "decision"}),
+            ("demo-001", "stage_changed", "decision → closed", 15, {"case_id": "NX-20260301-DEMO01", "old_stage": "decision", "new_stage": "closed"}),
+            ("demo-002", "stage_changed", "onboarding → doc_collection", 43, {"case_id": "NX-20260310-DEMO02", "old_stage": "onboarding", "new_stage": "doc_collection"}),
+            ("demo-002", "stage_changed", "doc_collection → docs_complete", 35, {"case_id": "NX-20260310-DEMO02", "old_stage": "doc_collection", "new_stage": "docs_complete"}),
+            ("demo-002", "stage_changed", "docs_complete → form_prep", 30, {"case_id": "NX-20260310-DEMO02", "old_stage": "docs_complete", "new_stage": "form_prep"}),
+            ("demo-002", "stage_changed", "form_prep → under_review", 25, {"case_id": "NX-20260310-DEMO02", "old_stage": "form_prep", "new_stage": "under_review"}),
+            ("demo-002", "stage_changed", "under_review → submitted", 20, {"case_id": "NX-20260310-DEMO02", "old_stage": "under_review", "new_stage": "submitted"}),
+            ("demo-002", "stage_changed", "submitted → processing", 15, {"case_id": "NX-20260310-DEMO02", "old_stage": "submitted", "new_stage": "processing"}),
+            ("demo-009", "stage_changed", "onboarding → doc_collection", 18, {"case_id": "NX-20260315-DEMO03", "old_stage": "onboarding", "new_stage": "doc_collection"}),
+            ("demo-011", "stage_changed", "onboarding → doc_collection", 13, {"case_id": "NX-20260325-DEMO08", "old_stage": "onboarding", "new_stage": "doc_collection"}),
+            ("demo-011", "stage_changed", "doc_collection → docs_complete", 10, {"case_id": "NX-20260325-DEMO08", "old_stage": "doc_collection", "new_stage": "docs_complete"}),
+            ("demo-011", "stage_changed", "docs_complete → form_prep", 7, {"case_id": "NX-20260325-DEMO08", "old_stage": "docs_complete", "new_stage": "form_prep"}),
+        ]
+        for contact_id, atype, detail, days_ago, meta in stage_changes:
+            session.add(Activity(
+                contact_id=contact_id,
+                activity_type=atype,
+                detail=detail,
+                metadata_json=meta,
+                created_at=now - timedelta(days=days_ago),
+            ))
+
         await session.commit()
 
     return {
@@ -151,9 +181,72 @@ async def seed_demo_data():
         "contacts": len(DEMO_CONTACTS),
         "opportunities": len(opps),
         "cases": len(cases),
-        "activities": len(activities),
+        "activities": len(activities) + len(stage_changes),
         "signatures": len(sigs),
-        "note": "Realistic immigration consulting data for presentations. Run POST /demo/clear to remove.",
+        "note": "Realistic immigration consulting data for investor demo. Run POST /demo/clear to remove.",
+    }
+
+
+@router.get("/summary")
+async def demo_summary():
+    """
+    Investor demo summary — key metrics at a glance.
+    Shows pipeline health, case status distribution, revenue, activity timeline.
+    """
+    from app import database
+    if not database.async_session_factory:
+        return {"error": "Database not configured"}
+
+    from sqlalchemy import text
+
+    async with database.async_session_factory() as session:
+        # Pipeline metrics
+        opp_stats = await session.execute(text("""
+            SELECT status, COUNT(*) as cnt, COALESCE(SUM(monetary_value), 0) as total_value
+            FROM opportunities GROUP BY status
+        """))
+        pipeline = {row.status: {"count": row.cnt, "value": row.total_value} for row in opp_stats}
+
+        # Case stage distribution
+        case_stats = await session.execute(text("""
+            SELECT stage, COUNT(*) as cnt FROM cases GROUP BY stage ORDER BY cnt DESC
+        """))
+        stages = {row.stage: row.cnt for row in case_stats}
+
+        # Activity volume (last 30 days)
+        activity_stats = await session.execute(text("""
+            SELECT activity_type, COUNT(*) as cnt FROM activities
+            WHERE created_at > NOW() - INTERVAL '30 days'
+            GROUP BY activity_type ORDER BY cnt DESC
+        """))
+        recent_activities = {row.activity_type: row.cnt for row in activity_stats}
+
+        # Revenue
+        revenue = await session.execute(text("""
+            SELECT COUNT(*) as total_cases,
+                   COALESCE(SUM(retainer_value), 0) as total_revenue,
+                   COALESCE(AVG(retainer_value), 0) as avg_retainer
+            FROM cases WHERE retainer_value > 0
+        """))
+        rev_row = revenue.first()
+
+        # Contacts by readiness
+        score_dist = await session.execute(text("""
+            SELECT readiness_outcome, COUNT(*) as cnt FROM contacts
+            WHERE readiness_outcome != '' GROUP BY readiness_outcome
+        """))
+        readiness = {row.readiness_outcome: row.cnt for row in score_dist}
+
+    return {
+        "pipeline": pipeline,
+        "case_stages": stages,
+        "recent_activities": recent_activities,
+        "revenue": {
+            "total_cases": rev_row.total_cases if rev_row else 0,
+            "total_revenue": float(rev_row.total_revenue) if rev_row else 0,
+            "avg_retainer": round(float(rev_row.avg_retainer), 2) if rev_row else 0,
+        },
+        "readiness_distribution": readiness,
     }
 
 

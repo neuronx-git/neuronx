@@ -617,4 +617,4 @@ class TestMainLifespan:
         r = client.get("/openapi.json")
         assert r.status_code == 200
         schema = r.json()
-        assert schema["info"]["version"] == "0.4.0"
+        assert schema["info"]["version"] == "0.5.0"
