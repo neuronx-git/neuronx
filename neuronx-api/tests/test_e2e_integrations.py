@@ -291,7 +291,7 @@ class TestMultiTenantForms:
     def test_vmc_form_serves(self, client):
         r = client.get("/form/vmc/onboarding")
         assert r.status_code == 200
-        assert "typebot-standard" in r.text
+        assert "iframe" in r.text
         assert "vmc-onboarding" in r.text
 
     def test_unknown_tenant_404(self, client):
