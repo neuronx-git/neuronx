@@ -190,18 +190,24 @@ async def install_views(x_admin_key: str = Header(...)):
 
     # Split on semicolons and execute each statement (strip leading comments)
     views_created = 0
+    errors = []
     async with async_session_factory() as session:
         for stmt in sql.split(";"):
-            # Remove comment-only lines from the front
             lines = [l for l in stmt.strip().splitlines() if l.strip() and not l.strip().startswith("--")]
             clean = "\n".join(lines).strip()
             if clean:
-                await session.execute(text(clean))
-                if "CREATE" in clean.upper():
-                    views_created += 1
+                try:
+                    await session.execute(text(clean))
+                    if "CREATE" in clean.upper():
+                        views_created += 1
+                except Exception as e:
+                    errors.append({"sql": clean[:80], "error": str(e)[:200]})
         await session.commit()
 
-    return {"status": "ok", "views_created": views_created}
+    result = {"status": "ok", "views_created": views_created}
+    if errors:
+        result["errors"] = errors
+    return result
 
 
 # Serve static assets (avatar, favicon, images)
