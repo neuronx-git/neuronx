@@ -1,7 +1,7 @@
 # NeuronX — Project Memory (Compact)
 
 **Last Updated**: 2026-04-16
-**Session**: Railway deploy fix + Typebot form E2E audit + webhook field mapping
+**Session**: Railway deploy fix + Typebot E2E audit + GHL auto-refresh + full data flow wiring
 
 ## Canon (Authority)
 
@@ -182,13 +182,32 @@ dependents, processed_webhooks, dead_letter_queue
 ### Dynamic Field Count
 - `/cases/onboarding-url` now returns dynamic `total_form_fields` per program (was hardcoded 68)
 
+### Typebot Form E2E Wiring (COMPLETE)
+- **3 webhooks configured** via Typebot API:
+  - `b_pp_ocr` → `/extract/from-url` (passport OCR after upload)
+  - `b_doc_ocr` → `/extract/from-url` (supporting docs OCR)
+  - `b_wh1` → `/typebot/webhook` (final submission → GHL sync)
+- **rememberUser enabled** (session storage) — users can resume across sessions
+- **53 webhook field mappings** — all 8 programs covered
+- **GHL token auto-refresh** — `_refresh_token()` uses refresh_token (valid until 2057) on 401
+- **search_contacts fix** — `pageLimit` instead of `limit` (GHL V2 API)
+- **GHL_ACCESS_TOKEN** set in Railway env vars
+
+### Form Flow (Verified E2E)
+1. Welcome → Passport upload (optional, OCR) → Name → Country → Passport# → Email → DOB → Current country → Passport expiry → Phone
+2. Program Selection (8 choices) → Program-specific questions → Document checklist per program
+3. Family (dependents, marital) → Background (criminal, refusal, medical)
+4. Document Upload (supporting docs + optional additional)
+5. Completion → Webhook → GHL sync (53 fields + nx:case:docs_pending tag)
+
 ## What Blocks Pilot Launch
 
-1. **Production GHL account** ($297/mo) — needed for email/SMS/phone
+1. **Production GHL account** ($297/mo) — needed for email/SMS/phone workflows
 2. ~~Typebot file upload fix~~ — **RESOLVED** (2026-04-14)
-3. **Typebot viewer ENV fix** — needs manual Railway dashboard deploy (Typebot project → Viewer)
-4. **E2E UAT** — needs production GHL + working viewer
+3. ~~Typebot webhook URLs~~ — **RESOLVED** (2026-04-16: all 3 webhooks wired)
+4. ~~GHL token auto-refresh~~ — **RESOLVED** (2026-04-16: auto-refreshes on 401)
 5. **RCIC license number** — update in config/ircc_field_mappings.yaml
+6. **Anthropic API key** — not configured in Railway (OCR via Claude vision won't work, FastMRZ passport OK)
 
 ## What Does NOT Block Pilot
 - Client portal (RCICs use GHL directly)
