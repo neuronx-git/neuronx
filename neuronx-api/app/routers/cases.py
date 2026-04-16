@@ -149,7 +149,10 @@ async def get_onboarding_questionnaire(program_type: str):
     common = config.get("common_questions", [])
     programs = config.get("programs", {})
 
-    program_config = programs.get(program_type)
+    # Normalize slug to display name (express-entry → Express Entry)
+    slug_map = {p.lower().replace(" ", "-").replace("/", "-"): p for p in programs.keys()}
+    display_name = slug_map.get(program_type, program_type)
+    program_config = programs.get(display_name)
     if not program_config:
         # Return common questions only for unknown programs
         return {
@@ -168,7 +171,7 @@ async def get_onboarding_questionnaire(program_type: str):
     all_sections = ["Personal Information", "Contact", "Family", "Background"] + program_sections
 
     return {
-        "program_type": program_type,
+        "program_type": display_name,
         "sections": all_sections,
         "questions": all_questions,
         "total_questions": len(all_questions),

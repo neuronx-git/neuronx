@@ -96,25 +96,32 @@ async def health_deep():
     # Database connectivity
     if is_db_configured():
         try:
-            async with get_session() as session:
-                from sqlalchemy import text
-                await session.execute(text("SELECT 1"))
-            checks["database"] = "ok"
+            from app.database import async_session_factory
+            if async_session_factory:
+                async with async_session_factory() as session:
+                    from sqlalchemy import text
+                    await session.execute(text("SELECT 1"))
+                checks["database"] = "ok"
+            else:
+                checks["database"] = "engine not initialized"
         except Exception as e:
             checks["database"] = f"error: {str(e)[:100]}"
     else:
         checks["database"] = "not configured"
 
     # GHL API reachability
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            r = await client.get(
-                f"{settings.ghl_api_base_url}/locations/{settings.ghl_location_id}",
-                headers={"Authorization": f"Bearer {settings.ghl_access_token}"},
-            )
-            checks["ghl_api"] = "ok" if r.status_code in (200, 401) else f"status: {r.status_code}"
-    except Exception as e:
-        checks["ghl_api"] = f"unreachable: {str(e)[:80]}"
+    if not settings.ghl_access_token:
+        checks["ghl_api"] = "token not configured"
+    else:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.get(
+                    f"{settings.ghl_api_base_url}/locations/{settings.ghl_location_id}",
+                    headers={"Authorization": f"Bearer {settings.ghl_access_token}"},
+                )
+                checks["ghl_api"] = "ok" if r.status_code in (200, 401) else f"status: {r.status_code}"
+        except Exception as e:
+            checks["ghl_api"] = f"unreachable: {str(e)[:80]}"
 
     # Anthropic API key validity
     if settings.anthropic_api_key:
@@ -132,7 +139,9 @@ async def health_deep():
         checks["configs"] = f"error: {str(e)[:100]}"
 
     # Typebot reachability
-    if settings.typebot_url:
+    if not settings.typebot_url or not settings.typebot_api_token:
+        checks["typebot"] = "not configured"
+    else:
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
                 r = await client.get(f"{settings.typebot_url}/api/v1/typebots", headers={
@@ -141,8 +150,6 @@ async def health_deep():
                 checks["typebot"] = "ok" if r.status_code in (200, 401, 403) else f"status: {r.status_code}"
         except Exception as e:
             checks["typebot"] = f"unreachable: {str(e)[:80]}"
-    else:
-        checks["typebot"] = "not configured"
 
     all_ok = all(v in ("ok", "configured", "not configured") or v.startswith("ok") for v in checks.values())
 
