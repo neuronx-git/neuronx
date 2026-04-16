@@ -188,21 +188,21 @@ async def install_views(x_admin_key: str = Header(...)):
     with open(sql_path) as f:
         sql = f.read()
 
-    # Split on semicolons and execute each statement (strip leading comments)
+    # Execute each CREATE VIEW statement in its own transaction
     views_created = 0
     errors = []
-    async with async_session_factory() as session:
-        for stmt in sql.split(";"):
-            lines = [l for l in stmt.strip().splitlines() if l.strip() and not l.strip().startswith("--")]
-            clean = "\n".join(lines).strip()
-            if clean:
-                try:
+    for stmt in sql.split(";"):
+        lines = [l for l in stmt.strip().splitlines() if l.strip() and not l.strip().startswith("--")]
+        clean = "\n".join(lines).strip()
+        if clean:
+            try:
+                async with async_session_factory() as session:
                     await session.execute(text(clean))
+                    await session.commit()
                     if "CREATE" in clean.upper():
                         views_created += 1
-                except Exception as e:
-                    errors.append({"sql": clean[:80], "error": str(e)[:200]})
-        await session.commit()
+            except Exception as e:
+                errors.append({"sql": clean[:80], "error": str(e)[:200]})
 
     result = {"status": "ok", "views_created": views_created}
     if errors:

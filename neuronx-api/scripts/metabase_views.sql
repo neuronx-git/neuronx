@@ -129,8 +129,8 @@ SELECT
     COUNT(*) FILTER (WHERE cs.ircc_decision = 'Refused') AS refused,
     CASE WHEN COUNT(*) FILTER (WHERE cs.ircc_decision IN ('Approved', 'Refused')) > 0
         THEN ROUND(
-            COUNT(*) FILTER (WHERE cs.ircc_decision = 'Approved')::float /
-            COUNT(*) FILTER (WHERE cs.ircc_decision IN ('Approved', 'Refused')) * 100, 1
+            (COUNT(*) FILTER (WHERE cs.ircc_decision = 'Approved')::numeric /
+            COUNT(*) FILTER (WHERE cs.ircc_decision IN ('Approved', 'Refused')) * 100), 1
         )
         ELSE NULL
     END AS approval_rate_pct
