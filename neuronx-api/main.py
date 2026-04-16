@@ -10,12 +10,18 @@ See: docs/04_compliance/trust_boundaries.md for AI behavioral constraints
 from fastapi import FastAPI, Request, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import logging
 import os
 
 from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract
 from app.config import settings
+
+limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("neuronx")
@@ -44,6 +50,9 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs" if settings.env != "production" else None,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -154,6 +163,82 @@ async def health_deep():
         "service": "neuronx-api",
         "version": "0.5.0",
         "checks": checks,
+    }
+
+
+@app.get("/health/smoke")
+async def smoke_test():
+    """
+    Production smoke test — verifies end-to-end data flow.
+    Checks: DB read, case listing, config load, GHL reachability.
+    Use for daily automated monitoring.
+    """
+    import httpx
+    from app.database import async_session_factory
+    from app.config_loader import load_scoring_config, load_programs_config
+    from sqlalchemy import text
+
+    results = {}
+    passed = 0
+    total = 0
+
+    # Test 1: DB read
+    total += 1
+    try:
+        if async_session_factory:
+            async with async_session_factory() as session:
+                row = await session.execute(text("SELECT COUNT(*) as cnt FROM cases"))
+                count = row.scalar()
+                results["db_cases"] = {"status": "ok", "count": count}
+                passed += 1
+        else:
+            results["db_cases"] = {"status": "skip", "reason": "no DB"}
+    except Exception as e:
+        results["db_cases"] = {"status": "fail", "error": str(e)[:100]}
+
+    # Test 2: Config load
+    total += 1
+    try:
+        programs = load_programs_config()
+        scoring = load_scoring_config()
+        results["configs"] = {"status": "ok", "programs": len(programs.get("programs", {})), "scoring_loaded": bool(scoring)}
+        passed += 1
+    except Exception as e:
+        results["configs"] = {"status": "fail", "error": str(e)[:100]}
+
+    # Test 3: Case lifecycle API
+    total += 1
+    try:
+        from app.services.case_service import VALID_TRANSITIONS, ALL_STAGES
+        assert len(ALL_STAGES) == 10
+        assert len(VALID_TRANSITIONS) == 10
+        results["case_lifecycle"] = {"status": "ok", "stages": len(ALL_STAGES)}
+        passed += 1
+    except Exception as e:
+        results["case_lifecycle"] = {"status": "fail", "error": str(e)[:100]}
+
+    # Test 4: GHL API reachability
+    total += 1
+    if settings.ghl_access_token:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                r = await client.get(
+                    f"{settings.ghl_api_base_url}/locations/{settings.ghl_location_id}",
+                    headers={"Authorization": f"Bearer {settings.ghl_access_token}"},
+                )
+                results["ghl_api"] = {"status": "ok" if r.status_code in (200, 401) else "degraded", "http_status": r.status_code}
+                if r.status_code in (200, 401):
+                    passed += 1
+        except Exception as e:
+            results["ghl_api"] = {"status": "fail", "error": str(e)[:100]}
+    else:
+        results["ghl_api"] = {"status": "skip", "reason": "no token"}
+
+    return {
+        "status": "pass" if passed == total else "partial" if passed > 0 else "fail",
+        "passed": passed,
+        "total": total,
+        "checks": results,
     }
 
 
