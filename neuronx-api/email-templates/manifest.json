@@ -1,0 +1,210 @@
+[
+  {
+    "slug": "01-inquiry-received",
+    "subject": "We received your inquiry, {{contact.first_name}} \u2014 next steps inside",
+    "preheader": "Our AI-assisted intake will call you in 5-15 minutes.",
+    "category": "INQUIRY RECEIVED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/01-inquiry-received.html",
+    "size": 16916
+  },
+  {
+    "slug": "02-outreach-attempt",
+    "subject": "{{contact.first_name}}, we couldn't reach you \u2014 let's schedule",
+    "preheader": "Pick a time that works. A licensed RCIC is holding your file.",
+    "category": "FOLLOW-UP",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/02-outreach-attempt.html",
+    "size": 16895
+  },
+  {
+    "slug": "03-invite-booking",
+    "subject": "{{contact.first_name}}, you're ready \u2014 book your free consultation",
+    "preheader": "A licensed RCIC is ready to discuss your case.",
+    "category": "ACTION REQUIRED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/03-invite-booking.html",
+    "size": 16913
+  },
+  {
+    "slug": "04-consultation-confirmed",
+    "subject": "\u2705 Your consultation is confirmed, {{contact.first_name}}",
+    "preheader": "Your immigration consultation is booked.",
+    "category": "BOOKING CONFIRMED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/04-consultation-confirmed.html",
+    "size": 16884
+  },
+  {
+    "slug": "05-consultation-reminder",
+    "subject": "\u23f0 Reminder: your consultation is tomorrow, {{contact.first_name}}",
+    "preheader": "Your immigration consultation is tomorrow.",
+    "category": "REMINDER",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/05-consultation-reminder.html",
+    "size": 16903
+  },
+  {
+    "slug": "06-noshow-recovery",
+    "subject": "\ud83d\udc4b We missed you \u2014 let's reschedule",
+    "preheader": "Quick 30-second rescheduling link.",
+    "category": "MISSED APPOINTMENT",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/06-noshow-recovery.html",
+    "size": 16853
+  },
+  {
+    "slug": "07-retainer-proposal",
+    "subject": "\ud83d\udccb Your immigration proposal is ready, {{contact.first_name}}",
+    "preheader": "Review and sign your retainer agreement.",
+    "category": "PROPOSAL",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/07-retainer-proposal.html",
+    "size": 16906
+  },
+  {
+    "slug": "08-retainer-followup",
+    "subject": "\ud83d\udcec Quick follow-up on your immigration proposal",
+    "preheader": "I'm here to answer any questions about the retainer.",
+    "category": "FOLLOW-UP",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/08-retainer-followup.html",
+    "size": 16870
+  },
+  {
+    "slug": "09-score-medium-handler",
+    "subject": "\ud83c\udf31 Your immigration roadmap \u2014 let's build it together",
+    "preheader": "Strong potential, some prep needed.",
+    "category": "ROADMAP",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/09-score-medium-handler.html",
+    "size": 16906
+  },
+  {
+    "slug": "10-monthly-nurture",
+    "subject": "\ud83d\udce8 {{nurture.month}} \u2014 Canadian immigration update",
+    "preheader": "This month's IRCC changes, program spotlight, and one tip.",
+    "category": "MONTHLY UPDATE",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/10-monthly-nurture.html",
+    "size": 20714
+  },
+  {
+    "slug": "11-winback-nurture",
+    "subject": "\ud83c\udf31 A lot has changed in Canadian immigration, {{contact.first_name}}",
+    "preheader": "CRS cutoffs at multi-year lows. Worth a fresh look?",
+    "category": "RECONNECT",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/11-winback-nurture.html",
+    "size": 16912
+  },
+  {
+    "slug": "12-pipeda-ack",
+    "subject": "\ud83d\udd12 Privacy request received \u2014 we're on it",
+    "preheader": "Your PIPEDA request is being processed.",
+    "category": "PRIVACY",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/12-pipeda-ack.html",
+    "size": 20703
+  },
+  {
+    "slug": "13-pipeda-deleted",
+    "subject": "\ud83d\uddd1 Your data has been permanently deleted",
+    "preheader": "PIPEDA deletion complete.",
+    "category": "PRIVACY",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/13-pipeda-deleted.html",
+    "size": 20717
+  },
+  {
+    "slug": "14-complex-case-alert",
+    "subject": "\ud83d\udea8 Complex case flagged \u2014 RCIC review needed",
+    "preheader": "Internal alert: complex case.",
+    "category": "INTERNAL ALERT",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/14-complex-case-alert.html",
+    "size": 20702
+  },
+  {
+    "slug": "15-case-onboarding",
+    "subject": "\ud83c\udf89 Welcome, {{contact.first_name}} \u2014 your immigration case is open",
+    "preheader": "Your retainer is signed. Here's what happens next.",
+    "category": "CASE OPEN",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/15-case-onboarding.html",
+    "size": 16910
+  },
+  {
+    "slug": "16-cp-docs-reminder",
+    "subject": "\ud83d\udcce {{contact.first_name}}, still need a few documents for your case",
+    "preheader": "Document deadline reminder.",
+    "category": "DOCS PENDING",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/16-cp-docs-reminder.html",
+    "size": 16893
+  },
+  {
+    "slug": "17-cp-form-prep",
+    "subject": "\u270f\ufe0f Your IRCC forms are being prepared",
+    "preheader": "All docs received. Your RCIC is preparing your IRCC forms.",
+    "category": "IN PREPARATION",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/17-cp-form-prep.html",
+    "size": 20695
+  },
+  {
+    "slug": "18-cp-internal-review",
+    "subject": "\ud83d\udd0d {{contact.first_name}}, your application is in final review",
+    "preheader": "3-step QA in progress.",
+    "category": "QUALITY REVIEW",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/18-cp-internal-review.html",
+    "size": 20720
+  },
+  {
+    "slug": "19-cp-submitted",
+    "subject": "\ud83d\ude80 Submitted! Your IRCC receipt: {{contact.ircc_receipt_number}}",
+    "preheader": "Application submitted to IRCC.",
+    "category": "MILESTONE",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/19-cp-submitted.html",
+    "size": 20727
+  },
+  {
+    "slug": "20-cp-status-update",
+    "subject": "\ud83d\udcca {{nurture.month}} status \u2014 your IRCC application",
+    "preheader": "Monthly status check.",
+    "category": "STATUS UPDATE",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/20-cp-status-update.html",
+    "size": 20698
+  },
+  {
+    "slug": "21-cp-rfi",
+    "subject": "\u26a0\ufe0f URGENT: IRCC requested additional information",
+    "preheader": "RFI received. Schedule a call.",
+    "category": "URGENT - RFI",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/21-cp-rfi.html",
+    "size": 16890
+  },
+  {
+    "slug": "22-cp-decision-approved",
+    "subject": "\ud83c\udf89 APPROVED \u2014 Congratulations, {{contact.first_name}}!",
+    "preheader": "IRCC approved your application.",
+    "category": "APPROVED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/22-cp-decision-approved.html",
+    "size": 16890
+  },
+  {
+    "slug": "23-cp-decision-refused",
+    "subject": "Your IRCC decision \u2014 let's discuss",
+    "preheader": "Application refused. We have options.",
+    "category": "DECISION RECEIVED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/23-cp-decision-refused.html",
+    "size": 16879
+  },
+  {
+    "slug": "24-cp-decision-withdrawn",
+    "subject": "\ud83d\udccb Your application withdrawal is confirmed",
+    "preheader": "Withdrawal processed.",
+    "category": "WITHDRAWN",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/24-cp-decision-withdrawn.html",
+    "size": 20699
+  },
+  {
+    "slug": "25-cp-case-closed",
+    "subject": "\ud83c\udfc1 Your case is complete \u2014 final package inside",
+    "preheader": "Case archive + how we can help again.",
+    "category": "CASE CLOSED",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/25-cp-case-closed.html",
+    "size": 16888
+  },
+  {
+    "slug": "26-missed-ai-call",
+    "subject": "\ud83d\udcde {{contact.first_name}}, we tried calling \u2014 reply with 3 answers",
+    "preheader": "5-minute readiness check missed.",
+    "category": "RESCHEDULE",
+    "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/26-missed-ai-call.html",
+    "size": 16910
+  }
+]

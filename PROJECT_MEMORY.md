@@ -1,7 +1,30 @@
 # NeuronX — Project Memory (Compact)
 
-**Last Updated**: 2026-04-17
-**Session**: Sprint 5 v0.5.0 — Case lifecycle, Metabase dashboards, UAT+Schemathesis hardening, OWASP security headers
+**Last Updated**: 2026-04-17 (evening)
+**Session**: Production GHL migration + premium email templates (Postmark-based) + best-in-class demo data
+
+## PRODUCTION GHL (NEW AGENCY — 2026-04-17)
+- **Agency company**: `qKxHWhSxcGxcW3YycTui` (replaces sandbox `1H22jRUQWbxzaCaacZjO`)
+- **VMC demo location**: `vb8iWAwoLi2uT3s5v1OW` (replaces sandbox `FlRL82M0D6nclmKT7eXH`)
+- **NeuronX agency location**: `muc56LdMG8hkmlpFFuZE` (empty, for future use)
+- **PITs stored**: `tools/ghl-lab/.pit-tokens.json` (gitignored)
+  - Agency: `pit-bbdadc81...` (read-only, for location discovery)
+  - VMC: `pit-33dfd5df...` (location-scoped, full read+write)
+  - NeuronX: `pit-6af15bfb...` (location-scoped, full read+write)
+- **Railway API env updated** to point to new VMC PIT/location
+
+## MIGRATION STATUS (Sandbox → VMC)
+| Resource | Sandbox | VMC (after migration) | Status |
+|---|---|---|---|
+| Custom Fields | 140 | 140 | ✅ Matched |
+| Tags | 104 | 107 | ✅ Matched (107 vs 104: some extras fine) |
+| Pipelines | 2 | 1 | ⚠️ Case Processing missing (needs manual create) |
+| Calendars | 3 | 1 | ⚠️ Paid + Strategy missing |
+| Workflows | 24 | 18 | ⚠️ 9 WF-CP-* missing + 3 broken "🚧 Processing" duplicates |
+| Forms | 2 | 1 | ⚠️ 1 missing |
+| Emails | 11 | **40** (14 original + 26 new Postmark templates) | ✅ |
+
+**Root cause for missing items**: The snapshot used to migrate VMC was taken BEFORE the Case Processing pipeline and WF-CP-* workflows existed in sandbox. PIT doesn't have `opportunities.write` scope for programmatic pipeline creation.
 
 ## Canon (Authority)
 
