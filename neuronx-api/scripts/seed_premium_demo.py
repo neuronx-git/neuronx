@@ -160,6 +160,23 @@ DEMO_CONTACTS = [
     {"first": "Anna", "last": "Kowalski", "email": "anna.kowalski@demo.neuronx.co", "phone": "+14165550130",
      "program": "Work Permit", "score": 71, "outcome": "ready_standard", "source": "Facebook",
      "tags": ["nx:score:high", "nx:no_show"], "country": "Poland"},
+
+    # — Additional edge-case demo (5 more for full stage coverage + realistic spread) —
+    {"first": "Ingrid", "last": "Andersen", "email": "ingrid.andersen@demo.neuronx.co", "phone": "+14165550131",
+     "program": "Express Entry", "score": 86, "outcome": "ready_standard", "source": "Referral",
+     "tags": ["nx:score:high", "nx:retainer:signed", "nx:case:docs_complete"], "country": "Denmark"},  # NEW stage: docs_complete
+    {"first": "Jorge", "last": "Alvarez", "email": "jorge.alvarez@demo.neuronx.co", "phone": "+14165550132",
+     "program": "Work Permit", "score": 79, "outcome": "ready_standard", "source": "Website",
+     "tags": ["nx:score:high", "nx:retainer:signed", "nx:case:decision", "nx:decision:withdrawn"], "country": "Argentina"},  # NEW: withdrawn decision
+    {"first": "Amara", "last": "Okafor", "email": "amara.okafor@demo.neuronx.co", "phone": "+14165550133",
+     "program": "Spousal Sponsorship", "score": 93, "outcome": "ready_urgent", "source": "Website",
+     "tags": ["nx:score:high", "nx:urgent", "nx:retainer:signed", "nx:case:closed", "nx:decision:approved", "nx:testimonial:provided"], "country": "Nigeria"},  # Approved + testimonial
+    {"first": "Tenzin", "last": "Norbu", "email": "tenzin.norbu@demo.neuronx.co", "phone": "+14165550134",
+     "program": "Citizenship", "score": 90, "outcome": "ready_standard", "source": "Referral",
+     "tags": ["nx:score:high", "nx:retainer:signed", "nx:case:closed", "nx:decision:approved", "nx:testimonial:provided", "nx:referral_source"], "country": "Canada (PR)"},  # Referral attribution
+    {"first": "Beatriz", "last": "Coelho", "email": "beatriz.coelho@demo.neuronx.co", "phone": "+14165550135",
+     "program": "Visitor Visa", "score": 48, "outcome": "ready_standard", "source": "Facebook",
+     "tags": ["nx:score:med", "nx:nurture", "nx:form_abandoned"], "country": "Brazil"},  # NEW: form abandonment
 ]
 
 
@@ -184,19 +201,40 @@ def pick_stage(tags):
     return "NEW"
 
 
-# Case stages for those with nx:retainer:signed
+# Case stages for those with nx:retainer:signed — all 10 stages
 CASE_STAGE_BY_TAG = {
     "nx:case:onboarding": "onboarding",
     "nx:case:doc_collection": "doc_collection",
+    "nx:case:docs_complete": "docs_complete",
     "nx:case:form_prep": "form_prep",
     "nx:case:under_review": "under_review",
     "nx:case:submitted": "submitted",
     "nx:case:processing": "processing",
     "nx:case:rfi": "rfi",
+    "nx:case:decision": "decision",
     "nx:case:closed": "closed",
 }
 
-RCIC_NAMES = ["Rajiv Mehta", "Nina Patel", "Michael Chen", "Sarah Johnson"]
+# Real VMC team user IDs (loaded from .team-users.json)
+import json as _json
+try:
+    with open(ROOT / "tools/ghl-lab/.team-users.json") as _f:
+        _team_map = _json.load(_f)
+        TEAM_USERS = {
+            u["title"]: u.get("ghl_id")
+            for u in _team_map["users"] if u.get("ghl_id")
+        }
+except Exception:
+    TEAM_USERS = {}
+
+# Distribution: senior RCICs handle complex + premium cases, junior RCICs handle standard
+RCIC_NAMES = ["DEMO - Rajiv Mehta", "DEMO - Nina Patel", "DEMO - Michael Chen",
+              "DEMO - Sarah Johnson", "DEMO - Arjun Kapoor"]
+RCIC_USER_IDS = [
+    TEAM_USERS.get("Managing Partner / Head RCIC"),
+    TEAM_USERS.get("Senior RCIC Consultant"),   # Nina (first match)
+    TEAM_USERS.get("Junior RCIC Consultant"),
+]
 
 
 def case_retainer_value(program):
@@ -473,12 +511,25 @@ async def seed_database():
 
 
 async def seed_ghl():
-    """Push contacts + tags to GHL VMC via PIT."""
+    """Push contacts + tags to GHL VMC via PIT with rate limit respect.
+
+    GHL production rate limit: 100 req/10s. We throttle to 50/10s (6 req/s) + backoff on 429.
+    """
+    import asyncio
     print("\n[GHL sync — pushing demo contacts to VMC]")
     created = 0
+    already = 0
     failed = []
-    async with httpx.AsyncClient(timeout=20) as c:
+
+    # Rotate RCIC assignments (use real user IDs)
+    rcic_ids = [u for u in RCIC_USER_IDS if u]
+    if not rcic_ids:
+        rcic_ids = [None]
+
+    async with httpx.AsyncClient(timeout=30) as c:
         for i, contact in enumerate(DEMO_CONTACTS, 1):
+            # Assign round-robin to RCIC
+            assigned_user_id = rcic_ids[i % len(rcic_ids)] if rcic_ids[0] else None
             payload = {
                 "firstName": contact["first"],
                 "lastName": contact["last"],
@@ -488,20 +539,38 @@ async def seed_ghl():
                 "tags": contact["tags"] + ["demo-data"],
                 "locationId": VMC_LOC,
             }
-            try:
-                r = await c.post(f"{GHL}/contacts/", headers=VMC_HDR, json=payload)
-                if r.status_code in (200, 201):
-                    created += 1
-                elif r.status_code == 409 or "duplicate" in r.text.lower():
-                    # Already exists — that's fine
-                    pass
-                else:
-                    failed.append((contact["email"], r.status_code, r.text[:100]))
-            except Exception as e:
-                failed.append((contact["email"], "EXC", str(e)[:100]))
-    print(f"  Created: {created}, Failed: {len(failed)}")
-    if failed[:3]:
-        for n, c, err in failed[:3]:
+            if assigned_user_id:
+                payload["assignedTo"] = assigned_user_id
+
+            # Retry with exponential backoff on 429
+            attempt = 0
+            while attempt < 4:
+                try:
+                    r = await c.post(f"{GHL}/contacts/", headers=VMC_HDR, json=payload)
+                    if r.status_code in (200, 201):
+                        created += 1
+                        break
+                    elif r.status_code == 409 or "duplicate" in r.text.lower():
+                        already += 1
+                        break
+                    elif r.status_code == 429:
+                        retry_after = float(r.headers.get("retry-after", 2))
+                        await asyncio.sleep(retry_after * (attempt + 1))
+                        attempt += 1
+                        continue
+                    else:
+                        failed.append((contact["email"], r.status_code, r.text[:120]))
+                        break
+                except Exception as e:
+                    failed.append((contact["email"], "EXC", str(e)[:120]))
+                    break
+
+            # Throttle to ~6 req/s = well below 100/10s
+            await asyncio.sleep(0.2)
+
+    print(f"  Created: {created}, Already existed: {already}, Failed: {len(failed)}")
+    if failed[:5]:
+        for n, c, err in failed[:5]:
             print(f"    ✗ {n}: [{c}] {err}")
 
 

@@ -92,3 +92,5 @@ neuronx-api/logs/compliance.jsonl
 *.png
 NeuronX-Brand/
 tools/ghl-lab/.pit-tokens.json
+tools/ghl-lab/.env
+tools/ghl-lab/.team-users.json

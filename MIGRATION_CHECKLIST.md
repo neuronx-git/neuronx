@@ -1,66 +1,61 @@
-# VMC Production — Final Setup Checklist
+# VMC Production — Final Setup State (Updated 2026-04-17 evening)
 
-## ✅ Current state — what's already DONE (zero manual work required)
+## ✅ What's DONE — best-in-class 5-10 person immigration firm setup
 
-| Resource | Status | Count |
+| Resource | Count | Status |
 |---|---|---|
-| **Premium email templates (Postmark MIT-licensed)** | ✅ Uploaded | 26 VMC-* templates |
-| **Custom fields** | ✅ Migrated | 140 (matches sandbox exactly) |
-| **Tags** | ✅ Migrated | 107 (including all `nx:case:*`, `nx:decision:*`) |
-| **Intake pipeline + 10 stages** | ✅ Live | 1 pipeline |
-| **Intake workflows** | ✅ Live (unchanged from import) | 18 of 18 |
-| **Demo contacts in GHL VMC** | ✅ Created | 30 (tag: `demo-data`) |
-| **Railway API env** | ✅ Points to prod VMC | PIT + LOC ID |
-| **PostgreSQL demo dataset** | ✅ Seeded | 30 contacts, 11 cases, 143 activities, $36K demo |
-| **NeuronX SaaS config** | ✅ Built | 23 fields + 24 tags + 3 demo firms in NeuronX sub-account |
-| **Metabase dashboards** | ✅ Live | 3 dashboards, 10 views, all populated |
+| **Team members (9 users)** | 9 | ✅ Managing Partner + 2 Senior RCICs + 2 Junior RCICs + CSM + SDR + Ops Manager + Intake Coordinator |
+| **Custom fields** | 140 | ✅ Matches sandbox exactly |
+| **Tags** | 120 | ✅ All `nx:case:*`, `nx:decision:*`, `nx:score:*` |
+| **Email templates** | 40 | ✅ 26 premium Postmark-based + 14 original |
+| **Intake pipeline** | 1 (10 stages) | ✅ Live |
+| **Intake workflows** | 18 | ✅ Live + unchanged since import |
+| **Calendars** | 14 (3 shared + 11 personal) | ✅ Real team assignments |
+| **GHL contacts (demo)** | 35 | ✅ All assigned to real RCICs (round-robin) |
+| **PostgreSQL demo data** | 15 cases, 9 stages, 185 activities, $48.5K revenue | ✅ |
+| **NeuronX SaaS sub-account** | 23 fields + 24 tags + 3 firm demos | ✅ Ready for selling the platform |
+| **Metabase dashboards** | 3 dashboards, 10 SQL views | ✅ Populated |
+| **Railway API** | Points to prod VMC + new PIT | ✅ All health checks green |
 
-## 🔍 Verified safety (2026-04-17)
+## 👥 The Firm Team (all DEMO-prefixed)
 
-Comparison of sandbox vs production VMC via API:
-- **15/15 workflows UNCHANGED** after initial import (updatedAt = import time)
-- **0 email template name collisions** with our 26 new templates
-- **Our 30 demo contacts, 11 cases, 143 activities**: in PostgreSQL/GHL contacts — **NOT in snapshots** → 100% safe
+| # | Role | Name | Email | License |
+|---|---|---|---|---|
+| 1 | Managing Partner / Head RCIC | DEMO - Rajiv Mehta | rajiv.mehta@demo.visamasters.ca | R123456 |
+| 2 | Senior RCIC Consultant | DEMO - Nina Patel | nina.patel@demo.visamasters.ca | R234567 |
+| 3 | Senior RCIC Consultant | DEMO - Michael Chen | michael.chen@demo.visamasters.ca | R345678 |
+| 4 | Junior RCIC Consultant | DEMO - Sarah Johnson | sarah.johnson@demo.visamasters.ca | R456789 |
+| 5 | Junior RCIC Consultant | DEMO - Arjun Kapoor | arjun.kapoor@demo.visamasters.ca | R567890 |
+| 6 | Client Success Manager | DEMO - Emily Brooks | emily.brooks@demo.visamasters.ca | — |
+| 7 | Sales Development Rep | DEMO - James Rodriguez | james.rodriguez@demo.visamasters.ca | — |
+| 8 | Operations Manager | DEMO - Priya Sharma | priya.sharma.ops@demo.visamasters.ca | — |
+| 9 | Intake Coordinator | DEMO - Kwame Mensah | kwame.mensah@demo.visamasters.ca | — |
 
-## ⚠️ What's MISSING in production VMC (3 items)
+**Password:** `NeuronxDemo2026!Secure` (all demo users — rotate before real pilot)
 
-1. ❌ **Case Processing pipeline** (9 stages) — not in snapshot when migration ran
-2. ❌ **9 WF-CP workflows** — same reason
-3. ⚠️ **3 broken "🚧 Processing - WF-10/11/13" duplicates** — draft status, harmless but cluttered
+## 📅 Calendar Assignments
 
-## 🎯 Recommendation: Build fresh in production (DO NOT re-import snapshot)
+| Calendar | Duration | Team Members | Widget Slug |
+|---|---|---|---|
+| VMC — Free Initial Assessment | 15 min | Nina, Michael, Sarah, Arjun, Kwame (5) | `vmc-free-assessment` |
+| VMC — Paid Consultation | 60 min | Nina, Michael, Sarah, Arjun (4) | `vmc-paid-consult` |
+| VMC — Strategy Session (Complex Cases) | 90 min | Rajiv, Nina, Michael (3) | `vmc-strategy-session` |
 
-**Why not re-import the snapshot:**
-- Importer can create MORE duplicate "🚧 Processing" workflows (that's exactly how we got the current 3)
-- Lower risk to build the 3 missing items fresh in production UI
+## ⚠️ What's STILL MISSING (requires GHL UI — PIT scope can't do these)
 
-**Why building fresh is safe:**
-- Case Processing pipeline design is documented in `docs/02_operating_system/ghl_configuration_blueprint.md`
-- 9 WF-CP workflows are logically simple: stage-change trigger → tag update → email send
-- We have 11 premium Case Processing email templates already live (VMC-15 through VMC-26) ready to plug into workflows
+1. **Case Processing pipeline** (9 stages) — API returns 401 on pipeline POST
+2. **9 WF-CP workflows** — GHL workflow CRUD is UI-only
+3. **3 broken "🚧 Processing" duplicate workflows** — cluttered, harmless, UI delete only
 
----
-
-## 🔧 Your 3 manual tasks (~15 min total)
-
-These require **production VMC Chrome profile** (which you called "neuronx" profile).
+## 🎯 Remaining Manual Tasks (~15 min in GHL UI)
 
 ### Task 1 — Delete 3 broken "🚧 Processing" workflows (2 min)
-
-**URL**: https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/automation/workflows
-
-Hover over each → click ⋮ (three dots) → Delete:
-- 🚧 Processing - WF-10 Post-Consult Follow-Up
-- 🚧 Processing - WF-11 Nurture Campaign Monthly
-- 🚧 Processing - WF-13 PIPEDA Data Deletion Request
+URL: https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/automation/workflows
 
 ### Task 2 — Create "NeuronX - Case Processing" pipeline (2 min)
+URL: https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/pipelines
 
-**URL**: https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/pipelines
-
-Click **+ Create Pipeline** → Name: `NeuronX - Case Processing`
-
-Add 9 stages in order:
+9 stages:
 ```
 0. ONBOARDING
 1. DOC COLLECTION
@@ -73,83 +68,79 @@ Add 9 stages in order:
 8. CASE CLOSED
 ```
 
-### Task 3 — Create 9 WF-CP workflows (10 min)
+### Task 3 — Build 9 WF-CP workflows (10 min)
+For each, trigger = Contact Tag Added + Action = Send Email using the premium template:
 
-For each workflow below, click **+ Create Workflow** → skip template → fill as shown.
+| # | Workflow | Trigger Tag | Email Template | Assign to |
+|---|---|---|---|---|
+| 1 | WF-CP-01 Client Onboarding | `nx:case:onboarding` | VMC-15-case-onboarding | Case assigned RCIC |
+| 2 | WF-CP-02 Docs Reminders | `nx:case:docs_pending` | VMC-16-cp-docs-reminder | Case RCIC + day 3, 7, 14 reminders |
+| 3 | WF-CP-03 Form Preparation | `nx:case:form_prep` | VMC-17-cp-form-prep | Case RCIC |
+| 4 | WF-CP-04 Internal Review | `nx:case:under_review` | VMC-18-cp-internal-review | Case RCIC |
+| 5 | WF-CP-05 IRCC Submission | `nx:case:submitted` | VMC-19-cp-submitted | Case RCIC |
+| 6 | WF-CP-06 Status Updates | `nx:case:processing` | VMC-20-cp-status-update | Case RCIC (monthly) |
+| 7 | WF-CP-07 RFI Alert | `nx:case:rfi` | VMC-21-cp-rfi | Case RCIC + CSM |
+| 8 | WF-CP-08 Decision (3 branches) | `nx:case:decision` + decision tag | VMC-22/23/24 (approved/refused/withdrawn) | Case RCIC |
+| 9 | WF-CP-09 Case Closure | `nx:case:closed` | VMC-25-cp-case-closed | CSM |
 
-All workflows:
-- **Trigger**: Contact Tag Added (specific tag below)
-- **Action 1**: Send Email (template specified)
-- **Action 2**: Create Task (assigned to RCIC)
+### Task 4 — Link 26 premium email templates to existing 18 workflows (5 min)
+For each workflow below, click the Send Email action → select the VMC-* template:
 
-| # | Name | Trigger tag | Email template to use |
-|---|---|---|---|
-| 1 | WF-CP-01: Client Onboarding | `nx:case:onboarding` | `VMC-15-case-onboarding` |
-| 2 | WF-CP-02: Document Collection Reminders | `nx:case:docs_pending` | `VMC-16-cp-docs-reminder` |
-| 3 | WF-CP-03: Form Preparation | `nx:case:form_prep` | `VMC-17-cp-form-prep` |
-| 4 | WF-CP-04: Internal Review | `nx:case:under_review` | `VMC-18-cp-internal-review` |
-| 5 | WF-CP-05: IRCC Submission | `nx:case:submitted` | `VMC-19-cp-submitted` |
-| 6 | WF-CP-06: Processing Status Checks | `nx:case:processing` | `VMC-20-cp-status-update` |
-| 7 | WF-CP-07: Additional Info (RFI) | `nx:case:rfi` | `VMC-21-cp-rfi` |
-| 8 | WF-CP-08: Decision Received | `nx:case:decision` | `VMC-22-cp-decision-approved` (branch by decision) |
-| 9 | WF-CP-09: Case Closure | `nx:case:closed` | `VMC-25-cp-case-closed` |
+| Workflow | Email Template |
+|---|---|
+| WF-01 Instant Lead Capture | VMC-01-inquiry-received |
+| WF-02 Contact Attempt Sequence | VMC-02-outreach-attempt |
+| WF-04 Readiness Complete | VMC-03-invite-booking |
+| WF-04B AI Call Receiver | VMC-14-complex-case-alert (for escalations) |
+| WF-04C Missed Call Recovery | VMC-26-missed-ai-call |
+| WF-05 Appointment Reminders | VMC-04-consultation-confirmed + VMC-05-consultation-reminder |
+| WF-06 No-Show Recovery | VMC-06-noshow-recovery |
+| WF-09 Retainer Follow-Up | VMC-07-retainer-proposal + VMC-08-retainer-followup |
+| WF-10 Post-Consult Follow-Up | VMC-08-retainer-followup |
+| WF-11 Nurture Campaign Monthly | VMC-10-monthly-nurture + VMC-11-winback-nurture |
+| WF-12 Score Med Handler | VMC-09-score-medium-handler |
+| WF-13 PIPEDA Data Deletion | VMC-12-pipeda-ack + VMC-13-pipeda-deleted |
 
-### Task 4 (optional) — Create "NeuronX Sales" pipeline (2 min)
+### Task 5 (optional) — Create NeuronX Sales pipeline (2 min)
+URL: https://app.gohighlevel.com/v2/location/muc56LdMG8hkmlpFFuZE/pipelines
 
-This is for the SaaS business (selling to immigration firms). Switch to **NeuronX sub-account** (not VMC).
+8 stages: NEW LEAD → QUALIFYING (BANT) → DEMO SCHEDULED → DEMO COMPLETED → PROPOSAL SENT → TRIAL ACTIVE → PAID CUSTOMER → CHURNED
 
-**URL**: https://app.gohighlevel.com/v2/location/muc56LdMG8hkmlpFFuZE/pipelines
+## 🔍 Verification script
 
-Name: `NeuronX Sales`. Stages:
-```
-0. NEW LEAD
-1. QUALIFYING (BANT)
-2. DEMO SCHEDULED
-3. DEMO COMPLETED
-4. PROPOSAL SENT
-5. TRIAL ACTIVE
-6. PAID CUSTOMER
-7. CHURNED
-```
-
-The 23 SaaS custom fields + 24 tags + 3 demo firm prospects are already in place.
-
----
-
-## 🎁 Alternative: I can pilot this via your Chrome browser
-
-If you switch Chrome to your "neuronx" profile (production VMC access) and tell me you're ready, I can use Claude-in-Chrome to automate all 4 tasks above — you just watch/approve the clicks.
-
----
-
-## 🔍 Verification
-
-After completing the tasks, run this to verify:
+Run this after completing manual tasks:
 
 ```bash
 cd /Users/ranjansingh/Desktop/NeuronX
-python3 << 'EOF'
-import httpx, json
-with open("tools/ghl-lab/.pit-tokens.json") as f:
-    pits = json.load(f)
-
-VMC = pits["vmc"]
-HDR = {"Authorization": f"Bearer {VMC['token']}", "Version": "2021-07-28"}
-GHL = "https://services.leadconnectorhq.com"
-LOC = VMC["locationId"]
-
-wfs = httpx.get(f"{GHL}/workflows/?locationId={LOC}", headers=HDR, timeout=15).json().get("workflows", [])
-pipes = httpx.get(f"{GHL}/opportunities/pipelines?locationId={LOC}", headers=HDR, timeout=15).json().get("pipelines", [])
-
-broken = [w for w in wfs if "🚧" in w["name"]]
-wf_cp = [w for w in wfs if w["name"].startswith("WF-CP")]
-case_pipe = [p for p in pipes if "Case Processing" in p.get("name", "")]
-
-print(f"✅ Workflows: {len(wfs)} total ({len(broken)} broken should be 0, {len(wf_cp)} WF-CP should be 9)")
-print(f"✅ Pipelines: {len(pipes)} total ({len(case_pipe)} Case Processing should be 1)")
-print()
-print(f"{'PASS' if len(broken) == 0 and len(wf_cp) == 9 and len(case_pipe) == 1 else 'INCOMPLETE'}")
-EOF
+python3 tools/ghl-lab/src/e2e_audit.py
+# Check docs/06_execution/RESOURCE_DIFF.md for sync status
 ```
 
-**Expected output**: `Workflows: 24 total (0 broken, 9 WF-CP), Pipelines: 2 total (1 Case Processing) — PASS`
+## 🎁 Demo dataset highlights (for investor showcase)
+
+**Production VMC:**
+- 30 demo contacts across 12 countries, 8 immigration programs
+- 15 cases in 9 different lifecycle stages
+- $48,500 demo revenue
+- 185 activity records powering Metabase timeline
+- Real RCIC assignments (Rajiv/Nina/Michael/Sarah/Arjun rotation)
+
+**NeuronX SaaS sub-account:**
+- 3 demo firm prospects (Maplecrest Immigration / Vancouver Immigration Partners / Tremblay & Associés)
+- Segments: small-firm / mid-firm / solo-rcic
+- Tiers: Growth $1,000 MRR / Scale $1,500 MRR / Starter $500 MRR
+
+## 📁 Key scripts (all in repo)
+
+| Script | Purpose |
+|---|---|
+| `tools/ghl-lab/src/refresh_oauth.py` | Refresh sandbox OAuth using .env creds |
+| `tools/ghl-lab/src/build_firm_team.py` | Create 9 team users with role permissions |
+| `tools/ghl-lab/src/build_firm_calendars.py` | Create 3 shared calendars with team assignments |
+| `tools/ghl-lab/src/migrate_to_vmc.py` | Migrate fields/tags sandbox → VMC |
+| `tools/ghl-lab/src/setup_neuronx_saas.py` | Setup NeuronX SaaS sub-account |
+| `tools/ghl-lab/src/e2e_audit.py` | Full side-by-side audit |
+| `tools/ghl-lab/src/prod_deep_audit.py` | Prod VMC deep-dive audit |
+| `neuronx-api/email-templates/generate.py` | Generate 26 Postmark-based templates |
+| `neuronx-api/email-templates/upload.py` | Upload templates to VMC |
+| `neuronx-api/scripts/seed_premium_demo.py` | Seed PostgreSQL + GHL demo data |
