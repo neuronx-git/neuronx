@@ -241,6 +241,69 @@ class TestEdgeCases:
         # May return error dict if no DB, but should not 500
         assert r.status_code == 200
 
+    def test_negative_limit_rejected(self, client):
+        """Negative limit on /cases/list should return 422, not 500."""
+        r = client.get("/cases/list?limit=-1")
+        assert r.status_code == 422
+
+    def test_typebot_empty_body_rejected(self, client):
+        """Typebot webhook with no body should return 422, not 500."""
+        r = client.post("/typebot/webhook")
+        assert r.status_code == 422
+
+    def test_typebot_array_body_rejected(self, client):
+        """Typebot webhook with JSON array (not object) should return 422."""
+        r = client.post("/typebot/webhook", json=[1, 2, 3])
+        assert r.status_code == 422
+
+    def test_briefing_invalid_email_rejected(self, client):
+        """Briefing with invalid email format should return 422."""
+        r = client.post("/briefing/generate", json={
+            "contact_id": "test",
+            "appointment_id": "apt-1",
+            "consultant_email": "not-an-email",
+        })
+        assert r.status_code == 422
+
+    def test_briefing_empty_fields_rejected(self, client):
+        """Briefing with empty required strings should return 422."""
+        r = client.post("/briefing/generate", json={
+            "contact_id": "",
+            "appointment_id": "",
+            "consultant_email": "test@example.com",
+        })
+        assert r.status_code == 422
+
+    def test_briefing_invalid_delivery_method(self, client):
+        """Briefing with invalid delivery_method should return 422."""
+        r = client.post("/briefing/generate", json={
+            "contact_id": "test",
+            "appointment_id": "apt-1",
+            "consultant_email": "test@example.com",
+            "delivery_method": "carrier_pigeon",
+        })
+        assert r.status_code == 422
+
+    def test_dependent_invalid_relationship(self, client):
+        """Dependent with invalid relationship enum should return 422."""
+        r = client.post("/dependents/", json={
+            "case_id": "NX-TEST",
+            "contact_id": "c1",
+            "full_name": "Test",
+            "relationship": "pet",
+        })
+        assert r.status_code == 422
+
+    def test_dependent_empty_name(self, client):
+        """Dependent with empty full_name should return 422."""
+        r = client.post("/dependents/", json={
+            "case_id": "NX-TEST",
+            "contact_id": "c1",
+            "full_name": "",
+            "relationship": "spouse",
+        })
+        assert r.status_code == 422
+
 
 # ── Alternate Flows ───────────────────────────────────────────────────────
 

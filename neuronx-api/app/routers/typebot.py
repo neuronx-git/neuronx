@@ -106,7 +106,14 @@ async def typebot_webhook(request: Request):
     - Deduplication via resultId (prevents double-processing on webhook retry)
     - Email lookup returns error if >1 contact matches (prevents cross-contamination)
     """
-    payload = await request.json()
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=422, detail="Request body must be valid JSON")
+
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=422, detail="Request body must be a JSON object")
+
     logger.info("Typebot webhook received: %s", list(payload.keys()))
 
     # ── Submission deduplication (memory + DB backed) ──────────────────

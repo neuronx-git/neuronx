@@ -126,7 +126,7 @@ async def get_case(case_id: str):
 
 
 @router.get("/list")
-async def list_cases(stage: Optional[str] = Query(None), limit: int = Query(50, le=200)):
+async def list_cases(stage: Optional[str] = Query(None), limit: int = Query(50, ge=1, le=200)):
     """List cases, optionally filtered by stage."""
     if stage and stage not in ALL_STAGES:
         raise HTTPException(status_code=400, detail=f"Unknown stage '{stage}'. Valid: {ALL_STAGES}")
