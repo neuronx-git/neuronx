@@ -54,11 +54,63 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Adds OWASP-recommended security headers to every response."""
+    response = await call_next(request)
+    response.headers.setdefault("strict-transport-security", "max-age=31536000; includeSubDomains")
+    response.headers.setdefault("x-content-type-options", "nosniff")
+    response.headers.setdefault("x-frame-options", "DENY")
+    response.headers.setdefault("referrer-policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("permissions-policy", "geolocation=(), microphone=(), camera=()")
+    # CSP only for HTML responses (forms) to avoid breaking API JSON consumers
+    ct = response.headers.get("content-type", "")
+    if "text/html" in ct:
+        response.headers.setdefault(
+            "content-security-policy",
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.railway.app; "
+            "style-src 'self' 'unsafe-inline'; frame-src https://*.railway.app; "
+            "img-src 'self' data: https:; connect-src 'self' https://*.railway.app"
+        )
+    return response
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    """Simple per-IP rate limiter. 200 req/min default; webhooks exempted."""
+    # Exempt health checks and webhooks (webhooks have their own signature verification)
+    path = request.url.path
+    if path.startswith("/health") or path.startswith("/webhooks/") or path == "/":
+        return await call_next(request)
+
+    from collections import defaultdict
+    import time
+    if not hasattr(app.state, "_rate_buckets"):
+        app.state._rate_buckets = defaultdict(list)
+
+    ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    bucket = app.state._rate_buckets[ip]
+    # Keep only requests within the last 60 seconds
+    bucket[:] = [t for t in bucket if now - t < 60]
+
+    if len(bucket) >= 200:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Rate limit exceeded: 200 requests/minute"},
+            headers={"retry-after": "60"},
+        )
+    bucket.append(now)
+    return await call_next(request)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_methods=["POST", "GET", "PUT", "DELETE"],
-    allow_headers=["Authorization", "Content-Type", "X-GHL-Signature", "X-GHL-Timestamp", "X-Vapi-Signature"],
+    allow_methods=["POST", "GET", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "X-GHL-Signature", "X-GHL-Timestamp", "X-Vapi-Signature", "X-Admin-Key"],
 )
 
 # Routers
