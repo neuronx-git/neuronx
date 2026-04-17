@@ -1,7 +1,7 @@
 # NeuronX — Project Memory (Compact)
 
-**Last Updated**: 2026-04-16
-**Session**: Railway deploy fix + Typebot E2E audit + zero-gap form + GHL auto-refresh
+**Last Updated**: 2026-04-17
+**Session**: Sprint 5 v0.5.0 — Case lifecycle, Metabase dashboards, UAT+Schemathesis hardening, OWASP security headers
 
 ## Canon (Authority)
 
@@ -193,6 +193,35 @@ dependents, processed_webhooks, dead_letter_queue
 5. **Case initiation accepted invalid programs** — Now validates against programs.yaml.
 6. **5 programs had no IRCC forms** — Study, LMIA, PR Renewal, Citizenship, Visitor now have forms configured.
 7. **Case initiation response incomplete** — Now returns allowed_transitions + docs_required.
+
+### UAT + Schemathesis + Security Hardening (2026-04-17)
+**Tool-driven findings + fixes:**
+1. **Real production UAT (66 test cases across 12 categories)** — 65 PASS, 1 FAIL
+   - Found: `/cases/list?limit=-1` returned 500 instead of 422 → fixed with `ge=1` bound
+2. **Schemathesis API fuzzing (821 auto-generated test cases across 45 endpoints)** — 28 unique failures
+   - `/briefing/generate` leaked raw GHL internal errors → now proper 502 / sanitized 500
+   - `/briefing/generate` accepted any delivery_method → now `Literal["email_only", "note_only", "email_and_note"]`
+   - `/briefing/generate` accepted malformed email → now validates `@` + TLD
+   - `/dependents/` POST with FK violation returned 500 → now 404 with case-exists pre-check
+   - `/dependents/` UPDATE had SQL injection risk via model_dump keys → now whitelist of 7 allowed columns
+   - `/dependents/` accepted any relationship → now `Literal["spouse","child","parent","sibling","other"]`
+   - `/dependents/` accepted any docs_status → now `Literal["pending","partial","complete"]`
+   - `/dependents/` DELETE silently succeeded on missing ID → now 404 via rowcount check
+   - `/typebot/webhook` with no body returned 500 → now 422 (JSON parse try/except)
+   - `/typebot/webhook` with JSON array returned 500 → now 422 (dict type check)
+3. **Security scan** — 6 findings, all fixed:
+   - Missing HSTS → added (`max-age=31536000; includeSubDomains`)
+   - Missing X-Content-Type-Options → added (`nosniff`)
+   - Missing X-Frame-Options → added (`DENY`)
+   - Missing Referrer-Policy → added (`strict-origin-when-cross-origin`)
+   - Missing Permissions-Policy → added (disables geo/mic/camera)
+   - Added CSP for HTML responses (forms only, doesn't break API JSON consumers)
+   - slowapi rate limiter wasn't engaging → replaced with per-IP sliding-window middleware
+   - Fixed CORS: added PATCH method + X-Admin-Key header
+4. **Test coverage**: 788+ tests passing (was 743 at start of sprint)
+   - 31 E2E customer journey tests
+   - 23 case lifecycle tests (state machine)
+   - 8 new bug-regression tests from Schemathesis findings
 
 ### Metabase Dashboards (LIVE — 3 dashboards, 10 cards)
 | Dashboard | URL | Cards |
