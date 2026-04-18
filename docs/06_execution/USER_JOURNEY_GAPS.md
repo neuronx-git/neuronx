@@ -1,6 +1,6 @@
 # End-User Journey Audit — NeuronX / VMC
 
-Generated: 2026-04-17T12:27:34.382824Z
+Generated: 2026-04-17T12:40:51.780006Z
 
 
 ## The complete customer journey

@@ -1,6 +1,6 @@
 # NeuronX E2E Resource Sync Audit
 
-**Generated:** 2026-04-17T12:27:20.564529Z
+**Generated:** 2026-04-17T12:40:38.577710Z
 
 
 ## 🎯 Executive Summary
@@ -8,9 +8,9 @@
 | Resource | Sandbox | Prod VMC | Gap | Status |
 |---|---|---|---|---|
 | Custom Fields | 140 | 140 | 0 missing | ✅ |
-| Tags | 104 | 116 | 0 missing | ✅ |
+| Tags | 104 | 120 | 0 missing | ✅ |
 | Pipelines | 2 | 1 | 1 missing | ❌ |
-| Calendars | 3 | 1 | 3 missing | ⚠️ |
+| Calendars | 3 | 14 | 0 missing | ✅ |
 | Workflows | 24 | 18 | 9 missing, 3 broken | ❌ |
 | Forms | 2 | 1 | 1 missing | ⚠️ |
 | Emails | 11 | 33 | Production has +22 (new premium) | ✅ |
@@ -32,9 +32,9 @@
 
 | | Sandbox | VMC |
 |---|---|---|
-| Count | 104 | 116 |
+| Count | 104 | 120 |
 
-**Tags only in VMC (12):** `follow-up, high priority, nx:consult:completed, nx:consult:ready, nx:decision:approved, nx:decision:refused, nx:new, nx:no_show, nx:nurture, nx:urgent, nx:winback, warm lead`
+**Tags only in VMC (16):** `follow-up, high priority, nx:consult:completed, nx:consult:ready, nx:decision:approved, nx:decision:refused, nx:decision:withdrawn, nx:form_abandoned, nx:new, nx:no_show, nx:nurture, nx:referral_source, nx:testimonial:provided, nx:urgent, nx:winback, warm lead`
 
 ## 3. Pipelines
 
@@ -54,10 +54,8 @@
 **Sandbox (3):** 
 `VMC — Free Initial Assessment` (15min), `VMC — Paid Consultation` (30min), `VMC — Strategy Session (Complex Cases)` (60min)
 
-**VMC (1):** 
-`Immigration Consultations` (30min)
-
-⚠️ **Missing calendars in VMC:** VMC — Paid Consultation, VMC — Free Initial Assessment, VMC — Strategy Session (Complex Cases)
+**VMC (14):** 
+`DEMO - Rajiv Mehta's Personal Calendar` (30min), `VMC — Paid Consultation` (60min), `DEMO - Emily Brooks's Personal Calendar` (30min), `VMC — Free Initial Assessment` (15min), `DEMO - Nina Patel's Personal Calendar` (30min), `Immigration Consultations` (30min), `DEMO - Sarah Johnson's Personal Calendar` (30min), `DEMO - Kwame Mensah's Personal Calendar` (30min), `DEMO - Arjun Kapoor's Personal Calendar` (30min), `DEMO - Michael Chen's Personal Calendar` (30min), `DEMO - James Rodriguez's Personal Calendar` (30min), `VMC — Strategy Session (Complex Cases)` (90min), `Test UserDeleteMe's Personal Calendar` (30min), `DEMO - Priya Sharma's Personal Calendar` (30min)
 
 ## 5. Workflows
 

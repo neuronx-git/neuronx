@@ -1,6 +1,6 @@
 # Email Template → Workflow Mapping
 
-Generated: 2026-04-17T12:27:34.382155Z
+Generated: 2026-04-17T12:40:51.779203Z
 
 ## Proposed email assignments for each workflow
 
