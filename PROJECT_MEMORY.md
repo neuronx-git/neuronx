@@ -1,7 +1,38 @@
 # NeuronX — Project Memory (Compact)
 
-**Last Updated**: 2026-04-17 (evening)
-**Session**: Production GHL migration + premium email templates (Postmark-based) + best-in-class demo data
+**Last Updated**: 2026-04-18
+**Session**: Workflow API triple-check (confirmed impossible) + 26 templates re-rendered with VMC logo + linking guide written
+
+## Session 2026-04-18 — Workflow API triple-check + logo relaunch
+
+### What was done
+- **Triple-checked GHL workflow internals API** — confirmed `GET /workflows/{id}` does not exist per GHL's official OpenAPI spec (`highlevel-api-docs/apps/workflows.json`). Only `GET /workflows/` (list) exists, returning 7 metadata fields and nothing else. No detail endpoint, no export, no additional scope. Snapshot export returns `{id, name, type}` only. Evidence in `docs/06_execution/WORKFLOW_API_DISCOVERY.md`.
+- **P0 #2 done**: `POST /users/sync-from-ghl` → `{fetched: 10, created: 0, updated: 10}`. 10 VMC users confirmed in PostgreSQL.
+- **Fixed `neuronx-api/email-templates/generate.py`** — replacement regex now matches the actual Postmark base HTML pattern (`<a href="https://example.com" class="f-fallback email-masthead_name"...>[Product Name]</a>`). Previous version's `<span>`-wrapper regex didn't match anything, so the logo had never been embedded despite the Railway static asset + generator being in place.
+- **Re-rendered all 26 templates** — all 26 now contain `<img src=".../vmc-logo.png" width="160" ...>` in the masthead. Verified via grep: 26/26.
+- **Re-uploaded to GHL via `reupload_with_logo.py`** — `UPDATED: 26, SKIPPED: 0, FAILED: 0`. All 26 WF-* templates in VMC Email Builder now have the logo.
+- **Wrote founder linking guide** — `docs/06_execution/WORKFLOW_TEMPLATE_LINKING.md`. Maps 24 workflows to 29 Send Email actions → 26 templates. Includes direct-click URLs, step-by-step UI procedure, smoke test, merge tag catalog, troubleshooting.
+- **Chose Path C (AI-regenerated copy)** over Path A (Claude-in-Chrome scrape) — the existing Postmark-based premium copy is higher quality than likely raw inline text in current workflows, and unblocks investor demo today.
+
+### What was decided
+- **No more hunting for workflow action API** — case closed. The only programmatic route is Playwright/Claude-in-Chrome against the internal `backend.leadconnectorhq.com` host using a browser-session JWT. Not worth building; linking 24 workflows via UI is 30 min.
+- **Keep existing Postmark template copy** — do not regenerate from scratch. They already have good subjects, merge tags, preheaders, CTAs. Only fix was embedding the logo image.
+
+### Still pending (P0 from PRODUCTION_READINESS.md)
+- #3: Add PIPEDA disclosure to VAPI `firstMessage` (founder UI, 10 min)
+- #4: Fix stale analytics pipeline ID in `/analytics/pipeline` (me, 15 min)
+- #7: Ranjan works through `WORKFLOW_TEMPLATE_LINKING.md` to link 29 Send Email actions → 26 templates (founder UI, 30 min)
+
+### Next session should start with
+Asking founder whether to proceed with P0 #4 (analytics pipeline ID — pure code fix, no human handoff) while they work on linking + PIPEDA in GHL UI.
+
+## Key files added this session
+- `docs/06_execution/WORKFLOW_API_DISCOVERY.md` — verdict doc for future agents (don't re-probe)
+- `docs/06_execution/WORKFLOW_TEMPLATE_LINKING.md` — founder UI walkthrough
+- `neuronx-api/email-templates/generate.py` (edited) — logo regex now correct
+
+---
+
 
 ## PRODUCTION GHL (NEW AGENCY — 2026-04-17)
 - **Agency company**: `qKxHWhSxcGxcW3YycTui` (replaces sandbox `1H22jRUQWbxzaCaacZjO`)

@@ -49,12 +49,18 @@ def customize_branding(html: str) -> str:
     html = html.replace("#3869D4", "#E8380D")
     # Button hover/border color (Postmark uses the same blue)
     html = html.replace("3869d4", "e8380d")  # lowercase variant
-    # Product name — swap wordmark for actual logo image at top (centered)
-    html = html.replace(
-        '<span class="f-fallback"><a href="https://example.com" class="f-fallback email-masthead_name">[Product Name]</a></span>',
+    # Masthead: replace the Postmark wordmark <a> element with the VMC logo <img>.
+    # Base HTML emits:
+    #   <a href="https://example.com" class="f-fallback email-masthead_name" style="...">
+    #     [Product Name]
+    #   </a>
+    html = re.sub(
+        r'<a\s+href="https://example\.com"\s+class="f-fallback email-masthead_name"[^>]*>\s*\[Product Name\]\s*</a>',
         VMC_LOGO_HTML,
+        html,
+        flags=re.DOTALL,
     )
-    # Also replace any remaining [Product Name] references inline
+    # Catch any stragglers that didn't match the href attribute exactly.
     html = html.replace("[Product Name]", "Visa Master Canada")
     html = html.replace("[Product]", "Visa Master Canada")
     html = html.replace("Product Name", "Visa Master Canada")

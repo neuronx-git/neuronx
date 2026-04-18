@@ -5,7 +5,7 @@
     "preheader": "Our AI-assisted intake will call you in 5-15 minutes.",
     "category": "INQUIRY RECEIVED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/01-inquiry-received.html",
-    "size": 16916
+    "size": 16880
   },
   {
     "slug": "02-outreach-attempt",
@@ -13,7 +13,7 @@
     "preheader": "Pick a time that works. A licensed RCIC is holding your file.",
     "category": "FOLLOW-UP",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/02-outreach-attempt.html",
-    "size": 16895
+    "size": 16859
   },
   {
     "slug": "03-invite-booking",
@@ -21,7 +21,7 @@
     "preheader": "A licensed RCIC is ready to discuss your case.",
     "category": "ACTION REQUIRED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/03-invite-booking.html",
-    "size": 16913
+    "size": 16877
   },
   {
     "slug": "04-consultation-confirmed",
@@ -29,7 +29,7 @@
     "preheader": "Your immigration consultation is booked.",
     "category": "BOOKING CONFIRMED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/04-consultation-confirmed.html",
-    "size": 16884
+    "size": 16848
   },
   {
     "slug": "05-consultation-reminder",
@@ -37,7 +37,7 @@
     "preheader": "Your immigration consultation is tomorrow.",
     "category": "REMINDER",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/05-consultation-reminder.html",
-    "size": 16903
+    "size": 16867
   },
   {
     "slug": "06-noshow-recovery",
@@ -45,7 +45,7 @@
     "preheader": "Quick 30-second rescheduling link.",
     "category": "MISSED APPOINTMENT",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/06-noshow-recovery.html",
-    "size": 16853
+    "size": 16817
   },
   {
     "slug": "07-retainer-proposal",
@@ -53,7 +53,7 @@
     "preheader": "Review and sign your retainer agreement.",
     "category": "PROPOSAL",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/07-retainer-proposal.html",
-    "size": 16906
+    "size": 16870
   },
   {
     "slug": "08-retainer-followup",
@@ -61,7 +61,7 @@
     "preheader": "I'm here to answer any questions about the retainer.",
     "category": "FOLLOW-UP",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/08-retainer-followup.html",
-    "size": 16870
+    "size": 16834
   },
   {
     "slug": "09-score-medium-handler",
@@ -69,7 +69,7 @@
     "preheader": "Strong potential, some prep needed.",
     "category": "ROADMAP",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/09-score-medium-handler.html",
-    "size": 16906
+    "size": 16870
   },
   {
     "slug": "10-monthly-nurture",
@@ -77,7 +77,7 @@
     "preheader": "This month's IRCC changes, program spotlight, and one tip.",
     "category": "MONTHLY UPDATE",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/10-monthly-nurture.html",
-    "size": 20714
+    "size": 20678
   },
   {
     "slug": "11-winback-nurture",
@@ -85,7 +85,7 @@
     "preheader": "CRS cutoffs at multi-year lows. Worth a fresh look?",
     "category": "RECONNECT",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/11-winback-nurture.html",
-    "size": 16912
+    "size": 16876
   },
   {
     "slug": "12-pipeda-ack",
@@ -93,7 +93,7 @@
     "preheader": "Your PIPEDA request is being processed.",
     "category": "PRIVACY",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/12-pipeda-ack.html",
-    "size": 20703
+    "size": 20667
   },
   {
     "slug": "13-pipeda-deleted",
@@ -101,7 +101,7 @@
     "preheader": "PIPEDA deletion complete.",
     "category": "PRIVACY",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/13-pipeda-deleted.html",
-    "size": 20717
+    "size": 20681
   },
   {
     "slug": "14-complex-case-alert",
@@ -109,7 +109,7 @@
     "preheader": "Internal alert: complex case.",
     "category": "INTERNAL ALERT",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/14-complex-case-alert.html",
-    "size": 20702
+    "size": 20666
   },
   {
     "slug": "15-case-onboarding",
@@ -117,7 +117,7 @@
     "preheader": "Your retainer is signed. Here's what happens next.",
     "category": "CASE OPEN",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/15-case-onboarding.html",
-    "size": 16910
+    "size": 16874
   },
   {
     "slug": "16-cp-docs-reminder",
@@ -125,7 +125,7 @@
     "preheader": "Document deadline reminder.",
     "category": "DOCS PENDING",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/16-cp-docs-reminder.html",
-    "size": 16893
+    "size": 16857
   },
   {
     "slug": "17-cp-form-prep",
@@ -133,7 +133,7 @@
     "preheader": "All docs received. Your RCIC is preparing your IRCC forms.",
     "category": "IN PREPARATION",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/17-cp-form-prep.html",
-    "size": 20695
+    "size": 20659
   },
   {
     "slug": "18-cp-internal-review",
@@ -141,7 +141,7 @@
     "preheader": "3-step QA in progress.",
     "category": "QUALITY REVIEW",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/18-cp-internal-review.html",
-    "size": 20720
+    "size": 20684
   },
   {
     "slug": "19-cp-submitted",
@@ -149,7 +149,7 @@
     "preheader": "Application submitted to IRCC.",
     "category": "MILESTONE",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/19-cp-submitted.html",
-    "size": 20727
+    "size": 20691
   },
   {
     "slug": "20-cp-status-update",
@@ -157,7 +157,7 @@
     "preheader": "Monthly status check.",
     "category": "STATUS UPDATE",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/20-cp-status-update.html",
-    "size": 20698
+    "size": 20662
   },
   {
     "slug": "21-cp-rfi",
@@ -165,7 +165,7 @@
     "preheader": "RFI received. Schedule a call.",
     "category": "URGENT - RFI",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/21-cp-rfi.html",
-    "size": 16890
+    "size": 16854
   },
   {
     "slug": "22-cp-decision-approved",
@@ -173,7 +173,7 @@
     "preheader": "IRCC approved your application.",
     "category": "APPROVED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/22-cp-decision-approved.html",
-    "size": 16890
+    "size": 16854
   },
   {
     "slug": "23-cp-decision-refused",
@@ -181,7 +181,7 @@
     "preheader": "Application refused. We have options.",
     "category": "DECISION RECEIVED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/23-cp-decision-refused.html",
-    "size": 16879
+    "size": 16843
   },
   {
     "slug": "24-cp-decision-withdrawn",
@@ -189,7 +189,7 @@
     "preheader": "Withdrawal processed.",
     "category": "WITHDRAWN",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/24-cp-decision-withdrawn.html",
-    "size": 20699
+    "size": 20663
   },
   {
     "slug": "25-cp-case-closed",
@@ -197,7 +197,7 @@
     "preheader": "Case archive + how we can help again.",
     "category": "CASE CLOSED",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/25-cp-case-closed.html",
-    "size": 16888
+    "size": 16852
   },
   {
     "slug": "26-missed-ai-call",
@@ -205,6 +205,6 @@
     "preheader": "5-minute readiness check missed.",
     "category": "RESCHEDULE",
     "path": "/Users/ranjansingh/Desktop/NeuronX/neuronx-api/email-templates/rendered/26-missed-ai-call.html",
-    "size": 16910
+    "size": 16874
   }
 ]

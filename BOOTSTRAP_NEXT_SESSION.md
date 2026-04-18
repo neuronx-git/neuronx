@@ -2,7 +2,7 @@
 
 **Copy EVERYTHING below as your first message to a fresh Claude Code session.**
 
-**Last updated:** 2026-04-18 (after PM sprint — 4-agent parallel research + 2 P0 bug fixes deployed)
+**Last updated:** 2026-04-18 (evening — workflow API triple-check confirmed impossible; 26 templates re-rendered with VMC logo + uploaded; linking guide ready for founder)
 
 ---
 
@@ -98,13 +98,13 @@ cebf755  feat: case documents viewer UI
 
 ### 🔴 P0 — THIS WEEK (investor-demo blockers)
 
-1. **Verify P0 bugs deployed** — `/cases/list` 200 + Typebot creates new contact (commit `4462ef6`)
-2. **Run `POST /users/sync-from-ghl`** with `X-Admin-Key: neuronx-admin-dev` to populate users table from GHL roster
-3. **Add PIPEDA disclosure** to VAPI `firstMessage` (compliance)
-4. **Fix stale analytics pipeline ID** in `/analytics/pipeline` (Journey 7 demo)
-5. **Extract workflow email text** via Claude-in-Chrome (founder switches Chrome to "Work" profile, agent drives)
-6. **Rebuild 26 templates** with founder's actual text + VMC logo + Postmark base
-7. **Link 26 templates to 24 GHL workflow Send Email actions** (currently inline text)
+1. ✅ **Verify P0 bugs deployed** — `/cases/list` 200 + Typebot creates new contact (commit `4462ef6`). Confirmed 2026-04-18.
+2. ✅ **Run `POST /users/sync-from-ghl`** — done 2026-04-18, `{fetched: 10, created: 0, updated: 10}`.
+3. **Add PIPEDA disclosure** to VAPI `firstMessage` (compliance — founder UI)
+4. **Fix stale analytics pipeline ID** in `/analytics/pipeline` (Journey 7 demo — me, code only)
+5. ✅ ~~Extract workflow email text via Claude-in-Chrome~~ — **cancelled**. Chose Path C. See `WORKFLOW_API_DISCOVERY.md` for why API can't do it; Path C (keep premium Postmark copy) is better for investor demo anyway.
+6. ✅ **26 templates rebuilt with VMC logo** — re-rendered + re-uploaded 2026-04-18. All 26 have `vmc-logo.png` in masthead.
+7. **Link 26 templates to 24 workflow Send Email actions** — guide at `docs/06_execution/WORKFLOW_TEMPLATE_LINKING.md`. Founder UI, ~30 min across 29 Send Email actions.
 
 ### 🟡 P1 — NEXT 2 WEEKS (pilot-customer ready)
 
