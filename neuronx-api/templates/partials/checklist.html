@@ -1,0 +1,42 @@
+<div class="bg-white rounded-xl border border-slate-200 p-5 sticky top-24">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Checklist</h2>
+    <span class="text-xs text-slate-400">{{ stats.required_received }}/{{ stats.required_total }} required</span>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="mb-4">
+    <div class="flex items-center justify-between mb-1.5">
+      <span class="text-xs text-slate-600">{{ stats.progress_pct }}% complete</span>
+    </div>
+    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div class="h-full bg-brand-orange transition-all" style="width: {{ stats.progress_pct }}%"></div>
+    </div>
+  </div>
+
+  <ul class="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
+    {% for item in checklist %}
+    <li class="flex items-start gap-2 text-sm {% if not item.required %}opacity-75{% endif %}">
+      {% if item.received %}
+        <span class="flex-shrink-0 mt-0.5 h-4 w-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </span>
+      {% else %}
+        <span class="flex-shrink-0 mt-0.5 h-4 w-4 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-bold">!</span>
+      {% endif %}
+      <div class="min-w-0 flex-1">
+        <div class="text-slate-800 leading-snug">
+          {{ item.name }}
+          {% if not item.required %}<span class="text-[10px] text-slate-400 ml-1">optional</span>{% endif %}
+        </div>
+        {% if item.received and item.filename %}
+          <div class="text-[11px] text-emerald-700 mt-0.5 truncate">✓ {{ item.filename }}</div>
+        {% elif not item.received %}
+          <button data-request-doc="{{ item.name }}"
+                  class="text-[11px] text-brand-orange hover:text-brand-orange2 mt-0.5">Request via email</button>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

@@ -18,7 +18,7 @@ from slowapi.errors import RateLimitExceeded
 import logging
 import os
 
-from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract, users
+from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract, users, case_viewer
 from app.config import settings
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
@@ -69,9 +69,13 @@ async def add_security_headers(request: Request, call_next):
     if "text/html" in ct:
         response.headers.setdefault(
             "content-security-policy",
-            "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.railway.app; "
-            "style-src 'self' 'unsafe-inline'; frame-src https://*.railway.app; "
-            "img-src 'self' data: https:; connect-src 'self' https://*.railway.app"
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://*.railway.app https://cdn.tailwindcss.com; "
+            "style-src 'self' 'unsafe-inline' https://rsms.me; "
+            "font-src 'self' https://rsms.me data:; "
+            "frame-src https://*.railway.app 'self'; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self' https://*.railway.app"
         )
     return response
 
@@ -121,6 +125,7 @@ app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 app.include_router(trust.router, prefix="/trust", tags=["Trust Boundary"])
 app.include_router(documents.router, prefix="/documents", tags=["Document Generation"])
 app.include_router(cases.router, prefix="/cases", tags=["Case Processing"])
+app.include_router(case_viewer.router, prefix="/cases", tags=["Case Viewer (UI)"])
 app.include_router(sync.router, prefix="/sync", tags=["Data Sync"])
 app.include_router(signatures.router, prefix="/signatures", tags=["E-Signatures"])
 app.include_router(demo.router, prefix="/demo", tags=["Demo Data"])

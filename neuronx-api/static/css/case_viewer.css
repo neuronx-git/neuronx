@@ -1,0 +1,23 @@
+/* Case Viewer — custom styles layered on top of Tailwind CDN */
+@import url('https://rsms.me/inter/inter.css');
+
+html { font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'; }
+
+/* Subtle scrollbars in timeline / checklist */
+#timeline-list::-webkit-scrollbar,
+.checklist-scroll::-webkit-scrollbar { width: 6px; }
+#timeline-list::-webkit-scrollbar-thumb,
+.checklist-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+/* Smooth doc-card hover lift */
+article { transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+article:hover { transform: translateY(-1px); }
+
+/* Preview modal shown state (toggled by JS) */
+#preview-modal.open { display: flex; }
+
+/* Print-friendly */
+@media print {
+  header, .fixed, button, [data-copy-link], #preview-modal { display: none !important; }
+  main { padding: 0 !important; }
+}

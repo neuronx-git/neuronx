@@ -14,11 +14,21 @@ GET  /cases/status         — Client-facing case status
 GET  /cases/onboarding-url — Generate pre-filled onboarding URL from Phase 1 data
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from typing import Optional
 from urllib.parse import urlencode, quote_plus
 import logging
+import os
+
+
+def _viewer_url(case_id: str, request: Optional[Request] = None) -> str:
+    """Build the absolute URL for the case viewer UI. Falls back to
+    CASE_VIEWER_BASE_URL env var (production) or a relative path."""
+    base = os.getenv("CASE_VIEWER_BASE_URL", "").rstrip("/")
+    if not base and request is not None:
+        base = str(request.base_url).rstrip("/")
+    return f"{base}/cases/{case_id}/viewer" if base else f"/cases/{case_id}/viewer"
 
 from app.services.ghl_client import GHLClient
 from app.services.case_service import CaseService, ALL_STAGES, VALID_TRANSITIONS
@@ -124,12 +134,14 @@ async def update_case_status(case_id: str, payload: CaseStatusUpdate):
 
 
 @router.get("/by-id/{case_id}")
-async def get_case(case_id: str):
+async def get_case(case_id: str, request: Request):
     """Get full case details by case_id (NX-YYYYMMDD-XXXXXXXX)."""
     service = CaseService()
     case = await service.get_case_by_id(case_id)
     if not case:
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+    # Deep-link for Chrome extension + GHL workflows to open the RCIC viewer
+    case["case_viewer_url"] = _viewer_url(case_id, request)
     return case
 
 
