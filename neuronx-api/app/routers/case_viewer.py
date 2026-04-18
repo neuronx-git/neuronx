@@ -256,18 +256,16 @@ def _demo_activities(case: dict) -> list[dict]:
 async def case_viewer(request: Request, case_id: str):
     """Full case viewer — header, timeline, documents, checklist, stats."""
     ctx = await _load_case_context(case_id)
-    ctx["request"] = request
     ctx["view_mode"] = "full"
-    return templates.TemplateResponse("case_viewer.html", ctx)
+    return templates.TemplateResponse(request=request, name="case_viewer.html", context=ctx)
 
 
 @router.get("/{case_id}/documents/viewer", response_class=HTMLResponse)
 async def documents_viewer(request: Request, case_id: str):
     """Document-gallery-only view (embedded in modals etc.)."""
     ctx = await _load_case_context(case_id)
-    ctx["request"] = request
     ctx["view_mode"] = "documents"
-    return templates.TemplateResponse("case_viewer.html", ctx)
+    return templates.TemplateResponse(request=request, name="case_viewer.html", context=ctx)
 
 
 @router.get("/{case_id}/viewer/data")
