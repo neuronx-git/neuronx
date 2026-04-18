@@ -32,13 +32,29 @@ POSTMARK_WELCOME = (BASE_DIR / "postmark-base.html").read_text()
 POSTMARK_ACTION = (BASE_DIR / "postmark-action-base.html").read_text()
 
 
+# VMC logo — served from Railway static + CDN-mirrored
+# Width 160px renders crisp at 2x DPI (Retina); natural size 785×318
+VMC_LOGO_URL = "https://neuronx-production-62f9.up.railway.app/static/vmc-logo.png"
+VMC_LOGO_HTML = (
+    '<img src="' + VMC_LOGO_URL + '" '
+    'alt="Visa Master Canada" '
+    'width="160" '
+    'style="width:160px;max-width:160px;height:auto;display:block;margin:0 auto 8px;" />'
+)
+
+
 def customize_branding(html: str) -> str:
     """Replace Postmark branding with VMC branding — minimal changes, proven structure."""
     # Brand color: Postmark blue → VMC red (primary CTA color)
     html = html.replace("#3869D4", "#E8380D")
     # Button hover/border color (Postmark uses the same blue)
     html = html.replace("3869d4", "e8380d")  # lowercase variant
-    # Product name
+    # Product name — swap wordmark for actual logo image at top (centered)
+    html = html.replace(
+        '<span class="f-fallback"><a href="https://example.com" class="f-fallback email-masthead_name">[Product Name]</a></span>',
+        VMC_LOGO_HTML,
+    )
+    # Also replace any remaining [Product Name] references inline
     html = html.replace("[Product Name]", "Visa Master Canada")
     html = html.replace("[Product]", "Visa Master Canada")
     html = html.replace("Product Name", "Visa Master Canada")
