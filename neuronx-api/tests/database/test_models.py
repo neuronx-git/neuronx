@@ -108,12 +108,31 @@ def _create_tables_sqlite(conn):
     )
 
     Table(
+        "users", meta,
+        Column("id", String(50), primary_key=True),
+        Column("email", String(255)),
+        Column("first_name", String(100), default=""),
+        Column("last_name", String(100), default=""),
+        Column("full_name", String(200), default=""),
+        Column("phone", String(50), default=""),
+        Column("role", String(30), default="user"),
+        Column("rcic_license", String(20), default=""),
+        Column("is_active", Boolean, default=True),
+        Column("max_concurrent_cases", Integer, default=30),
+        Column("hire_date", DateTime(timezone=True), nullable=True),
+        Column("ghl_user_id", String(50)),
+        Column("synced_at", DateTime(timezone=True)),
+        Column("created_at", DateTime(timezone=True)),
+    )
+
+    Table(
         "cases", meta,
         Column("id", Integer, primary_key=True, autoincrement=True),
         Column("case_id", String(50), unique=True),
         Column("contact_id", String(50), ForeignKey("contacts.id")),
         Column("program_type", String(100)),
-        Column("assigned_rcic", String(100), default="Unassigned"),
+        Column("assigned_rcic_id", String(50), ForeignKey("users.id"), nullable=True),
+        Column("assigned_rcic_name", String(100), default="Unassigned"),
         Column("stage", String(50), default="onboarding"),
         Column("complexity", String(20), default="Standard"),
         Column("ircc_receipt_number", String(50), default=""),
@@ -212,15 +231,15 @@ async def db_session(db_engine):
 # ---------------------------------------------------------------------------
 
 class TestTableCreation:
-    """Verify all 9 model classes create tables without error."""
+    """Verify all 10 model classes create tables without error."""
 
     @pytest.mark.asyncio
     async def test_all_tables_created(self, db_engine):
-        """All 9 expected tables exist after create_all."""
+        """All 10 expected tables exist after create_all."""
         expected = {
             "contacts", "opportunities", "cases", "activities",
             "signatures", "dependents", "processed_webhooks",
-            "dead_letter_queue", "sync_log",
+            "dead_letter_queue", "sync_log", "users",
         }
 
         async with db_engine.connect() as conn:
@@ -250,9 +269,10 @@ class TestTableCreation:
 
     @pytest.mark.asyncio
     async def test_cases_table_columns(self, db_engine):
-        """cases table has all IRCC tracking columns."""
+        """cases table has all IRCC tracking columns + FK to users."""
         expected_cols = {
             "id", "case_id", "contact_id", "program_type",
+            "assigned_rcic_id", "assigned_rcic_name",
             "stage", "ircc_receipt_number", "ircc_decision",
         }
 
@@ -508,7 +528,7 @@ class TestCaseModel:
         case_id = "NX-20260413-ABCD1234"
         await db_session.execute(
             text(
-                "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic, "
+                "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic_name, "
                 "stage, ircc_decision, created_at) "
                 "VALUES (:cid, :contact, :prog, :rcic, :stage, :decision, :created)"
             ),
