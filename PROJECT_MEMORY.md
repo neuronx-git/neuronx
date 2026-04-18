@@ -3,6 +3,26 @@
 **Last Updated**: 2026-04-18
 **Session**: Workflow API triple-check (confirmed impossible) + 26 templates re-rendered with VMC logo + linking guide written
 
+## Session 2026-04-18 — Master production audit (+workflow API + logo + $297 context)
+
+### ⚠️ GHL Plan reality (corrected 2026-04-18 evening)
+- **Live agency (qKxHWhSxcGxcW3YycTui / VMC location vb8iWAwoLi2uT3s5v1OW) is on $297 plan** (NOT $497 SaaS Pro as STRIPE_SAAS_PRICING.md assumed)
+- **Sandbox agency (1H22jRUQWbxzaCaacZjO / location FlRL82M0D6nclmKT7eXH) was $497 SaaS Pro** — where all 26 templates + workflows + snapshot were originally built
+- **Implication**: $297 tier lacks GHL SaaS Configurator (rebill-with-markup). Two paths:
+  - **Path A (recommended)**: Stripe direct billing, manual/API sub-account provisioning, upgrade to $497 only when 3+ paid firms
+  - **Path B**: Upgrade to $497 now (+$200/mo) for native SaaS Configurator + auto-provisioning
+- **Snapshot was taken from the $497 sandbox** and migrated to the $297 live — that's why templates/workflows exist despite tier mismatch
+
+### Master Production Audit completed (docs/06_execution/MASTER_PRODUCTION_AUDIT_2026-04-18.md)
+- 6 parallel expert sub-agents: UX, Security, Code, Architecture, DevOps, Perf
+- Verdict: investor-demo-ready after P0 fixes; NOT paid-customer-ready
+- 🔴 3 P0 SECURITY bugs found: (a) real VAPI/Anthropic/Skyvern/Vercel/GitHub tokens in committed .env.example (b) /clients/* endpoints have no auth (IDOR — passport + DOB + settlement funds exposed by contact_id guess) (c) admin key falls back to literal "neuronx-admin-dev" if env var unset
+- 🔴 3 P0 COMPLIANCE bugs: no PIPEDA deletion job, 26 templates lack CASL unsubscribe link, VAPI firstMessage lacks disclosure
+- 🔴 2 P0 DEMO blockers: stale pipeline_id (returns 0 opps), case viewer shows fake Priya Sharma data on missing case IDs
+- 🟡 P1: no tenant isolation at API layer (blocks firm #2), no Alembic migrations (create_all only), 141 rate-limited test failures, no Sentry, no structured logging, no staging env
+- Test/coverage reality: **876 tests (claim was 788), 79.4% coverage (claim was 77%)** — better than claimed
+- Latency: all endpoints <1s p50 including network; no N+1 found
+
 ## Session 2026-04-18 — Workflow API triple-check + logo relaunch
 
 ### What was done
