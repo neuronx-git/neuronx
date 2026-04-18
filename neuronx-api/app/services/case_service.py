@@ -197,6 +197,22 @@ class CaseService:
 
         logger.info("Case %s transitioned: %s → %s", case_id, old_stage, new_stage)
 
+        # Refetch case with user for response (session is closed above)
+        assigned_user_payload = None
+        try:
+            from app.models.db_models import User
+            from sqlalchemy import select
+            async with database.async_session_factory() as s2:
+                if case.assigned_rcic_id:
+                    r = await s2.execute(select(User).where(User.id == case.assigned_rcic_id))
+                    u = r.scalar_one_or_none()
+                    if u:
+                        assigned_user_payload = {
+                            "id": u.id, "full_name": u.full_name, "role": u.role,
+                        }
+        except Exception:  # pragma: no cover
+            pass
+
         return {
             "case_id": case_id,
             "contact_id": contact_id,
@@ -204,6 +220,8 @@ class CaseService:
             "new_stage": new_stage,
             "tag_added": tag,
             "allowed_next": sorted(VALID_TRANSITIONS.get(new_stage, set())),
+            "assigned_rcic_id": case.assigned_rcic_id,
+            "assigned_user": assigned_user_payload,
         }
 
     async def get_case_by_id(self, case_id: str) -> Optional[dict]:
@@ -227,7 +245,18 @@ class CaseService:
                 "case_id": case.case_id,
                 "contact_id": case.contact_id,
                 "program_type": case.program_type,
-                "assigned_rcic": case.assigned_rcic,
+                "assigned_rcic": case.assigned_rcic_name,  # legacy display
+                "assigned_rcic_id": case.assigned_rcic_id,
+                "assigned_user": (
+                    {
+                        "id": case.assigned_user.id,
+                        "full_name": case.assigned_user.full_name,
+                        "email": case.assigned_user.email,
+                        "role": case.assigned_user.role,
+                    }
+                    if case.assigned_user
+                    else None
+                ),
                 "stage": case.stage,
                 "complexity": case.complexity,
                 "ircc_receipt_number": case.ircc_receipt_number,
@@ -262,7 +291,17 @@ class CaseService:
                     "case_id": c.case_id,
                     "contact_id": c.contact_id,
                     "program_type": c.program_type,
-                    "assigned_rcic": c.assigned_rcic,
+                    "assigned_rcic": c.assigned_rcic_name,  # legacy display
+                    "assigned_rcic_id": c.assigned_rcic_id,
+                    "assigned_user": (
+                        {
+                            "id": c.assigned_user.id,
+                            "full_name": c.assigned_user.full_name,
+                            "role": c.assigned_user.role,
+                        }
+                        if c.assigned_user
+                        else None
+                    ),
                     "stage": c.stage,
                     "retainer_value": c.retainer_value,
                     "created_at": c.created_at.isoformat() if c.created_at else None,
@@ -270,18 +309,53 @@ class CaseService:
                 for c in cases
             ]
 
-    async def initiate_case(self, contact_id: str, program_type: str, assigned_rcic: str) -> dict:
+    async def initiate_case(
+        self,
+        contact_id: str,
+        program_type: str,
+        assigned_rcic: Optional[str] = None,
+        assigned_rcic_id: Optional[str] = None,
+    ) -> dict:
         """
         Start a new case after retainer is signed.
-        1. Persists case to PostgreSQL (authoritative for case lifecycle)
-        2. Syncs to GHL (custom fields + tags + note)
-        3. Logs activity + compliance event
+
+        Accepts EITHER ``assigned_rcic_id`` (preferred — GHL user id, becomes
+        the FK) OR ``assigned_rcic`` (legacy display name; resolved against
+        the users table via fuzzy match). When both are given, the id wins.
         """
         # Validate program_type against config
         programs = _load_programs_config()
         valid_programs = [name.lower() for name in programs.keys()]
         if program_type.lower() not in valid_programs:
             return {"error": f"Unknown program_type '{program_type}'. Valid: {list(programs.keys())}"}
+
+        # ── Resolve RCIC: user_id (FK) + display name ──────────────────────
+        resolved_user = None
+        assigned_name = assigned_rcic or "Unassigned"
+        resolved_user_id = assigned_rcic_id
+        try:
+            from app import database as _db
+            if _db.async_session_factory:
+                from app.models.db_models import User
+                from sqlalchemy import select
+
+                async with _db.async_session_factory() as _s:
+                    if assigned_rcic_id:
+                        r = await _s.execute(select(User).where(User.id == assigned_rcic_id))
+                        resolved_user = r.scalar_one_or_none()
+                    if resolved_user is None and assigned_rcic:
+                        # Fuzzy-match legacy name
+                        from app.services.user_sync_service import UserSyncService
+                        match = await UserSyncService().resolve_by_name(assigned_rcic)
+                        if match:
+                            r = await _s.execute(select(User).where(User.id == match["id"]))
+                            resolved_user = r.scalar_one_or_none()
+
+                    if resolved_user:
+                        resolved_user_id = resolved_user.id
+                        assigned_name = resolved_user.full_name or assigned_name
+        except Exception as e:  # pragma: no cover
+            logger.warning("User resolution skipped for case init: %s", e)
 
         ghl = GHLClient()
         now = datetime.now(tz=timezone.utc)
@@ -309,7 +383,8 @@ class CaseService:
                         case_id=case_id,
                         contact_id=contact_id,
                         program_type=program_type,
-                        assigned_rcic=assigned_rcic,
+                        assigned_rcic_id=resolved_user_id,
+                        assigned_rcic_name=assigned_name,
                         stage="onboarding",
                         complexity="Standard",
                         ircc_decision="Pending",
@@ -323,11 +398,12 @@ class CaseService:
                     activity = Activity(
                         contact_id=contact_id,
                         activity_type="case_initiated",
-                        detail=f"Case {case_id} created — {program_type} — RCIC: {assigned_rcic}",
+                        detail=f"Case {case_id} created — {program_type} — RCIC: {assigned_name}",
                         metadata_json={
                             "case_id": case_id,
                             "program_type": program_type,
-                            "assigned_rcic": assigned_rcic,
+                            "assigned_rcic": assigned_name,
+                            "assigned_rcic_id": resolved_user_id,
                         },
                     )
                     session.add(activity)
@@ -341,7 +417,7 @@ class CaseService:
             await ghl.update_custom_fields(contact_id, {
                 "case_id": case_id,
                 "case_program_type": program_type,
-                "case_assigned_rcic": assigned_rcic,
+                "case_assigned_rcic": assigned_name,
                 "case_assigned_at": now.strftime("%Y-%m-%d"),
                 "case_deadline_date": deadline.strftime("%Y-%m-%d"),
                 "case_deadline_type": "Doc Collection",
@@ -358,7 +434,7 @@ class CaseService:
                 f"CASE INITIATED — {case_id}\n"
                 f"{'=' * 40}\n"
                 f"Program: {program_type}\n"
-                f"Assigned RCIC: {assigned_rcic}\n"
+                f"Assigned RCIC: {assigned_name}\n"
                 f"Document deadline: {deadline.strftime('%Y-%m-%d')}\n"
                 f"Estimated processing: {proc_time['min']}-{proc_time['max']} months\n"
                 f"{'=' * 40}\n"
@@ -372,14 +448,16 @@ class CaseService:
             "case_id": case_id,
             "contact_id": contact_id,
             "program_type": program_type,
-            "assigned_rcic": assigned_rcic,
+            "assigned_rcic": assigned_name,
+            "assigned_rcic_id": resolved_user_id,
         })
 
         return {
             "case_id": case_id,
             "contact_id": contact_id,
             "program_type": program_type,
-            "assigned_rcic": assigned_rcic,
+            "assigned_rcic": assigned_name,
+            "assigned_rcic_id": resolved_user_id,
             "doc_deadline": deadline.isoformat(),
             "estimated_processing_months": proc_time,
             "ircc_forms": forms,

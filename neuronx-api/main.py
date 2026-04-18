@@ -18,7 +18,7 @@ from slowapi.errors import RateLimitExceeded
 import logging
 import os
 
-from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract
+from app.routers import webhooks, scoring, briefings, analytics, trust, documents, cases, sync, signatures, demo, typebot, clients, forms, dependents, doc_extract, users
 from app.config import settings
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
@@ -129,6 +129,7 @@ app.include_router(clients.router, prefix="/clients", tags=["Client Data (Chrome
 app.include_router(forms.router, prefix="/form", tags=["Multi-Tenant Forms"])  # forms.neuronx.co/form/vmc/onboarding
 app.include_router(dependents.router, prefix="/dependents", tags=["Case Dependents"])
 app.include_router(doc_extract.router, prefix="/extract", tags=["Document OCR Extraction"])
+app.include_router(users.router, prefix="/users", tags=["Users / Team"])
 
 
 @app.get("/health")

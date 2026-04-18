@@ -72,31 +72,84 @@ ORDER BY stage_order;
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- View: Case stage distribution
+-- Grouped by user FK (typo-safe); still exposes the display name for legacy reports.
 CREATE OR REPLACE VIEW v_case_stages AS
 SELECT
     cs.stage,
     cs.program_type,
-    cs.assigned_rcic,
+    cs.assigned_rcic_id,
+    COALESCE(u.full_name, cs.assigned_rcic_name) AS assigned_rcic,
     COUNT(*) AS count,
     COALESCE(SUM(cs.retainer_value), 0) AS total_value,
     ROUND(AVG(EXTRACT(EPOCH FROM (COALESCE(cs.closed_at, NOW()) - cs.created_at)) / 86400)::numeric, 1) AS avg_days_in_pipeline
 FROM cases cs
-GROUP BY cs.stage, cs.program_type, cs.assigned_rcic
+LEFT JOIN users u ON u.id = cs.assigned_rcic_id
+GROUP BY cs.stage, cs.program_type, cs.assigned_rcic_id, u.full_name, cs.assigned_rcic_name
 ORDER BY count DESC;
 
--- View: RCIC workload
+-- View: RCIC workload — FK-joined (no more typo-broken groupings)
 CREATE OR REPLACE VIEW v_rcic_workload AS
 SELECT
-    cs.assigned_rcic,
-    COUNT(*) FILTER (WHERE cs.stage != 'closed') AS active_cases,
-    COUNT(*) FILTER (WHERE cs.stage = 'closed' AND cs.ircc_decision = 'Approved') AS approved,
-    COUNT(*) FILTER (WHERE cs.stage = 'closed' AND cs.ircc_decision = 'Refused') AS refused,
-    COUNT(*) FILTER (WHERE cs.stage = 'closed') AS total_closed,
+    u.id AS user_id,
+    u.full_name AS assigned_rcic,
+    u.role,
+    u.is_active,
+    COUNT(cs.*) FILTER (WHERE cs.stage != 'closed') AS active_cases,
+    COUNT(cs.*) FILTER (WHERE cs.stage = 'closed' AND cs.ircc_decision = 'Approved') AS approved,
+    COUNT(cs.*) FILTER (WHERE cs.stage = 'closed' AND cs.ircc_decision = 'Refused') AS refused,
+    COUNT(cs.*) FILTER (WHERE cs.stage = 'closed') AS total_closed,
     COALESCE(SUM(cs.retainer_value), 0) AS total_revenue,
     ROUND(AVG(cs.docs_received::float / NULLIF(cs.docs_required, 0) * 100)::numeric, 1) AS avg_doc_completeness
-FROM cases cs
-GROUP BY cs.assigned_rcic
-ORDER BY active_cases DESC;
+FROM users u
+LEFT JOIN cases cs ON cs.assigned_rcic_id = u.id
+WHERE u.is_active = TRUE
+GROUP BY u.id, u.full_name, u.role, u.is_active
+ORDER BY active_cases DESC NULLS LAST;
+
+-- View: Per-RCIC case velocity — avg days between stage transitions for CLOSED cases
+CREATE OR REPLACE VIEW v_rcic_case_velocity AS
+SELECT
+    u.id AS user_id,
+    u.full_name AS assigned_rcic,
+    u.role,
+    COUNT(cs.*) FILTER (WHERE cs.stage = 'closed') AS closed_cases,
+    ROUND(
+        AVG(EXTRACT(EPOCH FROM (cs.closed_at - cs.created_at)) / 86400)
+        FILTER (WHERE cs.stage = 'closed')::numeric, 1
+    ) AS avg_days_to_close,
+    ROUND(
+        AVG(EXTRACT(EPOCH FROM (cs.ircc_submission_date - cs.created_at)) / 86400)
+        FILTER (WHERE cs.ircc_submission_date IS NOT NULL)::numeric, 1
+    ) AS avg_days_to_submission
+FROM users u
+LEFT JOIN cases cs ON cs.assigned_rcic_id = u.id
+WHERE u.is_active = TRUE
+GROUP BY u.id, u.full_name, u.role
+ORDER BY avg_days_to_close NULLS LAST;
+
+-- View: Monthly team leaderboard — approvals + revenue per RCIC
+CREATE OR REPLACE VIEW v_team_leaderboard AS
+SELECT
+    DATE_TRUNC('month', cs.closed_at) AS month,
+    u.id AS user_id,
+    u.full_name AS assigned_rcic,
+    u.role,
+    COUNT(cs.*) AS cases_closed,
+    COUNT(cs.*) FILTER (WHERE cs.ircc_decision = 'Approved') AS approvals,
+    COUNT(cs.*) FILTER (WHERE cs.ircc_decision = 'Refused')  AS refusals,
+    CASE WHEN COUNT(cs.*) FILTER (WHERE cs.ircc_decision IN ('Approved', 'Refused')) > 0
+        THEN ROUND(
+            (COUNT(cs.*) FILTER (WHERE cs.ircc_decision = 'Approved')::numeric /
+             COUNT(cs.*) FILTER (WHERE cs.ircc_decision IN ('Approved', 'Refused')) * 100), 1
+        )
+        ELSE NULL
+    END AS approval_rate_pct,
+    COALESCE(SUM(cs.retainer_value), 0) AS revenue
+FROM users u
+JOIN cases cs ON cs.assigned_rcic_id = u.id
+WHERE cs.closed_at IS NOT NULL
+GROUP BY DATE_TRUNC('month', cs.closed_at), u.id, u.full_name, u.role
+ORDER BY month DESC, revenue DESC;
 
 -- View: Document collection progress
 CREATE OR REPLACE VIEW v_doc_progress AS
@@ -104,7 +157,8 @@ SELECT
     cs.case_id,
     c.first_name || ' ' || c.last_name AS client_name,
     cs.program_type,
-    cs.assigned_rcic,
+    COALESCE(u.full_name, cs.assigned_rcic_name) AS assigned_rcic,
+    cs.assigned_rcic_id,
     cs.docs_required,
     cs.docs_received,
     CASE WHEN cs.docs_required > 0
@@ -115,6 +169,7 @@ SELECT
     cs.stage
 FROM cases cs
 JOIN contacts c ON cs.contact_id = c.id
+LEFT JOIN users u ON u.id = cs.assigned_rcic_id
 WHERE cs.stage NOT IN ('closed', 'decision')
 ORDER BY pct_complete ASC;
 

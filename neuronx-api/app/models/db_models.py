@@ -89,6 +89,50 @@ class Opportunity(Base):
     )
 
 
+class User(Base):
+    """Team member / RCIC — synced from GHL users API.
+
+    Source of truth: GHL /users/ endpoint. We maintain a local mirror so we
+    can:
+      * enforce referential integrity on Case.assigned_rcic_id (no typos)
+      * compute reliable per-user analytics / leaderboards
+      * implement access control in upcoming auth work
+    The `id` column == GHL user id (same string, no surrogate).
+    """
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(50), primary_key=True)  # GHL user ID
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    first_name: Mapped[str] = mapped_column(String(100), default="")
+    last_name: Mapped[str] = mapped_column(String(100), default="")
+    full_name: Mapped[str] = mapped_column(String(200), default="")  # "First Last" — precomputed for grouping
+    phone: Mapped[str] = mapped_column(String(50), default="")
+
+    # Role values: managing_partner, senior_rcic, junior_rcic, csm, sdr, ops, intake, admin, user
+    role: Mapped[str] = mapped_column(String(30), default="user")
+    rcic_license: Mapped[str] = mapped_column(String(20), default="")  # "R123456" — empty for non-RCIC
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    max_concurrent_cases: Mapped[int] = mapped_column(Integer, default=30)
+    hire_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Explicit GHL mirror (same as id but clearer for joins/debugging)
+    ghl_user_id: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+
+    synced_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
+    cases: Mapped[list["Case"]] = relationship(back_populates="assigned_user")
+
+    __table_args__ = (
+        Index("ix_user_role", "role"),
+        Index("ix_user_active", "is_active"),
+    )
+
+
 class Case(Base):
     """Case processing record — post-retainer lifecycle tracking."""
     __tablename__ = "cases"
@@ -97,7 +141,17 @@ class Case(Base):
     case_id: Mapped[str] = mapped_column(String(50), unique=True)  # NX-20260404-ABCDEF
     contact_id: Mapped[str] = mapped_column(String(50), ForeignKey("contacts.id"))
     program_type: Mapped[str] = mapped_column(String(100))
-    assigned_rcic: Mapped[str] = mapped_column(String(100), default="Unassigned")
+
+    # ── Assignment (Blocker #2 migration) ───────────────────────────────────
+    # Preferred: FK to users.id. Nullable during backfill period.
+    assigned_rcic_id: Mapped[str] = mapped_column(
+        String(50), ForeignKey("users.id"), nullable=True, index=True
+    )
+    # Denormalized display name — kept for backwards compatibility with
+    # code/views that still read the string column. DEPRECATED: prefer the
+    # FK join via `assigned_user.full_name`. Do not drop until all consumers
+    # migrate.
+    assigned_rcic_name: Mapped[str] = mapped_column(String(100), default="Unassigned")
 
     stage: Mapped[str] = mapped_column(String(50), default="onboarding")
     complexity: Mapped[str] = mapped_column(String(20), default="Standard")
@@ -123,12 +177,31 @@ class Case(Base):
     doc_deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
     contact: Mapped["Contact"] = relationship(back_populates="cases")
+    assigned_user: Mapped["User"] = relationship(back_populates="cases", lazy="selectin")
 
     __table_args__ = (
         Index("ix_case_stage", "stage"),
         Index("ix_case_program", "program_type"),
-        Index("ix_case_rcic", "assigned_rcic"),
+        Index("ix_case_rcic_name", "assigned_rcic_name"),
     )
+
+    # ── Backwards-compat shim ───────────────────────────────────────────────
+    # A lot of older code (and seed scripts) still pass/read `assigned_rcic`
+    # as a plain string. We expose it as an alias of `assigned_rcic_name`,
+    # and accept it in the constructor for legacy callers.
+    def __init__(self, **kwargs):
+        legacy = kwargs.pop("assigned_rcic", None)
+        if legacy is not None and "assigned_rcic_name" not in kwargs:
+            kwargs["assigned_rcic_name"] = legacy
+        super().__init__(**kwargs)
+
+    @property
+    def assigned_rcic(self) -> str:
+        return self.assigned_rcic_name or "Unassigned"
+
+    @assigned_rcic.setter
+    def assigned_rcic(self, value: str) -> None:
+        self.assigned_rcic_name = value or "Unassigned"
 
 
 class Activity(Base):

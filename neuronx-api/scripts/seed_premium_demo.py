@@ -260,8 +260,8 @@ async def seed_database():
         return
     await init_db()
     # Re-import after init
-    from app.models.db_models import Contact, Opportunity, Case, Activity, Signature, Dependent
-    from sqlalchemy import delete
+    from app.models.db_models import Contact, Opportunity, Case, Activity, Signature, Dependent, User
+    from sqlalchemy import delete, select
 
     session_factory = db_module.async_session_factory
     if session_factory is None:
@@ -269,6 +269,46 @@ async def seed_database():
         return
 
     now = datetime.now(timezone.utc)
+
+    # ── Upsert users (from .team-users.json) so case FKs resolve ───────────
+    users_by_title = {}
+    users_by_email = {}
+    async with session_factory() as session:
+        for u in _team_map.get("users", []):
+            uid = u.get("ghl_id")
+            if not uid:
+                continue
+            existing = (await session.execute(select(User).where(User.id == uid))).scalar_one_or_none()
+            full = f"{u.get('firstName','')} {u.get('lastName','')}".strip()
+            role_code = (u.get("perms") or u.get("role") or "user").lower()
+            if existing:
+                existing.email = u.get("email", existing.email)
+                existing.first_name = u.get("firstName", "")
+                existing.last_name = u.get("lastName", "")
+                existing.full_name = full
+                existing.phone = u.get("phone", "")
+                existing.role = role_code
+                existing.rcic_license = u.get("license", "")
+                existing.ghl_user_id = uid
+                existing.synced_at = now
+            else:
+                session.add(User(
+                    id=uid,
+                    email=u.get("email", f"{uid}@demo.local"),
+                    first_name=u.get("firstName", ""),
+                    last_name=u.get("lastName", ""),
+                    full_name=full,
+                    phone=u.get("phone", ""),
+                    role=role_code,
+                    rcic_license=u.get("license", ""),
+                    is_active=True,
+                    ghl_user_id=uid,
+                    synced_at=now,
+                ))
+            users_by_title[u.get("title", "")] = uid
+            users_by_email[(u.get("email") or "").lower()] = uid
+        await session.commit()
+    print(f"  Upserted {len(users_by_title)} team users")
 
     async with session_factory() as session:
         # CLEAN existing demo-* data — respect FK constraints (children first)
@@ -357,10 +397,23 @@ async def seed_database():
             created_at = now - timedelta(days=random.randint(15, 120))
             case_id = f"DEMO-{created_at.strftime('%Y%m%d')}-{i:04d}"
             case_contact_map[cid] = case_id
+            # Pick a team user (RCIC role) — prefer Senior/Junior RCIC, skip ops
+            rcic_pool = [
+                uid for title, uid in users_by_title.items()
+                if "RCIC" in title or "Managing Partner" in title
+            ]
+            chosen_uid = random.choice(rcic_pool) if rcic_pool else None
+            chosen_name = next(
+                (f"{u['firstName']} {u['lastName']}".strip()
+                 for u in _team_map.get("users", [])
+                 if u.get("ghl_id") == chosen_uid),
+                random.choice(RCIC_NAMES),
+            )
             session.add(Case(
                 case_id=case_id, contact_id=cid,
                 program_type=c["program"],
-                assigned_rcic=random.choice(RCIC_NAMES),
+                assigned_rcic_id=chosen_uid,
+                assigned_rcic_name=chosen_name,
                 stage=case_stage, complexity="Standard" if "nx:human_escalation" not in c["tags"] else "Complex",
                 ircc_receipt_number=ircc_receipt, ircc_decision=ircc_decision,
                 ircc_decision_date=decision_date,

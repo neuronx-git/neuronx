@@ -40,7 +40,8 @@ def _create_tables_sqlite(conn):
           Column("id", Integer, primary_key=True, autoincrement=True),
           Column("case_id", String(50), unique=True),
           Column("contact_id", String(50)), Column("program_type", String(100)),
-          Column("assigned_rcic", String(100)), Column("stage", String(50)),
+          Column("assigned_rcic_id", String(50)), Column("assigned_rcic_name", String(100)),
+          Column("stage", String(50)),
           Column("complexity", String(20)), Column("ircc_receipt_number", String(50)),
           Column("ircc_submission_date", DateTime), Column("ircc_decision", String(20)),
           Column("ircc_decision_date", DateTime), Column("docs_required", Integer),
@@ -77,15 +78,15 @@ async def db_session():
         ])
 
         await session.execute(text(
-            "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic, stage, complexity, ircc_receipt_number, ircc_decision, docs_required, docs_received, retainer_value, created_at) "
-            "VALUES (:cid, :contact, :prog, :rcic, :stage, 'Standard', '', 'Pending', 0, 0, :val, :created)"
+            "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic_id, assigned_rcic_name, stage, complexity, ircc_receipt_number, ircc_decision, docs_required, docs_received, retainer_value, created_at) "
+            "VALUES (:cid, :contact, :prog, NULL, :rcic, :stage, 'Standard', '', 'Pending', 0, 0, :val, :created)"
         ), [
             {"cid": "NX-20260416-TEST01", "contact": "test-contact-1", "prog": "Express Entry", "rcic": "Rajiv Mehta", "stage": "onboarding", "val": 3500, "created": (now - timedelta(days=10)).isoformat()},
             {"cid": "NX-20260416-TEST02", "contact": "test-contact-2", "prog": "Spousal Sponsorship", "rcic": "Nina Patel", "stage": "doc_collection", "val": 4500, "created": (now - timedelta(days=5)).isoformat()},
         ])
         await session.execute(text(
-            "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic, stage, complexity, ircc_receipt_number, ircc_decision, docs_required, docs_received, retainer_value, created_at, closed_at) "
-            "VALUES (:cid, :contact, :prog, :rcic, 'closed', 'Standard', '', 'Approved', 8, 8, 3500, :created, :closed)"
+            "INSERT INTO cases (case_id, contact_id, program_type, assigned_rcic_id, assigned_rcic_name, stage, complexity, ircc_receipt_number, ircc_decision, docs_required, docs_received, retainer_value, created_at, closed_at) "
+            "VALUES (:cid, :contact, :prog, NULL, :rcic, 'closed', 'Standard', '', 'Approved', 8, 8, 3500, :created, :closed)"
         ), [{"cid": "NX-20260416-TEST03", "contact": "test-contact-1", "prog": "Express Entry", "rcic": "Rajiv Mehta", "created": (now - timedelta(days=90)).isoformat(), "closed": (now - timedelta(days=15)).isoformat()}])
         await session.commit()
 

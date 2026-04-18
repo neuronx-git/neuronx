@@ -31,7 +31,14 @@ logger = logging.getLogger("neuronx.cases")
 class CaseInitiateRequest(BaseModel):
     contact_id: str
     program_type: str
-    assigned_rcic: str = "Unassigned"
+    assigned_rcic: Optional[str] = Field(
+        default="Unassigned",
+        description="Legacy: display name. Fuzzy-matched to users table if assigned_rcic_id missing.",
+    )
+    assigned_rcic_id: Optional[str] = Field(
+        default=None,
+        description="Preferred: GHL user ID (FK to users.id).",
+    )
 
 
 class CaseStageRequest(BaseModel):
@@ -71,6 +78,7 @@ async def initiate_case(payload: CaseInitiateRequest):
             contact_id=payload.contact_id,
             program_type=payload.program_type,
             assigned_rcic=payload.assigned_rcic,
+            assigned_rcic_id=payload.assigned_rcic_id,
         )
         if "error" in result:
             raise HTTPException(status_code=400, detail=result["error"])
