@@ -1,286 +1,261 @@
-# BOOTSTRAP PROMPT — NeuronX Next Session (Post Sprint 5 v0.5.0)
+# 🚀 NeuronX — Master Bootstrap Prompt for New Sessions
 
-**Copy-paste this entire file as your first message to the next Claude Code session.**
+**Copy EVERYTHING below as your first message to a fresh Claude Code session.**
+
+**Last updated:** 2026-04-18 (after major email-stack + firm-team + case-processing build-out)
 
 ---
 
-## WHO YOU ARE
+## ⚡ PART A — MANDATORY SESSION START (DO THIS FIRST, IN ORDER)
 
-You are the AI development lead for NeuronX — an immigration consulting SaaS. You have full execution authority within documented boundaries. Your job is to take this product from "v0.5.0 investor-demo ready" toward pilot launch.
+You are the AI development lead for **NeuronX**, an AI-assisted sales + intake SaaS for Canadian immigration consulting firms, built on GoHighLevel (GHL) + VAPI voice AI + FastAPI thin brain + PostgreSQL + Metabase. **Primary directory:** `/Users/ranjansingh/Desktop/NeuronX`.
 
-## MANDATORY STARTUP SEQUENCE
-
-Run these BEFORE doing anything:
+**Before doing ANYTHING else, read these files in this exact order:**
 
 ```bash
-cat /Users/ranjansingh/Desktop/NeuronX/PROJECT_MEMORY.md
-cat /Users/ranjansingh/Desktop/NeuronX/CLAUDE.md
-cat /Users/ranjansingh/Desktop/NeuronX/neuronx-api/docs/E2E_FORM_FLOW.md
+cat /Users/ranjansingh/Desktop/NeuronX/CLAUDE.md                      # Agent operating contract (NON-NEGOTIABLE RULES)
+cat /Users/ranjansingh/Desktop/NeuronX/PROJECT_MEMORY.md              # Current state, recent decisions
+cat /Users/ranjansingh/Desktop/NeuronX/MIGRATION_CHECKLIST.md         # What's live, what's pending
+cat /Users/ranjansingh/Desktop/NeuronX/docs/06_execution/RESOURCE_DIFF.md      # Latest sandbox vs prod audit
+cat /Users/ranjansingh/Desktop/NeuronX/docs/06_execution/USER_JOURNEY_GAPS.md  # End-user journey gaps
+cat /Users/ranjansingh/Desktop/NeuronX/docs/06_execution/EMAIL_WORKFLOW_MAP.md # Template ↔ workflow map
+cat /Users/ranjansingh/Desktop/NeuronX/docs/06_execution/MANUAL_BUILD_CASE_PROCESSING.md  # Case processing build guide
 ```
 
-Read these memory files:
-```
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/project_neuronx_state.md
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/feedback_agent_working_model.md
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/feedback_form_architecture.md
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/feedback_railway_deploy.md
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/feedback_typebot_api.md
-/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/reference_credentials.md
-```
+**Then verify current production state (run this as ONE Bash call):**
 
----
-
-## CURRENT STATE (as of 2026-04-17)
-
-### Version: v0.5.0 — IN PRODUCTION
-- API: https://neuronx-production-62f9.up.railway.app (Railway)
-- Website: https://www.neuronx.co (Vercel)
-- Typebot: builder-production-6784.up.railway.app / viewer-production-366c.up.railway.app
-- Metabase: https://metabase-production-1846.up.railway.app
-- Postgres: Railway internal, 9 tables + 10 SQL views for dashboards
-
-### Production Health (verified today)
-| Check | Status |
-|-------|--------|
-| `/health` | ok (v0.5.0, DB connected) |
-| `/health/deep` | ok (4/4: database, ghl_api, configs, typebot) |
-| `/health/smoke` | pass (4/4: db_cases=8, configs, lifecycle, GHL) |
-| Website | HTTP 200 |
-| Metabase dashboards | 3 live (IDs 8, 9, 10) |
-| Security headers | HSTS, CTO, XFO, Referrer-Policy, Permissions-Policy all present |
-
-### What's Done in Sprint 5 (v0.4.0 → v0.5.0)
-
-**Delivered:**
-1. **Case Lifecycle API** — `PATCH /cases/{case_id}/status` with 10-stage state machine
-   - Stages: onboarding → doc_collection → docs_complete → form_prep → under_review → submitted → processing → rfi → decision → closed
-   - Every non-closed stage can transition to `closed` (early termination)
-   - `rfi` ↔ `processing` loop for IRCC requests for information
-   - Persists to PostgreSQL + syncs GHL tags, logs to Activity table + compliance JSONL
-   - Endpoints: `PATCH /cases/{id}/status`, `GET /cases/by-id/{id}`, `GET /cases/list`, `GET /cases/transitions`
-2. **Case initiation now persists to PostgreSQL** (was GHL-only — PATCH endpoint couldn't find cases)
-3. **Metabase dashboards** — 3 live via API:
-   - Pipeline Health (funnel, sources, conversion) — dashboard/8
-   - Case Status (stages, RCIC workload, revenue) — dashboard/9
-   - Activity Timeline (daily volume, recent, transitions) — dashboard/10
-   - Setup script: `neuronx-api/scripts/setup_metabase.py`
-4. **10 SQL views installed** in PostgreSQL (`scripts/metabase_views.sql`, `POST /admin/install-views`)
-5. **Demo data seeder** — 12 contacts, 8 cases, 46 activities, $28K demo revenue
-   - `POST /demo/seed`, `POST /demo/clear`, `GET /demo/summary`
-6. **Health + smoke tests** — `GET /health/smoke` for daily automated monitoring
-7. **Rate limiting** — Per-IP sliding 60s window, 200 req/min (webhooks + health exempted)
-8. **OWASP security headers** — HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, CSP (HTML only)
-9. **Bug fixes from Schemathesis API fuzzing** (821 auto-generated test cases → 28 findings → 10 real bugs fixed):
-   - Briefing leaked GHL internal errors → sanitized + proper 502 for upstream auth
-   - Briefing: email format validation, delivery_method as Literal enum, min/max field lengths
-   - Dependents POST with FK violation returned 500 → now 404 with case-exists pre-check
-   - Dependents UPDATE had SQL injection risk via model_dump keys → now whitelist of 7 columns
-   - Dependents: relationship + docs_status as Literal enums, all fields with bounds
-   - Dependents DELETE silently succeeded on missing ID → now 404 via rowcount check
-   - Typebot webhook with no body returned 500 → now 422 (JSON parse try/except)
-   - Typebot webhook with JSON array returned 500 → now 422 (dict type check)
-   - `/cases/list?limit=-1` returned 500 → now 422 (added `ge=1` bound)
-10. **E2E audit fixes** — case initiation program validation (rejects invalid with 400), analytics bounds (days 1-365, threshold 1-90), transcript max_length=50000, IRCC forms now configured for all 8 programs (was 4 missing), Typebot webhook dedup now DB-backed (was in-memory only)
-
-### Test Coverage
-- **788+ tests passing** (was 743 at start of sprint — +45 net)
-- 31 E2E customer journey tests (`tests/test_e2e_customer_journey.py`)
-- 23 case lifecycle tests (`tests/test_case_lifecycle.py` — state machine enforcement)
-- 8 Schemathesis-driven regression tests
-- 8 pre-existing order-dependent test pollution (not blocking, documented)
-
-### Tools Used for Testing
-- **pytest** — 788 unit/integration tests
-- **Schemathesis** — API fuzzing against OpenAPI spec (21 command used in session)
-- **Real production UAT** — 66 test cases across 12 categories via httpx
-- **Security scan** — OWASP headers, CORS, HTTP methods, info disclosure, auth bypass, rate limiting, CRLF injection, large payloads
-
----
-
-## WHAT REMAINS (Priority Order)
-
-### P0 — Pilot Launch Blockers
-1. **Production GHL account** ($297/mo) — unlocks email/SMS/phone workflows (sandbox blocks these)
-2. **RCIC license number** — `R000000` placeholder in `config/ircc_field_mappings.yaml`, needs real license
-3. **End-to-end UAT with real phone/email** — full inquiry → VAPI call → form → retainer → case cycle
-
-### P1 — Production Quality
-4. **Webhook signature verification hardening** — Already implemented (Ed25519 GHL, HMAC VAPI) but needs real signing keys in prod GHL account
-5. **Alembic migrations setup** — Alembic initialized but no migrations yet; schema changes currently require manual SQL
-6. **Error alerting** — Structured logging + Railway log drain / Sentry / healthcheck cron
-7. **Webhook DLQ retry worker** — failed webhooks saved to `dead_letter_queue` table but no auto-retry job
-8. **Backup verification** — Railway auto-backs-up PostgreSQL but restore not tested
-9. **Fix 8 pre-existing order-dependent test failures** — `async_session_factory` pollution between tests
-
-### P2 — Nice to Have (v1.0 polish)
-10. **Multi-tenant isolation** — prep for second customer (location-scoped queries)
-11. **Audit trail UI** — Metabase shows activities but no dedicated compliance view
-12. **Performance** — connection pooling tuning, query optimization, caching
-13. **Mobile responsiveness** — test + fix Typebot embed on mobile
-14. **VAPI bake-off completion** — OD-01 open decision (VAPI vs GHL Voice)
-15. **Chrome extension deployment** — client search extension in `tools/` needs web store submission
-
-### Known Issues (Don't Break These)
-- **GHL sandbox**: Email/SMS/phone BLOCKED, max 2 sub-accounts, 25 req/10s rate limit
-- **Typebot version pinning**: MUST be `"6"` exactly (not `"6.1"` — viewer rejects)
-- **Railway deploy**: Use `railway up --detach` (not git push — auto-deploy unreliable after root dir changes)
-- **Railway startCommand**: No shell expansion (`${PORT:-8000}` passed literally)
-- **OCR accuracy**: Ollama Cloud gemini-3-flash-preview ~80% — consider upgrading for production
-- **Order-dependent test failures**: 8 tests fail when suite is run together (pre-existing, pollution of `async_session_factory`)
-
----
-
-## ARCHITECTURAL RULES (LOCKED — DO NOT CHANGE WITHOUT DISCUSSION)
-
-1. **Config-first, code-last** — Use GHL native features before writing code
-2. **No new middleware** — No Make.com, n8n, Zapier, Temporal
-3. **Single SoT per entity** — GHL = contacts/pipeline/calendar; PostgreSQL = cases/dependents/activities
-4. **Railway for backend** — neuronx-api, Typebot, PostgreSQL, Metabase
-5. **Vercel for frontend only** — website (no API routes)
-6. **Trust boundaries** — AI cannot assess eligibility, recommend pathways, or interpret law
-7. **State machine for cases** — All stage changes via PATCH /cases/{id}/status (validated transitions)
-8. **Minimalist** — Default to simplest viable solution
-
----
-
-## INFRASTRUCTURE QUICK REFERENCE
-
-### Railway Projects
-```
-Neuronx (main):
-  neuronx (FastAPI) → neuronx-production-62f9.up.railway.app
-  PostgreSQL → postgres.railway.internal
-  Metabase → metabase-production-1846.up.railway.app
-
-Typebot (separate):
-  Builder → builder-production-6784.up.railway.app
-  Viewer → viewer-production-366c.up.railway.app
-```
-
-### Deploy Commands
 ```bash
-# FastAPI — USE THIS, not git push
+cd /Users/ranjansingh/Desktop/NeuronX
+echo "=== API health ===" && curl -s https://neuronx-production-62f9.up.railway.app/health/smoke | python3 -m json.tool
+echo "=== GHL VMC state ===" && python3 tools/ghl-lab/src/e2e_audit.py 2>&1 | tail -25
+echo "=== Git status ===" && git log --oneline -5 && git status -s
+```
+
+**Read these memory files (they contain style preferences + past decisions):**
+
+```
+/Users/ranjansingh/.claude/projects/-Users-ranjansingh-Desktop-NeuronX/memory/MEMORY.md
+  (This indexes all memory files — read its entries)
+```
+
+---
+
+## 📍 PART B — CURRENT STATE SNAPSHOT (as of 2026-04-18)
+
+### Production infrastructure (all live + healthy)
+
+| Component | Endpoint / Location | Status |
+|---|---|---|
+| FastAPI | `https://neuronx-production-62f9.up.railway.app` | v0.5.0, 788 tests passing, OWASP headers ✅ |
+| Website | `https://www.neuronx.co` | Vercel, v1.1.1 |
+| Typebot Builder | `https://builder-production-6784.up.railway.app` | Railway |
+| Typebot Viewer | `https://viewer-production-366c.up.railway.app` | Railway |
+| Metabase | `https://metabase-production-1846.up.railway.app` | 3 dashboards, 10 SQL views |
+| PostgreSQL | Railway internal | 9 tables (contacts, cases, activities, etc.) |
+| Email sending | `mg.neuronx.co` via LeadConnector/Mailgun | SPF ✅ DKIM ✅ DMARC ✅ Postmaster ✅ |
+
+### GHL accounts (2 — plus retired sandbox)
+
+| Account | Role | Location ID | Company ID |
+|---|---|---|---|
+| NeuronX Agency (prod) | SaaS business | `muc56LdMG8hkmlpFFuZE` | `qKxHWhSxcGxcW3YycTui` |
+| VMC (prod, demo customer) | Customer product showcase | `vb8iWAwoLi2uT3s5v1OW` | `qKxHWhSxcGxcW3YycTui` |
+| VMC sandbox (RETIRED) | Old reference only | `FlRL82M0D6nclmKT7eXH` | `1H22jRUQWbxzaCaacZjO` |
+
+### Auth tokens (gitignored)
+
+- `tools/ghl-lab/.pit-tokens.json` — PITs for agency + NeuronX + VMC
+- `tools/ghl-lab/.tokens.json` — sandbox OAuth (auto-refresh via `refresh_oauth.py`)
+- `tools/ghl-lab/.env` — OAuth client_id + client_secret
+- `tools/ghl-lab/.team-users.json` — 9 firm team user IDs
+
+### VMC production completion (6/6 VERIFIED via API)
+
+- ✅ 2 pipelines: "VMC- Case Processing" (9 stages) + "VMC— Immigration Intake" (10 stages)
+- ✅ 24 workflows: 15 standard (WF-01…WF-13) + 9 case processing (WF-CP-01…WF-CP-09)
+- ✅ 10 team users (9 DEMO- firm team + 1 original admin)
+- ✅ 140 custom fields
+- ✅ 120 tags (all nx:case:*, nx:decision:*, nx:score:* categories)
+- ✅ 14 calendars (3 shared + 11 personal per team member)
+- ✅ 40 email templates (26 premium Postmark-based + 14 original)
+- ✅ 35 demo contacts, 15 cases across 9 stages, $48.5K demo revenue
+- ✅ Email stack: SPF/DKIM/DMARC/Postmaster verified on `mg.neuronx.co`
+
+### What's STILL PENDING (priority order)
+
+1. **Email templates attached as TEMPLATE (not text) in all 24 workflows** — user built workflows writing email bodies as text. Need to change each "Send Email" action to use Template → pick corresponding VMC-* template. Guide: `docs/06_execution/EMAIL_WORKFLOW_MAP.md`. ~15-20 min in UI.
+2. **DMARC forwarding mailbox** `dmarc@neuronx.co` — create in Google Workspace OR use Postmark DMARC Digests free tier.
+3. **Microsoft SNDS registration** — https://sendersupport.olc.protection.outlook.com/snds/addnetwork.aspx
+4. **Move `mg.neuronx.co` to agency level** — currently at sub-account; should be agency default for multi-tenant fallback.
+5. **Test email send** — verify SPF/DKIM/DMARC pass in Gmail headers.
+6. **Documenso e-signature** — not integrated yet. Retainer flow currently email-only.
+7. **Production GHL account ($297/mo)** — user now has it ✅ (`qKxHWhSxcGxcW3YycTui`)
+8. **RCIC license number** — `R000000` placeholder in `config/ircc_field_mappings.yaml`
+9. **Chrome extension deployment to web store** — currently local only.
+10. **Family sponsorship upsell workflow** — per USER_JOURNEY_GAPS.md.
+
+---
+
+## 🏛 PART C — ARCHITECTURAL RULES (NON-NEGOTIABLE)
+
+1. **Config-first, code-last** — Use GHL native features before writing code.
+2. **No new middleware** — No Make.com, n8n, Zapier, Temporal. Stack stays: GHL + VAPI + FastAPI + PostgreSQL + Metabase + Typebot.
+3. **Single SoT per entity** — GHL = contacts/pipeline/calendar; PostgreSQL = cases/dependents/activities; Typebot = form responses; Mailgun = send infrastructure.
+4. **Railway for backend, Vercel for frontend** — no API routes on Vercel.
+5. **Trust boundaries** — AI cannot assess eligibility, recommend pathways, or interpret law. Escalate deportation/criminal/fraud flags immediately.
+6. **State machine for cases** — All stage changes via `PATCH /cases/{id}/status` (validated). Never bypass.
+7. **Minimalist** — Default to simplest viable solution. NO new tools without founder approval.
+8. **Document every non-trivial decision** — In PROJECT_MEMORY.md. Without docs, next session is blind.
+9. **Sandbox is retired** — All work happens in production VMC + NeuronX. Sandbox is read-only reference.
+10. **Demo data prefixed `demo-` / `DEMO-`** — Easy cleanup; never mix with real data.
+
+---
+
+## 🔄 PART D — DOCUMENT MAINTENANCE PROTOCOL (READ CAREFULLY)
+
+**The reason past sessions lost context: docs weren't updated.** Future sessions MUST follow this:
+
+### At session START (first 2 minutes)
+
+1. Read all files listed in PART A
+2. Run the verification Bash block from PART A
+3. Output: *"Last session ended at commit {hash}. Production state: {PASS/ISSUES}. I'm ready to {infer from most recent memory}."*
+4. If state doesn't match what docs say, HALT and investigate — don't plow ahead.
+
+### DURING session (after each meaningful task)
+
+- **After API call that changes state** (create/update/delete) → update `PROJECT_MEMORY.md` Current State table
+- **After architectural decision** → add to `PROJECT_MEMORY.md` decision log + memory file `project_architecture_decisions.md`
+- **After discovering limitation/quirk** → add to appropriate memory file (`feedback_*.md`)
+- **After creating new file** → add to `PROJECT_MEMORY.md` Key Files section
+- **Before suggesting a risky action** → check `MIGRATION_CHECKLIST.md` for prior guidance
+
+### At session END (MANDATORY before user stops)
+
+```bash
+# Run this auto-update sequence:
+cd /Users/ranjansingh/Desktop/NeuronX
+
+# 1. Refresh audit docs
+python3 tools/ghl-lab/src/refresh_oauth.py
+python3 tools/ghl-lab/src/e2e_audit.py
+
+# 2. Update PROJECT_MEMORY.md manually with session summary
+# Template:
+# ## Session YYYY-MM-DD — {session title}
+# ### What was done
+# ### What was decided
+# ### What's still pending
+# ### Key files changed
+# ### Next session should start with
+
+# 3. Commit with descriptive message
+git add -A
+git commit -m "session: {title}\n\n{summary}\n\nCo-Authored-By: Claude Opus 4.6"
+git push origin main
+```
+
+### When to use parallel sub-agents
+
+- **Research / codebase exploration** → `Explore` sub-agent (saves main context)
+- **Independent tasks** → multiple `general-purpose` agents in one message (faster than serial)
+- **Only orchestrator touches docs** — sub-agents report findings; main agent writes files. This prevents merge conflicts.
+
+---
+
+## 🎯 PART E — YOUR FIRST ACTIONS (every new session)
+
+1. Run Part A startup sequence
+2. Report current state in 3 sentences max
+3. **Ask the user what they want to work on** — don't assume from memory alone; ask for today's priority
+4. Pick focused work from the pending list in PART B
+5. **DO NOT** deploy anything without user approval
+6. **DO NOT** modify production data without explicit confirmation
+7. **DO NOT** edit CLAUDE.md, PROJECT_MEMORY.md, or this bootstrap file without user approval
+8. At session end, run Part D end protocol
+
+---
+
+## 🔧 PART F — KEY COMMANDS REFERENCE
+
+```bash
+# Deploy FastAPI (NOT git push — auto-deploy unreliable)
 cd /Users/ranjansingh/Desktop/NeuronX/neuronx-api && npx @railway/cli up --detach
 
-# Check deploy
-curl -s https://neuronx-production-62f9.up.railway.app/health
+# Refresh GHL sandbox OAuth (if needed)
+python3 tools/ghl-lab/src/refresh_oauth.py
 
-# Full production verification
+# Re-run full E2E audit
+python3 tools/ghl-lab/src/e2e_audit.py
+# → writes to docs/06_execution/{RESOURCE_DIFF, WORKFLOW_INTERNALS, EMAIL_WORKFLOW_MAP, USER_JOURNEY_GAPS}.md
+
+# Re-seed demo data (idempotent)
+cd /Users/ranjansingh/Desktop/NeuronX/neuronx-api
+DB_URL=$(cd .. && npx @railway/cli variables --service Postgres --kv 2>&1 | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
+DATABASE_URL="$DB_URL" .venv/bin/python scripts/seed_premium_demo.py
+
+# Test suite
+cd neuronx-api && .venv/bin/python -m pytest tests/ -q --ignore=tests/integration/test_vapi_live.py --ignore=tests/integration/test_ghl_live.py
+
+# Production health
 curl -s https://neuronx-production-62f9.up.railway.app/health/smoke
 ```
 
-### Credentials (gitignored)
-```
-GHL OAuth: tools/ghl-lab/.tokens.json (auto-refreshes, valid until 2057)
-GHL Location: FlRL82M0D6nclmKT7eXH (sandbox)
-Typebot API: SuUW5WiLi1IAjuja4Mdtlu16
-Typebot Workspace: cmnrfqc6z000034qx46joy6hf
-Typebot Form ID: cmnrfu934000334qxnlmsvw2u
-VAPI API: cb69d6fc-baf7-4881-8bff-20c7df251437
-VAPI Assistant: 289a9701-9199-4d03-9416-49d18bec2f69
-Admin API key (default): neuronx-admin-dev (ADMIN_API_KEY env var, change in prod)
-Metabase: ranjan@neuronx.co / NeuronX2026!Secure
-```
+---
 
-### Repo
-- **GitHub**: neuronx-git/neuronx (main branch)
-- **Active branch**: main
-- **Latest commit**: `26e172f` — security: OWASP headers middleware + working rate limiter
+## 🌐 PART G — URLS FOR HUMAN TASKS
+
+| Task | URL |
+|---|---|
+| VMC workflows | https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/automation/workflows |
+| VMC pipelines | https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/opportunities |
+| VMC email templates | https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/emails/email-builder |
+| VMC SMTP settings | https://app.gohighlevel.com/v2/location/vb8iWAwoLi2uT3s5v1OW/settings/email_services |
+| NeuronX agency settings | https://app.gohighlevel.com/settings (switch to agency view) |
+| Metabase dashboards | https://metabase-production-1846.up.railway.app/collection/5 |
+| Cloudflare DNS | https://dash.cloudflare.com (zone: neuronx.co) |
+| Google Postmaster | https://postmaster.google.com/u/0/ |
+| Railway API | https://railway.app/project/801e7d68-04b5-4137-a5bb-bc1406a4c0d9 |
 
 ---
 
-## TESTING TOOLS AVAILABLE
+## 🧪 PART H — PHASE 2: PRODUCTION-READY AUDIT (NEXT PRIORITY)
 
-```bash
-cd /Users/ranjansingh/Desktop/NeuronX/neuronx-api
+The user's next request: **end-to-end audit of all components as one seamless engine**, set up best-in-class demo data, verify Metabase dashboards, validate case processing + assignments, use templates (not text) in workflows, and provide one-step-at-a-time guidance.
 
-# Unit + integration tests (fast)
-.venv/bin/python -m pytest tests/ -q \
-  --ignore=tests/integration/test_vapi_live.py \
-  --ignore=tests/integration/test_ghl_live.py
+**Execution plan (parallel agents with orchestrator):**
 
-# E2E journey tests only (39 cases, <2s)
-.venv/bin/python -m pytest tests/test_e2e_customer_journey.py -v
+### Agent 1 (read-only, ~5 min): GHL Config Audit
+- Verify all 24 workflows are published + linked to correct VMC-* email templates (TEMPLATE mode, not text)
+- Verify all 9 WF-CP workflow triggers match `nx:case:*` tags
+- Verify Case Processing pipeline stage names match state machine (onboarding → … → closed)
+- Verify every calendar has team members + open hours
+- Output: `docs/06_execution/AUDIT_GHL_CONFIG.md`
 
-# Case lifecycle tests (23 cases, <1s)
-.venv/bin/python -m pytest tests/test_case_lifecycle.py -v
+### Agent 2 (read-only, ~5 min): Data Integrity Audit
+- Compare PostgreSQL case stages vs GHL pipeline stages (should match for `demo-*` contacts)
+- Verify RCIC assignments are consistent across Activity log, Case table, GHL opportunity card
+- Verify every case has complete audit trail (form → score → book → retainer → case → decision)
+- Output: `docs/06_execution/AUDIT_DATA_INTEGRITY.md`
 
-# Schemathesis fuzzing (finds ~28 edge cases across 45 endpoints in ~5 min)
-.venv/bin/schemathesis run https://neuronx-production-62f9.up.railway.app/openapi.json \
-  --max-examples 3 --workers 2 --request-timeout 10 \
-  --exclude-path-regex "/webhooks|/extract/upload|/extract/from-url|/admin/install|/sync/full|/demo/(clear|seed)|/typebot/create-form|/cases/(initiate|stage|submission|decision)|/form/" \
-  --checks not_a_server_error,positive_data_acceptance,negative_data_rejection
+### Agent 3 (read-only, ~5 min): Metabase + Dashboard Audit
+- Query all 10 SQL views — verify they return non-empty results
+- Confirm 3 dashboards load without error
+- Check if demo data surfaces meaningful insights (won/lost ratio, funnel metrics, stuck leads)
+- Output: `docs/06_execution/AUDIT_METABASE.md`
 
-# k6 load tests (configured but not run this session)
-# See: neuronx-api/tests/performance/
-```
+### Agent 4 (read-only, ~5 min): User Journey Simulation
+- Walk through demo contact #5 (demo-005) end-to-end
+- Simulate: form submit → AI call → score → book → retainer → case stages → decision → close
+- Identify any dead-end, broken link, missing email, stuck status
+- Output: `docs/06_execution/AUDIT_USER_JOURNEY.md`
 
----
-
-## SANDBOX ALERT (Still Active)
-
-**The current GHL agency is a DEVELOPER SANDBOX.** Rules:
-- ❌ Email sending BLOCKED
-- ❌ LC Phone/SMS BLOCKED
-- ❌ Max 2 sub-accounts
-- ❌ Data may expire after 6 months
-- ✅ All config work (fields, tags, workflows, forms, calendars) is safe and transferable via SNAPSHOT
-- ✅ VAPI, FastAPI, Google Workspace are independent — keep building
-- ✅ API calls work (reduced rate limits: 25 req/10s, 10K/day)
-
-**RULE: Never attempt email, SMS, phone, or >2 sub-account operations in sandbox.**
+### Main agent (orchestrator, ~10 min)
+- Correlate findings from 4 sub-agents
+- Produce unified report: `docs/06_execution/PRODUCTION_READINESS_REPORT.md`
+- Classify issues: BLOCKER / HIGH / MEDIUM / COSMETIC
+- Give user a prioritized list of manual actions needed (max 5 items)
 
 ---
 
-## YOUR FIRST ACTIONS
-
-1. **Read all startup files** (mandatory)
-2. **Verify production health**:
-   ```bash
-   curl -s https://neuronx-production-62f9.up.railway.app/health/smoke
-   ```
-3. **Ask the user what to work on next** — pick from P0/P1/P2 list above, or they may have a new request
-4. **DO NOT** upgrade libraries, refactor architecture, or remove existing features without explicit approval
-5. **DO NOT** use git push to deploy — use `railway up --detach`
-6. **Update PROJECT_MEMORY.md after every meaningful task** — this is how state persists across sessions
-
----
-
-## TRUST BOUNDARIES (HARD RULES — from docs/04_compliance/trust_boundaries.md)
-
-**AI MUST NOT:**
-- Assess eligibility for any immigration program
-- Recommend pathways
-- Interpret immigration law
-- Promise approval or specific processing times
-- Represent as a licensed RCIC/lawyer
-
-**AI MAY:**
-- Greet as "AI-assisted intake system"
-- Collect factual data (name, program interest, timeline, budget)
-- Book consultations
-- Send reminders
-
-**Mandatory escalation triggers:** deportation, removal order, criminal history, fraud, emotional distress, minor involved, explicit human request, AI confidence < 60%.
-
----
-
-## SPRINT 5 SESSION SUMMARY (what happened)
-
-**Commits in this sprint:**
-- `5535d20` — feat: case lifecycle API, demo data, Metabase views — v0.5.0
-- `ec7a85f` — fix: install-views SQL comment stripping logic
-- `da00c8e` — fix: install-views error handling — report SQL errors instead of 500
-- `f3a5236` — fix: SQL ROUND cast to numeric + per-statement transactions
-- `490499b` — feat: rate limiting (slowapi), smoke test, Metabase setup script
-- `85ddbd3` — docs: update PROJECT_MEMORY with v0.5.0 completions
-- `ff097df` — feat: E2E customer journey hardening — 7 critical fixes + 31 new tests
-- `45dc0f3` — docs: E2E audit findings — 7 gaps fixed, 780+ tests
-- `deec71d` — fix: Schemathesis/UAT-found bugs — 4 critical 500s now proper 4xx
-- `26e172f` — security: OWASP headers middleware + working rate limiter
-
-**Net result:** v0.4.0 (743 tests) → v0.5.0 (788+ tests, Metabase dashboards, OWASP security, 14 bugs fixed, case lifecycle API).
-
----
-
-**This bootstrap is current as of 2026-04-17, commit `26e172f`. All production checks green. Ready for pilot prep work.**
+**End of bootstrap prompt. Session agent: begin with Part A now.**
