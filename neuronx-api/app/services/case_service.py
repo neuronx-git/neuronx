@@ -278,16 +278,25 @@ class CaseService:
 
         from app.models.db_models import Case
         from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
 
         async with database.async_session_factory() as session:
-            q = select(Case).order_by(Case.created_at.desc()).limit(limit)
+            # Eager-load assigned_user to avoid lazy-load MissingGreenlet errors in async context
+            q = (
+                select(Case)
+                .options(selectinload(Case.assigned_user))
+                .order_by(Case.created_at.desc())
+                .limit(limit)
+            )
             if stage:
                 q = q.where(Case.stage == stage)
             result = await session.execute(q)
             cases = result.scalars().all()
 
-            return [
-                {
+            rows = []
+            for c in cases:
+                assigned = getattr(c, "assigned_user", None)
+                rows.append({
                     "case_id": c.case_id,
                     "contact_id": c.contact_id,
                     "program_type": c.program_type,
@@ -295,19 +304,18 @@ class CaseService:
                     "assigned_rcic_id": c.assigned_rcic_id,
                     "assigned_user": (
                         {
-                            "id": c.assigned_user.id,
-                            "full_name": c.assigned_user.full_name,
-                            "role": c.assigned_user.role,
+                            "id": assigned.id,
+                            "full_name": assigned.full_name,
+                            "role": assigned.role,
                         }
-                        if c.assigned_user
+                        if assigned
                         else None
                     ),
                     "stage": c.stage,
                     "retainer_value": c.retainer_value,
                     "created_at": c.created_at.isoformat() if c.created_at else None,
-                }
-                for c in cases
-            ]
+                })
+            return rows
 
     async def initiate_case(
         self,

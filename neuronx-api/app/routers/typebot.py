@@ -13,6 +13,7 @@ import logging
 
 from app.services.ghl_client import GHLClient
 from app.services.typebot_service import TypebotService
+from app.config import settings
 from app.config_loader import load_yaml_config
 from app.utils.compliance_log import log_event
 
@@ -153,9 +154,49 @@ async def typebot_webhook(request: Request):
         if contacts:
             contact_id = contacts[0]["id"]
 
+    # Fallback: if no existing contact matched, CREATE one from form answers.
+    # This prevents silent drop of first-time submitters from the Typebot form.
+    if not contact_id and (email or phone):
+        try:
+            full_name = answers.get("full_name", "") or ""
+            first_name, _, last_name = full_name.partition(" ")
+            create_payload = {
+                "locationId": settings.ghl_location_id,
+                "firstName": first_name or answers.get("first_name", ""),
+                "lastName": last_name or answers.get("last_name", ""),
+                "email": email or "",
+                "phone": phone or "",
+                "source": "typebot-onboarding-form",
+                "tags": ["nx:source:typebot", "nx:new"],
+            }
+            # Drop empty/None keys so GHL doesn't reject
+            create_payload = {k: v for k, v in create_payload.items() if v}
+            create_payload["locationId"] = settings.ghl_location_id  # re-add always
+            new_contact = await ghl.create_contact(create_payload) if hasattr(ghl, "create_contact") else None
+            if not new_contact:
+                # Direct POST fallback if client lacks helper
+                import httpx as _httpx
+                async with _httpx.AsyncClient(timeout=15) as _c:
+                    _r = await _c.post(
+                        f"{settings.ghl_api_base_url}/contacts/",
+                        headers={
+                            "Authorization": f"Bearer {settings.ghl_access_token}",
+                            "Version": "2021-07-28",
+                            "Content-Type": "application/json",
+                        },
+                        json=create_payload,
+                    )
+                if _r.status_code in (200, 201):
+                    new_contact = _r.json().get("contact") or _r.json()
+            if new_contact:
+                contact_id = new_contact.get("id") or new_contact.get("contactId")
+                logger.info("Typebot webhook: created new contact %s for email=%s", contact_id, email)
+        except Exception as e:
+            logger.error("Typebot webhook: contact creation failed — %s", e)
+
     if not contact_id:
-        logger.warning("Typebot webhook: could not identify contact (email=%s, phone=%s)", email, phone)
-        return {"status": "unmatched", "note": "Could not find contact in GHL"}
+        logger.warning("Typebot webhook: could not identify or create contact (email=%s, phone=%s)", email, phone)
+        return {"status": "unmatched", "note": "Could not find or create contact in GHL"}
 
     # Map Typebot answers to GHL custom fields
     # Covers all 8 programs — common (24) + program-specific fields
